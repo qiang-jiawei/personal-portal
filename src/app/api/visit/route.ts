@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 export async function POST(request: NextRequest) {
   try {
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const today = new Date().toISOString().split("T")[0];
 
     // Try to update today's count
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const today = new Date().toISOString().split("T")[0];
 
     const { data: todayData, error: todayError } = await client

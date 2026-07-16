@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 async function getUserFromToken(request: NextRequest) {
   const token = request.cookies.get("user_token")?.value;
   if (!token) return null;
 
-  const client = getSupabaseClient();
+  const client = getSupabaseServiceClient();
   const { data: user, error } = await client
     .from("users")
     .select("id, phone, name, token_expires_at")
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "未登录" }, { status: 401 });
     }
 
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { data, error } = await client
       .from("consultations")
       .select("id, title, content, contact, status, reply, created_at")
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "所有字段不能为空" }, { status: 400 });
     }
 
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { error } = await client.from("consultations").insert({
       id: crypto.randomUUID(),
       user_id: user.id,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 async function checkAdmin(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get("admin_token")?.value;
@@ -12,7 +12,7 @@ async function checkAdmin(request: NextRequest): Promise<boolean> {
 export async function GET(request: NextRequest) {
   try {
     if (!await checkAdmin(request)) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { data, error } = await client
       .from("disclosure_requests")
       .select("*")
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     if (!await checkAdmin(request)) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
     const body = await request.json();
     const { request_id, reply } = body;
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { error } = await client
       .from("disclosure_requests")
       .update({ status: "replied", reply, replied_at: new Date().toISOString() })

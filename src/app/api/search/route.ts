@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: [] });
     }
 
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const results: { type: string; title: string; href: string }[] = [];
 
     // Search notices

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 async function getUserFromToken(request: NextRequest) {
   const token = request.cookies.get("user_token")?.value;
   if (!token) return null;
 
-  const client = getSupabaseClient();
+  const client = getSupabaseServiceClient();
   const { data: user } = await client
     .from("users")
     .select("id, phone, token_expires_at")
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "未登录" }, { status: 401 });
     }
 
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { data, error } = await client
       .from("ious")
       .select("id, document_no, status, amount, description, created_at")

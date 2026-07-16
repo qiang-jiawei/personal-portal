@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 async function checkAdmin(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get("admin_token")?.value;
@@ -12,7 +12,7 @@ async function checkAdmin(request: NextRequest): Promise<boolean> {
 export async function GET(request: NextRequest) {
   try {
     if (!await checkAdmin(request)) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { data, error } = await client
       .from("ious")
       .select("*")
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     const verificationCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
 
     // Look up user by phone to set user_id
     const { data: userData } = await client
@@ -85,7 +85,7 @@ export async function PUT(request: NextRequest) {
     if (!await checkAdmin(request)) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
     const body = await request.json();
     const { iou_id, status } = body;
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { error } = await client
       .from("ious")
       .update({ status, updated_at: new Date().toISOString() })

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 export async function GET(request: NextRequest) {
   try {
     const isAdmin = await checkAdmin(request);
     if (!isAdmin) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
 
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { data, error } = await client
       .from("users")
       .select("id, phone, name, is_active, is_frozen, created_at")
@@ -27,7 +27,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const { user_id, action } = body;
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
 
     const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
     if (action === "freeze") updates.is_frozen = true;

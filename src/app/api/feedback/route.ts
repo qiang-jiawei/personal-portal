@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "反馈内容至少10个字符" }, { status: 400 });
     }
 
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { error } = await client.from("feedback").insert({
       id: crypto.randomUUID(),
       type: type || "bug",

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 // Register new user
 export async function POST(request: NextRequest) {
@@ -39,7 +39,7 @@ async function handleRegister(body: { phone?: string; password?: string; name?: 
     return NextResponse.json({ success: false, error: "密码长度不能少于6位" }, { status: 400 });
   }
 
-  const client = getSupabaseClient();
+  const client = getSupabaseServiceClient();
 
   // Check if phone already exists
   const { data: existing, error: checkError } = await client
@@ -105,7 +105,7 @@ async function handleLogin(body: { phone?: string; password?: string }) {
     return NextResponse.json({ success: false, error: "手机号和密码不能为空" }, { status: 400 });
   }
 
-  const client = getSupabaseClient();
+  const client = getSupabaseServiceClient();
   const passwordHash = Buffer.from(password).toString("base64");
 
   const { data: user, error } = await client
@@ -165,7 +165,7 @@ async function handleCheck(request: NextRequest) {
     return NextResponse.json({ success: false, logged_in: false });
   }
 
-  const client = getSupabaseClient();
+  const client = getSupabaseServiceClient();
   const { data: user, error } = await client
     .from("users")
     .select("id, phone, name, token_expires_at, is_active, is_frozen")
@@ -204,7 +204,7 @@ async function handleLogout(request: NextRequest) {
   const token = request.cookies.get("user_token")?.value;
 
   if (token) {
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     await client.from("users").update({ login_token: null, token_expires_at: null }).eq("login_token", token);
   }
 
