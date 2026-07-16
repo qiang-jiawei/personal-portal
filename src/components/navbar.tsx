@@ -39,10 +39,10 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#e5e5e5] dark:border-[#2a2a3a] bg-white/95 dark:bg-[#0f0f1a]/95 backdrop-blur-sm">
-      {/* Top bar - deep color like Tsinghua */}
-      <div className="bg-[#1a1a2e] dark:bg-[#0a0a14]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-8 items-center justify-between text-xs text-white/70">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-transparent">
+      {/* Top bar - transparent to show background */}
+      <div className="bg-transparent">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-8 items-center justify-between text-xs text-white/90">
           <span>个人门户系统</span>
           <div className="flex items-center gap-4">
             <button
@@ -71,7 +71,7 @@ export function Navbar() {
               <div className="text-[#1a1a2e] dark:text-[#fafaf9] font-serif text-lg font-semibold tracking-wide">
                 个人门户系统
               </div>
-              <div className="text-[10px] text-[#6b7280] tracking-widest uppercase">
+              <div className="text-[10px] text-white/50 tracking-widest uppercase">
                 Personal Portal
               </div>
             </div>
@@ -84,10 +84,10 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative px-4 py-2 text-sm tracking-wide transition-colors duration-200",
+                  "relative px-4 py-2 text-sm tracking-wide transition-colors duration-200 text-white/90",
                   isActive(item.href)
-                    ? "text-[#1a1a2e] dark:text-[#fafaf9] font-medium"
-                    : "text-[#6b7280] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9]"
+                    ? "text-white font-medium"
+                    : "text-white/70 hover:text-white"
                 )}
               >
                 {item.label}
@@ -103,7 +103,7 @@ export function Navbar() {
             {/* Theme toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-[#6b7280] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9] transition-colors duration-200"
+              className="p-2 text-white/70 hover:text-white transition-colors duration-200"
               aria-label="切换主题"
             >
               {theme === "light" ? (
@@ -120,7 +120,7 @@ export function Navbar() {
             {/* Login button */}
             <Link
               href="/login"
-              className="hidden sm:inline-flex px-4 py-1.5 text-sm border border-[#1a1a2e] dark:border-[#fafaf9] text-[#1a1a2e] dark:text-[#fafaf9] hover:bg-[#1a1a2e] hover:text-white dark:hover:bg-[#fafaf9] dark:hover:text-[#1a1a2e] transition-colors duration-200 rounded-[2px]"
+              className="hidden sm:inline-flex px-4 py-1.5 text-sm border border-white/50 text-white hover:bg-white hover:text-[#1a1a2e] transition-colors duration-200 rounded-[2px]"
             >
               登录
             </Link>
@@ -128,7 +128,7 @@ export function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-[#6b7280]"
+              className="md:hidden p-2 text-white/70"
               aria-label="菜单"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
