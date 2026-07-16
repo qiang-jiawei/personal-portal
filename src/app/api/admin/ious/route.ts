@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const client = getSupabaseClient();
     const { data, error } = await client
       .from("ious")
-      .select("*, users!inner(name)")
+      .select("*, users!ious_user_id_users_id_fk(name)")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     // Flatten user name into each record
