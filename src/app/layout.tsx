@@ -21,7 +21,7 @@ export default function RootLayout({
   const isDev = process.env.COZE_PROJECT_ENV === "DEV";
 
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html lang="zh-CN" className="dark" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col">
         {isDev && <Inspector />}
         <ThemeProvider>
