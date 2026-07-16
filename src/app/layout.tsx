@@ -26,7 +26,7 @@ export default function RootLayout({
         {isDev && <Inspector />}
         <ThemeProvider>
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 bg-[#fafaf9] dark:bg-[#0f0f1a]">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>
