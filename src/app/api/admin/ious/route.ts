@@ -15,10 +15,16 @@ export async function GET(request: NextRequest) {
     const client = getSupabaseClient();
     const { data, error } = await client
       .from("ious")
-      .select("*")
+      .select("*, users!inner(name)")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return NextResponse.json({ success: true, data: data || [] });
+    // Flatten user name into each record
+    const enriched = (data || []).map((item: any) => ({
+      ...item,
+      borrower_name: item.users?.name || null,
+      users: undefined,
+    }));
+    return NextResponse.json({ success: true, data: enriched });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ success: false, error: message }, { status: 500 });

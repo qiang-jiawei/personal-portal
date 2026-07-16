@@ -308,7 +308,7 @@ function RequestsPanel() {
 }
 
 function IousPanel() {
-  const [ious, setIous] = useState<Array<{ id: string; document_no: string; borrower_phone: string; status: string; amount: string | null; created_at: string }>>([]);
+  const [ious, setIous] = useState<Array<{ id: string; document_no: string; borrower_phone: string; borrower_name: string | null; status: string; amount: string | null; created_at: string }>>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [newDocNo, setNewDocNo] = useState("");
@@ -368,7 +368,7 @@ function IousPanel() {
           <thead>
             <tr className="border-b border-[#e5e5e5] dark:border-[#2a2a3a] text-left">
               <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">编号</th>
-              <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">手机号</th>
+              <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">用户</th>
               <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">金额</th>
               <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">状态</th>
               <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">操作</th>
@@ -378,7 +378,7 @@ function IousPanel() {
             {ious.map((iou) => (
               <tr key={iou.id} className="border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
                 <td className="py-2 px-3 text-[#1a1a2e] dark:text-[#fafaf9] text-xs">{iou.document_no}</td>
-                <td className="py-2 px-3 text-[#6b7280] text-xs">{iou.borrower_phone}</td>
+                <td className="py-2 px-3 text-[#6b7280] text-xs">{iou.borrower_name || "-"} <span className="text-[10px] text-[#9ca3af]">({iou.borrower_phone})</span></td>
                 <td className="py-2 px-3 text-[#6b7280] text-xs">{iou.amount || "-"}</td>
                 <td className="py-2 px-3">
                   <span className={cn("text-[10px] border px-1.5 py-0.5 rounded-[1px]",
