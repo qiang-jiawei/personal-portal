@@ -66,12 +66,10 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 shrink-0">
-            <div className="h-9 w-9 bg-[#1a1a2e] dark:bg-[#b8860b] rounded-[2px] flex items-center justify-center">
-              <span className="text-white dark:text-[#1a1a2e] font-serif text-lg font-bold">门</span>
-            </div>
+            <img src="/logo.png" alt="LOGO" className="h-9 w-auto" />
             <div className="hidden sm:block">
               <div className="text-[#1a1a2e] dark:text-[#fafaf9] font-serif text-lg font-semibold tracking-wide">
-                个人门户
+                个人门户系统
               </div>
               <div className="text-[10px] text-[#6b7280] tracking-widest uppercase">
                 Personal Portal
