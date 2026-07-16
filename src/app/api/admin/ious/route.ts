@@ -15,14 +15,26 @@ export async function GET(request: NextRequest) {
     const client = getSupabaseClient();
     const { data, error } = await client
       .from("ious")
-      .select("*, users!ious_user_id_users_id_fk(name)")
+      .select("*")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    // Flatten user name into each record
+
+    // Batch fetch user names
+    const phoneList = [...new Set((data || []).map((item: any) => item.borrower_phone).filter(Boolean))];
+    let userMap: Record<string, string> = {};
+    if (phoneList.length > 0) {
+      const { data: users } = await client
+        .from("users")
+        .select("phone, name")
+        .in("phone", phoneList);
+      if (users) {
+        userMap = Object.fromEntries(users.map((u: any) => [u.phone, u.name || ""]));
+      }
+    }
+
     const enriched = (data || []).map((item: any) => ({
       ...item,
-      borrower_name: item.users?.name || null,
-      users: undefined,
+      borrower_name: userMap[item.borrower_phone] || null,
     }));
     return NextResponse.json({ success: true, data: enriched });
   } catch (error) {
@@ -43,9 +55,17 @@ export async function POST(request: NextRequest) {
     const verificationCode = Math.random().toString(36).substring(2, 10).toUpperCase();
     const client = getSupabaseClient();
 
+    // Look up user by phone to set user_id
+    const { data: userData } = await client
+      .from("users")
+      .select("id")
+      .eq("phone", borrower_phone.trim())
+      .maybeSingle();
+
     const { error } = await client.from("ious").insert({
       id: crypto.randomUUID(),
       borrower_phone: borrower_phone.trim(),
+      user_id: userData?.id || null,
       document_no: document_no.trim(),
       verification_code: verificationCode,
       status: "valid",
