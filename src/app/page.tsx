@@ -26,7 +26,7 @@ export default function HomePage() {
   return (
     <div className="relative">
       {/* Hero Section - Full screen */}
-      <section className="relative h-[calc(100vh-8rem)] min-h-[500px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen min-h-[500px] flex items-center justify-center overflow-hidden -mt-[7.5rem]">
         {/* Background image */}
         <div className="absolute inset-0">
           <div
