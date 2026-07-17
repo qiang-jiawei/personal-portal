@@ -45,7 +45,7 @@ export async function PUT(request: NextRequest) {
 }
 
 async function checkAdmin(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get("admin_token")?.value;
+  const token = request.cookies.get("admin_session")?.value;
   if (!token) return false;
   const adminUser = process.env.ADMIN_USERNAME || "admin";
   const adminPass = process.env.ADMIN_PASSWORD || "admin123";
