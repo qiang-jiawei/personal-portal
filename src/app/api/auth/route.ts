@@ -89,7 +89,7 @@ async function handleRegister(body: { phone?: string; password?: string; name?: 
   const response = NextResponse.json({ success: true, user: data });
   response.cookies.set("user_token", token, {
     httpOnly: true,
-    secure: process.env.COZE_PROJECT_ENV === "PROD",
+    secure: true,
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60, // 7 days
     path: "/",

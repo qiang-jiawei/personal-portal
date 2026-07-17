@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, useCallback } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
 import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
@@ -15,10 +15,40 @@ const NAV_ITEMS = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "check" }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.user) {
+          setIsLoggedIn(true);
+          setUserName(d.user.name || d.user.phone);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    await fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "logout" }),
+    });
+    setIsLoggedIn(false);
+    setUserName("");
+    router.refresh();
+  }, [router]);
 
   const isActive = useCallback(
     (href: string) => {
@@ -117,13 +147,25 @@ export function Navbar() {
               )}
             </button>
 
-            {/* Login button */}
-            <Link
-              href="/login"
-              className="hidden sm:inline-flex px-4 py-1.5 text-sm border border-white/50 text-white hover:bg-white hover:text-[#1a1a2e] transition-colors duration-200 rounded-[2px]"
-            >
-              登录
-            </Link>
+            {/* Login/Logout button */}
+            {isLoggedIn ? (
+              <div className="hidden sm:flex items-center gap-3">
+                <span className="text-xs text-white/70">{userName}</span>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-1.5 text-sm border border-white/50 text-white hover:bg-white hover:text-[#1a1a2e] transition-colors duration-200 rounded-[2px]"
+                >
+                  退出
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden sm:inline-flex px-4 py-1.5 text-sm border border-white/50 text-white hover:bg-white hover:text-[#1a1a2e] transition-colors duration-200 rounded-[2px]"
+              >
+                登录
+              </Link>
+            )}
 
             {/* Mobile menu button */}
             <button
@@ -184,13 +226,25 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="block px-3 py-2 text-sm text-[#b8860b] font-medium"
-            >
-              登录 / 注册
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <div className="px-3 py-2 text-xs text-[#6b7280]">{userName}</div>
+                <button
+                  onClick={() => { handleLogout(); setMobileOpen(false); }}
+                  className="block w-full text-left px-3 py-2 text-sm text-red-600 font-medium"
+                >
+                  退出登录
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block px-3 py-2 text-sm text-[#b8860b] font-medium"
+              >
+                登录 / 注册
+              </Link>
+            )}
           </nav>
         </div>
       )}
