@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const client = getSupabaseServiceClient();
     const { data, error } = await client
       .from("ious")
-      .select("id, document_no, status, amount, description, created_at")
+      .select("id, document_no, verification_code, status, amount, description, created_at")
       .eq("borrower_phone", user.phone)
       .order("created_at", { ascending: false });
 

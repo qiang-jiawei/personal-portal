@@ -11,6 +11,7 @@ interface IOU {
   amount: string | null;
   description: string | null;
   created_at: string;
+  verification_code?: string;
 }
 
 export default function FinancePage() {
@@ -64,6 +65,42 @@ export default function FinancePage() {
       setVerifyResult({ success: false, message: "网络错误" });
     } finally {
       setVerifying(false);
+    }
+  };
+
+  const handleDownload = async (iou: IOU) => {
+    try {
+      const res = await fetch("/api/ious/generate-document", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ iou_id: iou.id, document_type: iou.status }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        alert("下载失败: " + (error.error || "未知错误"));
+        return;
+      }
+
+      // Download the file
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const filenames: Record<string, string> = {
+        valid: `借据_${iou.document_no}.docx`,
+        expired: `借款失效证明_${iou.document_no}.docx`,
+        invalid: `借据无效说明_${iou.document_no}.docx`,
+      };
+      link.download = filenames[iou.status] || `借据_${iou.document_no}.docx`;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert("下载失败，请重试");
     }
   };
 
@@ -142,7 +179,7 @@ export default function FinancePage() {
                 const status = statusLabels[iou.status] || statusLabels.invalid;
                 return (
                   <div key={iou.id} className="py-4 px-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a] flex items-center justify-between">
-                    <div>
+                    <div className="flex-1">
                       <div className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">
                         编号：{iou.document_no}
                       </div>
@@ -153,9 +190,17 @@ export default function FinancePage() {
                         {new Date(iou.created_at).toLocaleDateString("zh-CN")}
                       </div>
                     </div>
-                    <span className={`text-[10px] border px-1.5 py-0.5 rounded-[1px] ${status.color}`}>
-                      {status.text}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-[10px] border px-1.5 py-0.5 rounded-[1px] ${status.color}`}>
+                        {status.text}
+                      </span>
+                      <button
+                        onClick={() => handleDownload(iou)}
+                        className="text-xs text-[#b8860b] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9] transition-colors px-2 py-1 border border-[#b8860b]/30 rounded-[2px] hover:border-[#b8860b]"
+                      >
+                        下载文书
+                      </button>
+                    </div>
                   </div>
                 );
               })}
