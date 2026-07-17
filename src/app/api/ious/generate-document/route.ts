@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
-import Docxtemplater from "docxtemplater";
-import PizZip from "pizzip";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import QRCode from "qrcode";
-import { readFileSync } from "fs";
-import { join } from "path";
 
 async function getUserFromToken(request: NextRequest) {
   const token = request.cookies.get("user_token")?.value;
@@ -59,119 +56,143 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     const borrowerName = userData?.name || user.phone;
+    const date = new Date(iou.created_at).toLocaleDateString("zh-CN");
 
-    // Generate QR code (contains document_no and verification_code)
+    // Generate QR code
     const qrData = JSON.stringify({
       document_no: iou.document_no,
       verification_code: iou.verification_code,
     });
     const qrCodeBase64 = await QRCode.toDataURL(qrData, {
-      width: 300,
-      margin: 2,
+      width: 200,
+      margin: 1,
       color: { dark: "#000000", light: "#ffffff" },
     });
+    const qrCodeBytes = Buffer.from(qrCodeBase64.split(",")[1], "base64");
 
-    // Convert base64 to buffer
-    const qrCodeBuffer = Buffer.from(qrCodeBase64.split(",")[1], "base64");
+    // Create PDF
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([595, 842]); // A4 size
+    const { width, height } = page.getSize();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    // Load signature and seal images
-    const publicDir = join(process.cwd(), "public");
-    let signatureBuffer: Buffer | null = null;
-    let sealBuffer: Buffer | null = null;
-
-    try {
-      signatureBuffer = readFileSync(join(publicDir, "signature.png"));
-    } catch {
-      console.warn("签名图片未找到，将使用占位符");
-    }
-
-    try {
-      sealBuffer = readFileSync(join(publicDir, "seal.png"));
-    } catch {
-      console.warn("印章图片未找到，将使用占位符");
-    }
-
-    // Load Word template
-    const templatePath = join(publicDir, "templates", "借据.docx");
-    let templateBuffer: Buffer;
-
-    try {
-      templateBuffer = readFileSync(templatePath);
-    } catch {
-      return NextResponse.json(
-        { success: false, error: "借据模板文件不存在" },
-        { status: 500 }
-      );
-    }
-
-    // Process template with docxtemplater
-    const zip = new PizZip(templateBuffer);
-    const doc = new Docxtemplater(zip, {
-      paragraphLoop: true,
-      linebreaks: true,
-    });
-
-    // Prepare template data
-    const templateData: Record<string, unknown> = {
-      borrower_name: borrowerName,
-      document_no: iou.document_no,
-      verification_code: iou.verification_code,
-      amount: iou.amount || "",
-      description: iou.description || "",
-      date: new Date(iou.created_at).toLocaleDateString("zh-CN"),
-      qr_code: qrCodeBuffer,
-      signature: signatureBuffer,
-      seal: sealBuffer,
-    };
-
-    // Add document type specific data
-    if (document_type === "valid") {
-      templateData.document_title = "借 据";
-      templateData.status_text = "有效";
-    } else if (document_type === "expired") {
-      templateData.document_title = "借款失效证明";
-      templateData.status_text = "失效";
+    // Title based on document type
+    let title = "借 据";
+    let statusText = "有效";
+    if (document_type === "expired") {
+      title = "借款失效证明";
+      statusText = "失效";
     } else if (document_type === "invalid") {
-      templateData.document_title = "借据无效说明";
-      templateData.status_text = "无效";
+      title = "借据无效说明";
+      statusText = "无效";
     }
 
-    doc.setData(templateData);
-
-    try {
-      doc.render();
-    } catch (error: unknown) {
-      const e = error as { properties?: { errors?: Array<{ message?: string }> } };
-      if (e.properties?.errors) {
-        console.error("模板渲染错误:", e.properties.errors);
-      }
-      throw new Error("模板渲染失败");
-    }
-
-    const outZip = doc.getZip();
-    const generatedDoc = outZip.generate({
-      type: "nodebuffer",
-      compression: "DEFLATE",
+    // Draw title
+    page.drawText(title, {
+      x: width / 2 - 60,
+      y: height - 80,
+      size: 24,
+      font: boldFont,
+      color: rgb(0, 0, 0),
     });
 
-    // Set filename based on document type
-    const filenames: Record<string, string> = {
-      valid: `借据_${iou.document_no}.docx`,
-      expired: `借款失效证明_${iou.document_no}.docx`,
-      invalid: `借据无效说明_${iou.document_no}.docx`,
+    // Draw content
+    const lineHeight = 30;
+    let y = height - 140;
+
+    const drawLine = (label: string, value: string) => {
+      page.drawText(label, {
+        x: 60,
+        y,
+        size: 12,
+        font,
+        color: rgb(0.3, 0.3, 0.3),
+      });
+      page.drawText(value, {
+        x: 160,
+        y,
+        size: 12,
+        font: boldFont,
+        color: rgb(0, 0, 0),
+      });
+      y -= lineHeight;
     };
 
-    const filename = filenames[document_type] || `借据_${iou.document_no}.docx`;
+    drawLine("借据编号：", iou.document_no);
+    drawLine("借款人：", borrowerName);
+    drawLine("金 额：", iou.amount || "");
+    drawLine("核验码：", iou.verification_code);
+    drawLine("日 期：", date);
+    drawLine("状 态：", statusText);
 
-    return new NextResponse(new Uint8Array(generatedDoc), {
+    if (iou.description) {
+      y -= 10;
+      page.drawText("备注说明：", {
+        x: 60,
+        y,
+        size: 12,
+        font,
+        color: rgb(0.3, 0.3, 0.3),
+      });
+      y -= 25;
+      page.drawText(iou.description, {
+        x: 60,
+        y,
+        size: 11,
+        font,
+        color: rgb(0, 0, 0),
+        maxWidth: width - 120,
+      });
+    }
+
+    // Draw QR code
+    const qrImage = await pdfDoc.embedPng(qrCodeBytes);
+    const qrSize = 100;
+    page.drawImage(qrImage, {
+      x: width - qrSize - 60,
+      y: 100,
+      width: qrSize,
+      height: qrSize,
+    });
+
+    page.drawText("扫码核验", {
+      x: width - qrSize - 60 + 20,
+      y: 80,
+      size: 10,
+      font,
+      color: rgb(0.5, 0.5, 0.5),
+    });
+
+    // Draw footer
+    page.drawText("本文书由系统自动生成，具有法律效力", {
+      x: 60,
+      y: 50,
+      size: 9,
+      font,
+      color: rgb(0.6, 0.6, 0.6),
+    });
+
+    // Serialize PDF
+    const pdfBytes = await pdfDoc.save();
+
+    // Set filename
+    const filenames: Record<string, string> = {
+      valid: `借据_${iou.document_no}.pdf`,
+      expired: `借款失效证明_${iou.document_no}.pdf`,
+      invalid: `借据无效说明_${iou.document_no}.pdf`,
+    };
+    const filename = filenames[document_type] || `借据_${iou.document_no}.pdf`;
+
+    return new NextResponse(new Uint8Array(pdfBytes), {
       headers: {
-        "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${encodeURIComponent(filename)}"`,
       },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("文档生成错误:", message);
+    console.error("PDF 生成错误:", message);
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
