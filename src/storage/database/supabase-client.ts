@@ -12,12 +12,20 @@ function getSupabaseServiceRoleKey(): string {
   return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.COZE_SUPABASE_SERVICE_ROLE_KEY || '';
 }
 
+function validateUrl(url: string): boolean {
+  return url.startsWith('https://') && url.includes('.supabase.co');
+}
+
 export function getSupabaseClient(): SupabaseClient {
   const url = getSupabaseUrl();
   const anonKey = getSupabaseAnonKey();
 
   if (!url || !anonKey) {
-    throw new Error('Supabase environment variables not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.');
+    throw new Error('Supabase 环境变量未配置。请在 Vercel 中设置 SUPABASE_URL 和 SUPABASE_ANON_KEY。');
+  }
+
+  if (!validateUrl(url)) {
+    throw new Error(`SUPABASE_URL 格式错误。正确格式: https://你的项目ID.supabase.co，当前值: ${url}`);
   }
 
   return createClient(url, anonKey);
@@ -28,7 +36,11 @@ export function getSupabaseServiceClient(): SupabaseClient {
   const serviceKey = getSupabaseServiceRoleKey();
 
   if (!url || !serviceKey) {
-    throw new Error('Supabase service role environment variables not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
+    throw new Error('Supabase 环境变量未配置。请在 Vercel 中设置 SUPABASE_URL 和 SUPABASE_SERVICE_ROLE_KEY。');
+  }
+
+  if (!validateUrl(url)) {
+    throw new Error(`SUPABASE_URL 格式错误。正确格式: https://你的项目ID.supabase.co，当前值: ${url}`);
   }
 
   return createClient(url, serviceKey, {

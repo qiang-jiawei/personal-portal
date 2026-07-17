@@ -112,13 +112,15 @@ export default function AdminPage() {
 function UsersPanel() {
   const [users, setUsers] = useState<Array<{ id: string; phone: string; name: string; is_active: boolean; is_frozen: boolean; created_at: string }>>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/users");
       const data = await res.json();
-      if (data.success) setUsers(data.data);
-    } catch { /* ignore */ }
+      if (data.success) { setUsers(data.data); setError(""); }
+      else setError(data.error || "获取用户列表失败");
+    } catch { setError("网络请求失败，请检查 Supabase 配置"); }
     setLoading(false);
   }, []);
 
@@ -144,6 +146,7 @@ function UsersPanel() {
   };
 
   if (loading) return <div className="text-sm text-[#6b7280] py-8 text-center">加载中...</div>;
+  if (error) return <div className="text-sm text-red-400 py-8 text-center">{error}</div>;
 
   return (
     <div className="overflow-x-auto">
@@ -202,11 +205,15 @@ function ConsultationsPanel() {
   const [items, setItems] = useState<Array<{ id: string; title: string; content: string; contact: string; status: string; reply: string | null; user_id: string }>>([]);
   const [replyId, setReplyId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const fetchItems = useCallback(async () => {
-    const res = await fetch("/api/admin/consultations");
-    const data = await res.json();
-    if (data.success) setItems(data.data);
+    try {
+      const res = await fetch("/api/admin/consultations");
+      const data = await res.json();
+      if (data.success) { setItems(data.data); setError(null); }
+      else setError(data.error || "加载失败");
+    } catch (e) { setError("网络错误，请检查 Supabase 配置"); }
   }, []);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
@@ -225,6 +232,8 @@ function ConsultationsPanel() {
 
   return (
     <div className="space-y-0">
+      {error && <div className="p-4 text-sm text-red-500">{error}</div>}
+      {items.length === 0 && !error && <div className="p-8 text-center text-sm text-[#6b7280]">暂无咨询记录</div>}
       {items.map((item) => (
         <div key={item.id} className="py-4 px-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
           <div className="flex items-center justify-between mb-1">
@@ -259,11 +268,13 @@ function RequestsPanel() {
   const [items, setItems] = useState<Array<{ id: string; title: string; content: string; contact: string; status: string; reply: string | null }>>([]);
   const [replyId, setReplyId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [error, setError] = useState("");
 
   const fetchItems = useCallback(async () => {
     const res = await fetch("/api/admin/disclosure-requests");
     const data = await res.json();
-    if (data.success) setItems(data.data);
+    if (data.success) { setItems(data.data); setError(""); }
+    else setError(data.error || "加载失败");
   }, []);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
@@ -282,6 +293,7 @@ function RequestsPanel() {
 
   return (
     <div className="space-y-0">
+      {error && <div className="py-3 px-4 text-xs text-red-500">{error}</div>}
       {items.map((item) => (
         <div key={item.id} className="py-4 px-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
           <div className="flex items-center justify-between mb-1">
@@ -309,31 +321,38 @@ function RequestsPanel() {
 
 function IousPanel() {
   const [ious, setIous] = useState<Array<{ id: string; document_no: string; borrower_phone: string; borrower_name: string | null; status: string; amount: string | null; created_at: string }>>([]);
+  const [iousError, setIousError] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [newDocNo, setNewDocNo] = useState("");
   const [newAmount, setNewAmount] = useState("");
 
   const fetchIous = useCallback(async () => {
-    const res = await fetch("/api/admin/ious");
-    const data = await res.json();
-    if (data.success) setIous(data.data);
+    try {
+      const res = await fetch("/api/admin/ious");
+      const data = await res.json();
+      if (data.success) { setIous(data.data); setIousError(""); }
+      else { setIousError(data.error || "加载失败"); }
+    } catch { setIousError("网络错误，请检查 Supabase 配置"); }
   }, []);
 
   useEffect(() => { fetchIous(); }, [fetchIous]);
 
   const createIou = async () => {
     if (!newPhone.trim() || !newDocNo.trim()) return;
-    await fetch("/api/admin/ious", {
+    const res = await fetch("/api/admin/ious", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ borrower_phone: newPhone.trim(), document_no: newDocNo.trim(), amount: newAmount.trim() || null }),
     });
-    setShowCreate(false);
-    setNewPhone("");
-    setNewDocNo("");
-    setNewAmount("");
-    fetchIous();
+    const data = await res.json();
+    if (data.success) {
+      setShowCreate(false);
+      setNewPhone(""); setNewDocNo(""); setNewAmount("");
+      fetchIous();
+    } else {
+      alert("录入失败: " + (data.error || "未知错误"));
+    }
   };
 
   const changeStatus = async (id: string, status: string) => {
@@ -363,6 +382,8 @@ function IousPanel() {
         </div>
       )}
 
+      {iousError && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-[2px] text-red-600 dark:text-red-400 text-xs">{iousError}</div>}
+
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -375,6 +396,9 @@ function IousPanel() {
             </tr>
           </thead>
           <tbody>
+            {ious.length === 0 && !iousError && (
+              <tr><td colSpan={5} className="py-8 text-center text-[#6b7280] text-xs">暂无借据数据</td></tr>
+            )}
             {ious.map((iou) => (
               <tr key={iou.id} className="border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
                 <td className="py-2 px-3 text-[#1a1a2e] dark:text-[#fafaf9] text-xs">{iou.document_no}</td>
@@ -426,15 +450,18 @@ function ContentPanel() {
 
 function FeedbackPanel() {
   const [items, setItems] = useState<Array<{ id: string; type: string; content: string; contact: string | null; status: string; created_at: string }>>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/feedback").then((r) => r.json()).then((d) => {
       if (d.success) setItems(d.data);
-    }).catch(() => {});
+      else setError(d.error || "加载失败");
+    }).catch((e) => setError("网络错误: " + e.message));
   }, []);
 
   return (
     <div className="space-y-0">
+      {error && <div className="py-3 px-4 text-xs text-red-500">{error}</div>}
       {items.map((item) => (
         <div key={item.id} className="py-4 px-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
           <div className="flex items-center gap-2 mb-1">
@@ -454,15 +481,18 @@ function FeedbackPanel() {
 
 function LogsPanel() {
   const [logs, setLogs] = useState<Array<{ id: string; action: string; detail: string | null; created_at: string }>>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/logs").then((r) => r.json()).then((d) => {
       if (d.success) setLogs(d.data);
-    }).catch(() => {});
+      else setError(d.error || "加载失败");
+    }).catch((e) => setError("网络错误: " + e.message));
   }, []);
 
   return (
     <div className="space-y-0">
+      {error && <div className="py-3 px-4 text-xs text-red-500">{error}</div>}
       {logs.map((log) => (
         <div key={log.id} className="py-3 px-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a] flex items-center justify-between">
           <div>
