@@ -67,12 +67,14 @@ export const info_disclosures = pgTable(
     title: varchar("title", { length: 300 }).notNull(),
     content: text("content").notNull().default(""),
     pdf_url: text("pdf_url"),
+    is_pinned: boolean("is_pinned").default(false).notNull(),
     display_type: varchar("display_type", { length: 20 }).notNull().default("text"), // 'text' or 'pdf'
     is_published: boolean("is_published").default(true).notNull(),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
+    index("info_disclosures_is_pinned_idx").on(table.is_pinned),
     index("info_disclosures_is_published_idx").on(table.is_published),
     index("info_disclosures_created_at_idx").on(table.created_at),
   ]
