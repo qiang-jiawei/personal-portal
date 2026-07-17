@@ -20,7 +20,7 @@ export default function ProfilePage() {
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-8 h-[2px] bg-[#b8860b]" />
-          <span className="text-xs text-[#6b7280] tracking-widest uppercase">Profile</span>
+          <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] tracking-widest uppercase">Profile</span>
         </div>
         <h1 className="font-serif text-3xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
           个人简介
@@ -38,7 +38,7 @@ export default function ProfilePage() {
                 "relative px-6 py-3 text-sm transition-colors duration-200",
                 activeTab === tab.key
                   ? "text-[#1a1a2e] dark:text-[#fafaf9] font-medium"
-                  : "text-[#6b7280] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9]"
+                  : "text-[#6b7280] dark:text-[#9ca3af] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9]"
               )}
             >
               {tab.label}
@@ -66,11 +66,11 @@ function IntroTab() {
       {/* Photo */}
       <div className="lg:col-span-1">
         <div className="aspect-[3/4] bg-[#f5f5f4] dark:bg-[#1e1e32] rounded-[2px] overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center text-[#6b7280]">
-            <svg className="h-16 w-16 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
+          <img
+            src="/profile-photo.jpg"
+            alt="强嘉伟"
+            className="w-full h-full object-cover object-top"
+          />
         </div>
       </div>
 
@@ -78,19 +78,16 @@ function IntroTab() {
       <div className="lg:col-span-2 space-y-6">
         <div>
           <h2 className="font-serif text-2xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-1">
-            姓名
+            强嘉伟
           </h2>
-          <p className="text-sm text-[#6b7280]">职称 / 职务</p>
+          <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">初级职称 / 学生</p>
         </div>
 
         <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
 
         <div className="space-y-4 text-sm leading-relaxed text-[#374151] dark:text-[#d1d5db]">
           <p>
-            此处为个人简介内容。请根据实际情况编辑个人信息、教育背景、研究方向、工作经历等内容。
-          </p>
-          <p>
-            可以在此处展示学术成果、研究兴趣、社会兼职等信息，全面呈现个人专业形象。
+            强嘉伟，学生，初级职称。致力于专业领域的学习与研究，不断追求学术进步与个人成长。
           </p>
         </div>
 
@@ -99,20 +96,17 @@ function IntroTab() {
         {/* Contact info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="text-[#6b7280] text-xs">电子邮箱</span>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9]">example@email.com</p>
+            <span className="text-[#6b7280] dark:text-[#9ca3af]">电子邮箱</span>
+            <p className="text-[#1a1a2e] dark:text-[#fafaf9] mt-1">jiawei-qiang@foxmail.com</p>
           </div>
           <div>
-            <span className="text-[#6b7280] text-xs">办公电话</span>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9]">+86 XXX-XXXX-XXXX</p>
+            <span className="text-[#6b7280] dark:text-[#9ca3af]">联系电话</span>
+            <p className="text-[#1a1a2e] dark:text-[#fafaf9] mt-1">+86 15398575367（优先）</p>
+            <p className="text-[#1a1a2e] dark:text-[#fafaf9]">+86 17791789885</p>
           </div>
           <div>
-            <span className="text-[#6b7280] text-xs">办公地点</span>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9]">XX楼XXX室</p>
-          </div>
-          <div>
-            <span className="text-[#6b7280] text-xs">通信地址</span>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9]">详细地址</p>
+            <span className="text-[#6b7280] dark:text-[#9ca3af]">微信</span>
+            <p className="text-[#1a1a2e] dark:text-[#fafaf9] mt-1">wxid_cl8nra6s3bp322</p>
           </div>
         </div>
       </div>
@@ -121,31 +115,26 @@ function IntroTab() {
 }
 
 function HonorsTab() {
-  const honors = [
-    { year: "2024", title: "荣誉奖项名称", org: "颁发机构" },
-    { year: "2023", title: "荣誉奖项名称", org: "颁发机构" },
-    { year: "2022", title: "荣誉奖项名称", org: "颁发机构" },
-    { year: "2021", title: "荣誉奖项名称", org: "颁发机构" },
-  ];
-
   return (
-    <div className="space-y-0">
-      {honors.map((honor, idx) => (
-        <div
-          key={idx}
-          className="flex items-start gap-6 py-5 border-b border-[#e5e5e5] dark:border-[#2a2a3a] last:border-b-0"
-        >
-          <span className="text-sm font-medium text-[#b8860b] w-12 shrink-0">
-            {honor.year}
-          </span>
+    <div className="space-y-6">
+      <div>
+        <h2 className="font-serif text-2xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-1">
+          所获荣誉
+        </h2>
+        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">Honors & Awards</p>
+      </div>
+
+      <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
+
+      <div className="space-y-4">
+        <div className="flex items-start gap-4 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px]">
+          <div className="w-2 h-2 mt-2 bg-[#b8860b] rounded-full shrink-0" />
           <div>
-            <h3 className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">
-              {honor.title}
-            </h3>
-            <p className="text-xs text-[#6b7280] mt-1">{honor.org}</p>
+            <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">荣誉待补充</p>
+            <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mt-1">请在管理员后台添加荣誉信息</p>
           </div>
         </div>
-      ))}
+      </div>
     </div>
   );
 }
@@ -153,16 +142,23 @@ function HonorsTab() {
 function CustomTab() {
   return (
     <div className="space-y-6">
-      <div className="border border-dashed border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] p-12 text-center">
-        <svg className="h-10 w-10 mx-auto text-[#6b7280] opacity-40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-        <p className="text-sm text-[#6b7280]">
-          自定义板块 — 可根据需要添加更多内容
-        </p>
-        <p className="text-xs text-[#6b7280] mt-2">
-          此板块为预留内容区域，可在管理员后台进行编辑
-        </p>
+      <div>
+        <h2 className="font-serif text-2xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-1">
+          其他信息
+        </h2>
+        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">Additional Information</p>
+      </div>
+
+      <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
+
+      <div className="space-y-4">
+        <div className="flex items-start gap-4 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px]">
+          <div className="w-2 h-2 mt-2 bg-[#b8860b] rounded-full shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">自定义板块</p>
+            <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mt-1">此板块内容待补充，可在管理员后台进行编辑</p>
+          </div>
+        </div>
       </div>
     </div>
   );
