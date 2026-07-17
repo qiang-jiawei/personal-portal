@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleAdminCheck(request: NextRequest) {
+export async function handleAdminCheck(request: NextRequest) {
   const session = request.cookies.get("admin_session")?.value;
 
   if (!session) {
@@ -58,6 +58,9 @@ async function handleAdminCheck(request: NextRequest) {
     user: { role: "admin" },
   });
 }
+
+// Alias for backward compatibility
+export const checkAdmin = handleAdminCheck;
 
 export async function GET(request: NextRequest) {
   const body = { action: "check" };
