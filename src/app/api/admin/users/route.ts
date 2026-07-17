@@ -45,10 +45,16 @@ export async function PUT(request: NextRequest) {
 }
 
 async function checkAdmin(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get("admin_session")?.value;
-  if (!token) return false;
-  const adminUser = process.env.ADMIN_USERNAME || "admin";
-  const adminPass = process.env.ADMIN_PASSWORD || "admin123";
-  const expected = Buffer.from(`${adminUser}:${adminPass}`).toString("base64");
-  return token === expected;
+  const session = request.cookies.get("admin_session")?.value;
+  if (!session) return false;
+  try {
+    const decoded = atob(session);
+    const parts = decoded.split(":");
+    if (parts.length !== 2) return false;
+    const [username] = parts;
+    const adminUser = process.env.ADMIN_USERNAME || "admin";
+    return username === adminUser;
+  } catch {
+    return false;
+  }
 }
