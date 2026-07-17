@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学本科获奖获证活动参与记录</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f4f7fc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 30px 20px;
+            color: #1e293b;
+        }
+        .container { max-width: 1050px; margin: 0 auto; }
+
+        .header {
+            text-align: center;
+            padding: 44px 26px 34px;
+            background: linear-gradient(135deg, #0b1e33, #1a3a5c);
+            border-radius: 24px;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 45px rgba(0,20,40,0.2);
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            color: rgba(255,255,255,0.6);
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        .header .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .header .stat-item {
+            background: rgba(255,255,255,0.09);
+            backdrop-filter: blur(4px);
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .header .stat-item .num {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .header .stat-item .label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.55);
+            margin-left: 6px;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px 20px;
+            background: #fff;
+            padding: 14px 22px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            border: 1px solid #eef2f6;
+            margin-bottom: 28px;
+        }
+        .controls .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .controls .left label {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #475569;
+        }
+        .controls select, .controls input {
+            padding: 7px 14px;
+            border-radius: 10px;
+            border: 1px solid #dce2ea;
+            background: #f9fbfd;
+            font-size: 0.88rem;
+            outline: none;
+        }
+        .controls select:focus, .controls input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        .controls .info {
+            font-size: 0.86rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 5px 16px;
+            border-radius: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 22px 18px;
+            box-shadow: 0 3px 16px rgba(0,0,0,0.03);
+            border: 1px solid #edf2f7;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 38px rgba(0,0,0,0.06);
+            border-color: #dce7f5;
+        }
+
+        .card .tier-line {
+            height: 4px;
+            border-radius: 4px 4px 0 0;
+            margin: -20px -22px 14px -22px;
+        }
+
+        .card .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .card .head .title-area {
+            flex: 1;
+        }
+        .card .head .title-area h3 {
+            font-size: 1.08rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .card .head .title-area .sub {
+            font-size: 0.78rem;
+            color: #64748b;
+            margin-top: 3px;
+        }
+        .card .stars {
+            display: flex;
+            gap: 1px;
+            flex-shrink: 0;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+        .card .status-badge {
+            font-size: 0.66rem;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 30px;
+            background: #eef2f6;
+            color: #475569;
+            white-space: nowrap;
+            border: 1px solid #e2e8f0;
+            align-self: center;
+        }
+        .card .status-badge.done {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+        .card .status-badge.ongoing {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffe69c;
+        }
+        .card .desc {
+            font-size: 0.89rem;
+            color: #334155;
+            margin-top: 10px;
+            line-height: 1.5;
+            flex: 1;
+        }
+        .card .footer-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f4fa;
+            font-size: 0.77rem;
+            color: #64748b;
+        }
+        .card .footer-meta .time {
+            background: #f8fafc;
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
+        .no-result {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+            font-size: 1rem;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- 头部 -->
+    <div class="header">
+        <h1>🎓 大学本科 · 荣誉墙</h1>
+        <p>按含金量降序排列 · 已完成项目显示完成时间</p>
+        <div class="stats">
+            <div class="stat-item"><span class="num" id="totalCount">0</span><span class="label">总项目</span></div>
+            <div class="stat-item"><span class="num" id="doneCount">0</span><span class="label">已完成</span></div>
+            <div class="stat-item"><span class="num" id="ongoingCount">0</span><span class="label">进行中</span></div>
+        </div>
+    </div>
+
+    <!-- 筛选控件 -->
+    <div class="controls">
+        <div class="left">
+            <label for="statusFilter">状态</label>
+            <select id="statusFilter">
+                <option value="all">全部</option>
+                <option value="done">已完成</option>
+                <option value="ongoing">进行中</option>
+            </select>
+            <label for="searchInput" style="margin-left:6px;">🔍</label>
+            <input type="text" id="searchInput" placeholder="搜索名称/描述" style="min-width:150px;">
+        </div>
+        <div class="info" id="resultInfo">共 0 项</div>
+    </div>
+
+    <!-- 卡片网格 -->
+    <div class="grid" id="cardGrid"></div>
+
+</div>
+
+<script>
+    // ---------- 数据 ----------
+    const activitiesData = [
+        {
+            id: 1,
+            title: "轻型民用无人驾驶航空器安全操控理论培训",
+            subtitle: "中国民用航空局飞行标准司",
+            description: "成绩合格",
+            tier: 1,          // 含金量等级 1~5
+            status: "done",
+            completedDate: "2024-08-30"
+        },
+        {
+            id: 2,
+            title: "AOPA民用无人机驾驶员合格证",
+            subtitle: "中国航空器拥有者及驾驶员协会",
+            description: "视距内轻型多旋翼无人机驾驶员",
+            tier: 1,
+            status: "done",
+            completedDate: "2024-08-30"
+        },
+        {
+            id: 3,
+            title: "2024-2025学年共青团滇池学院委员会纪检部任职",
+            subtitle: "共青团滇池学院委员会纪检部",
+            description: "干事职务",
+            tier: 1,
+            status: "done",
+            completedDate: "2024-09-06"
+        },
+        {
+            id: 4,
+            title: "普通话水平测试（PSC）",
+            subtitle: "国家语言文字工作委员会，国家语委普通话与文字应用培训测试中心",
+            description: "二级乙等",
+            tier: 2,
+            status: "done",
+            completedDate: "2024-11-16"
+        },
+        {
+            id: 5,
+            title: "云南省昆明市西山区红十字会会员",
+            subtitle: "西山区红十字会",
+            description: "个人会员",
+            tier: 1,
+            status: "done",
+            completedDate: "2024-11-25"
+        },
+        {
+            id: 6,
+            title: "2024-2025学年滇池学院理工学院2024级人工智能1班团支部委员会委员任职",
+            subtitle: "共青团滇池学院理工学院总支部委员会",
+            description: "支部委员会委员，宣传委员",
+            tier: 2,
+            status: "done",
+            completedDate: "2024-11-28"
+        },
+        {
+            id: 7,
+            title: "第二届全国大学生职业规划大赛滇池学院校级选拔赛",
+            subtitle: "滇池学院",
+            description: "优秀奖",
+            tier: 3,
+            status: "done",
+            completedDate: "2024-12-26"
+        },
+        {
+            id: 8,
+            title: "全国计算机等级考试_二级_WPS Office 高级应用与设计",
+            subtitle: "教育部教育考试院",
+            description: "成绩“合格”",
+            tier: 3,
+            status: "done",
+            completedDate: "2025-05-07"
+        },
+        {
+            id: 9,
+            title: "滇池学院第二期“青年马克思主义者培养工程”校级大学生骨干培训班",
+            subtitle: "共青团滇池学院委员会",
+            description: "结业",
+            tier: 3,
+            status: "done",
+            completedDate: "2026-06-12"
+        },
+        {
+            id: 10,
+            title: "第三届“外研U词杯”全国大学生英语词汇智慧学习大赛",
+            subtitle: "“外研U词杯”全国大学生英语词汇智慧学习大赛组织委员会",
+            description: "全国三等奖",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-06-09"
+        },
+        {
+            id: 11,
+            title: "华为鸿蒙应用开发者基础认证",
+            subtitle: "HUAWEI DEVELOPERS（华为开发者联盟）",
+            description: "华为鸿蒙应用开发者",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-06-14"
+        },
+        {
+            id: 12,
+            title: "Huawei Certification人工智能初识微认证",
+            subtitle: "HUAWEI Learning&Certification Services Dept",
+            description: "认证（100分）",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-06-11"
+        },
+        {
+            id: 13,
+            title: "Huawei Certification数通网络层协议基础微认证",
+            subtitle: "HUAWEI Learning&Certification Services Dept",
+            description: "认证（74.5分）",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-06-12"
+        },
+        {
+            id: 14,
+            title: "第二届“华夏杯”全民经典国学大会",
+            subtitle: "华夏文化促进会素质教育委员会",
+            description: "大学生组一等奖",
+            tier: 1,
+            status: "done",
+            completedDate: "2025-06-30"
+        },
+        {
+            id: 15,
+            title: "中华人民共和国国家版权局计算机软件著作权登记",
+            subtitle: "中华人民共和国国家版权局",
+            description: "基于云计算与大模型的智能医疗交互平台",
+            tier: 5,
+            status: "done",
+            completedDate: "2025-09-24"
+        },
+        {
+            id: 16,
+            title: "2025年全国语文规范化知识大赛",
+            subtitle: "教育部关心下一代工作委员会，中国教育学会，中国语文报刊协会，中国文字学会，全国语文规范化知识大赛组织委员会",
+            description: "大学生组优秀奖",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-08-23"
+        },
+         {
+            id: 17,
+            title: "2025-2026学年滇池学院理工学院2024级人工智能1班团支部委员会委员任职",
+            subtitle: "共青团滇池学院理工学院总支部委员会",
+            description: "支部委员会委员，宣传委员",
+            tier: 2,
+            status: "done",
+            completedDate: "2026-08-31"
+        },
+         {
+            id: 18,
+            title: "滇池学院2025年校级新文科实践创新大赛",
+            subtitle: "滇池学院 · 2025",
+            description: "铜奖",
+            tier: 3,
+            status: "done",
+            completedDate: "2025-11-05"
+        },
+         {
+            id: 19,
+            title: "共青团滇池学院委员会办公室干事任职",
+            subtitle: "共青团滇池学院委员会办公室",
+            description: "因个人原因，辞去职务",
+            tier: 1,
+            status: "done",
+            completedDate: "2026-03-24"
+        },
+         {
+            id: 20,
+            title: "全国大学生网络安全知识闯关答题",
+            subtitle: "教育部思想政治工作司，中国大学生在线",
+            description: "合格",
+            tier: 1,
+            status: "done",
+            completedDate: "2025-09-19"
+        },
+         {
+            id: 21,
+            title: "全国计算机等级考试_三级_网络技术",
+            subtitle: "教育部教育考试院",
+            description: "良好",
+            tier: 4,
+            status: "done",
+            completedDate: "2025-11-10"
+        },
+         {
+            id: 22,
+            title: "全国计算机等级考试_一级_计算机基础及WPS Office应用",
+            subtitle: "教育部教育考试院",
+            description: "良好",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-11-10"
+        },
+         {
+            id: 23,
+            title: "滇池学院2024-2025学年优秀学生奖学金",
+            subtitle: "滇池学院",
+            description: "优秀学生三等奖学金",
+            tier: 4,
+            status: "done",
+            completedDate: "2025-10-11"
+        },
+         {
+            id: 24,
+            title: "滇池学院2024-2025学年优秀学生干部",
+            subtitle: "滇池学院",
+            description: "优秀学生干部荣誉称号",
+            tier: 4,
+            status: "done",
+            completedDate: "2025-10-11"
+        },
+         {
+            id: 25,
+            title: "“职”引未来·筑梦启航 滇青年 大学生职业规划训练营（第三期）",
+            subtitle: "共青团昆明市呈贡区委员会",
+            description: "优秀学员",
+            tier: 2,
+            status: "done",
+            completedDate: "2026-03-29"
+        },
+         {
+            id: 26,
+            title: "第四届“外研U词杯”全国大学生英语词汇智慧学习大赛",
+            subtitle: "“外研U词杯”全国大学生英语词汇智慧学习大赛组织委员会",
+            description: "全国二等奖",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-11-09"
+        },
+         {
+            id: 27,
+            title: "第五届“应急科普华夏行”全国大学生安全知识竞赛",
+            subtitle: "中国灾害防御协会科普教育培训分会（中国灾害防御协会秘书处代章），上海联合减灾与应急管理促进中心，河南省应急产业协会，浙江省安全工程学会，四川省职业安全健康协会，应急科普华夏行科普竞赛组织委员会",
+            description: "初赛一等奖",
+            tier: 1,
+            status: "done",
+            completedDate: "2025-11-02"
+        },
+         {
+            id: 28,
+            title: "Huawei Certification认识和安装openEuler微认证",
+            subtitle: "HUAWEI Learning&Certification Services Dept",
+            description: "认证（89分）",
+            tier: 2,
+            status: "done",
+            completedDate: "2025-11-04"
+        },
+         {
+            id: 29,
+            title: "全国计算机技术与软件专业技术资格（水平）考试",
+            subtitle: "中华人民共和国工业和信息化部，中华人民共和国人力资源和社会保障部，云南省人力资源和社会保障厅，云南省计算机技术与软件专业技术资格考试办公室",
+            description: "初级资格_信息处理技术员",
+            tier: 4,
+            status: "done",
+            completedDate: "2025-11-08"
+        },
+        {
+            id: 30,
+            title: "Huawei Certification AI for coding微认证",
+            subtitle: "HUAWEI Learning&Certification Services Dept",
+            description: "认证（91分）",
+            tier: 3,
+            status: "done",
+            completedDate: "2025-11-14"
+        },
+         {
+            id: 31,
+            title: "Huawei Certification AI Agent技术与应用微认证",
+            subtitle: "HUAWEI Learning&Certification Services Dept",
+            description: "认证（88分）",
+            tier: 3,
+            status: "done",
+            completedDate: "2025-11-14"
+        },
+        {
+            id: 32,
+            title: "Huawei Certification 华为人工智能技术链与实践微认证",
+            subtitle: "HUAWEI Learning&Certification Services Dept",
+            description: "认证（88分）",
+            tier: 3,
+            status: "done",
+            completedDate: "2025-11-14"
+        },
+        {
+            id: 33,
+            title: "滇池学院理工学院计算机网络安全知识宣传大赛",
+            subtitle: "共青团滇池学院理工学院总支部委员会",
+            description: "优秀奖",
+            tier: 3,
+            status: "done",
+            completedDate: "2025-11-24"
+        },
+        {
+            id: 34,
+            title: "心肺复苏普及培训线上课程",
+            subtitle: "海南省急救医学培训中心",
+            description: "结课",
+            tier: 1,
+            status: "done",
+            completedDate: "2025-11-23"
+        },
+        {
+            id: 35,
+            title: "Huawei Certification HCIA-AI",
+            subtitle: "Huawei Technologies Co.，Ltd.",
+            description: "华为人工智能工程师认证",
+            tier: 4,
+            status: "done",
+            completedDate: "2025-11-29"
+        },
+        {
+            id: 36,
+            title: "第三届全国大学生职业规划大赛滇池学院校级选拔赛",
+            subtitle: "滇池学院",
+            description: "铜奖",
+            tier: 3,
+            status: "done",
+            completedDate: "2025-12-25"
+        },
+        {
+            id: 37,
+            title: "全国大学英语四级考试_四级_网络工程师",
+            subtitle: "教育部教育考试院",
+            description: "431分",
+            tier: 4,
+            status: "done",
+            completedDate: "2026-03-10"
+        },
+        {
+            id: 38,
+            title: "中国人工智能学会学生会员",
+            subtitle: "中国人工智能学会",
+            description: "学生会员",
+            tier: 2,
+            status: "done",
+            completedDate: "2026-01-11"
+        },
+        {
+            id: 39,
+            title: "“学习强国”学习平台“爱我国防”互动科普学习活动",
+            subtitle: "学习强国学习平台有限责任公司",
+            description: "“国防教育践行者”荣誉身份",
+            tier: 1,
+            status: "done",
+            completedDate: "2026-01-17"
+        },
+        {
+            id: 40,
+            title: "中国计算机学会学生会员",
+            subtitle: "中国计算机学会",
+            description: "学生会员",
+            tier: 2,
+            status: "done",
+            completedDate: "2026-03-15"
+        },
+        {
+            id: 41,
+            title: "滇池学院2026年“五四表彰”",
+            subtitle: "共青团滇池学院委员会",
+            description: "优秀共青团干部荣誉称号",
+            tier: 3,
+            status: "done",
+            completedDate: "2026-05-20"
+        },
+        {
+            id: 42,
+            title: "滇池学院第四届“挑战杯”大学生创业计划竞赛（李全意团队）（黄玉华团队）",
+            subtitle: "共青团滇池学院委员会，滇池学院创新创业学院",
+            description: "三等奖",
+            tier: 3,
+            status: "done",
+            completedDate: "2026-04-27"
+        },
+        {
+            id: 43,
+            title: "全国计算机技术与软件专业技术资格（水平）考试_中级资格_网络工程师资格",
+            subtitle: "中华人民共和国工业和信息化部，中华人民共和国人力资源和社会保障部，云南省人力资源和社会保障厅，云南省计算机技术与软件专业技术资格考试办公室",
+            description: "中级资格，网络工程师资格，工程师职称资格",
+            tier: 5,
+            status: "ongoing",
+            completedDate: null
+        },
+        {
+            id: 44,
+            title: "第二十八届中国机器人及人工智能大赛云南赛区选拔赛",
+            subtitle: "中国机器人及人工智能大赛云南赛区组织委员会",
+            description: "省赛三等奖",
+            tier: 4,
+            status: "done",
+            completedDate: "2026-06-23"
+        },
+        {
+            id: 45,
+            title: "全国大学英语六级考试",
+            subtitle: "教育部教育考试院",
+            description: "",
+            tier: 5,
+            status: "ongoing",
+            completedDate: null
+        },
+        {
+            id: 46,
+            title: "机动车驾驶人考试-普通三轮摩托车（D）",
+            subtitle: "陕西省宝鸡市公安局交通警察支队",
+            description: "普通三轮摩托车（D）驾驶资格",
+            tier: 2,
+            status: "ongoing",
+            completedDate: null
+        },
+
+        {
+            id: 17,
+            title: "test",
+            subtitle: "test · 2025",
+            description: "test",
+            tier: 1,
+            status: "ongoing",
+            completedDate: null
+        }
+    ];
+
+    // ----- 工具函数 -----
+    function getStars(tier) {
+        if (tier >= 5) return '⭐⭐⭐⭐⭐';
+        if (tier === 4) return '⭐⭐⭐⭐';
+        if (tier === 3) return '⭐⭐⭐';
+        if (tier === 2) return '⭐⭐';
+        return '⭐';
+    }
+
+    function getTierColor(tier) {
+        if (tier >= 5) return '#f59e0b';   // 金色
+        if (tier === 4) return '#3b82f6';   // 蓝色
+        if (tier === 3) return '#10b981';   // 绿色
+        if (tier === 2) return '#8b5cf6';   // 紫色
+        return '#94a3b8';                   // 灰色
+    }
+
+    // 渲染函数
+    function render(filterStatus = 'all', searchText = '') {
+        const grid = document.getElementById('cardGrid');
+        const resultInfo = document.getElementById('resultInfo');
+
+        let filtered = activitiesData.filter(item => {
+            // 状态过滤
+            if (filterStatus === 'done' && item.status !== 'done') return false;
+            if (filterStatus === 'ongoing' && item.status !== 'ongoing') return false;
+            // 搜索过滤
+            if (searchText.trim()) {
+                const kw = searchText.trim().toLowerCase();
+                const inTitle = item.title.toLowerCase().includes(kw);
+                const inDesc = item.description.toLowerCase().includes(kw);
+                const inSub = item.subtitle.toLowerCase().includes(kw);
+                if (!inTitle && !inDesc && !inSub) return false;
+            }
+            return true;
+        });
+
+        // 按含金量降序 (tier从高到低)，同tier按id升序
+        filtered.sort((a, b) => {
+            if (a.tier !== b.tier) return b.tier - a.tier;
+            return a.id - b.id;
+        });
+
+        // 更新统计
+        document.getElementById('totalCount').innerText = activitiesData.length;
+        document.getElementById('doneCount').innerText = activitiesData.filter(d => d.status === 'done').length;
+        document.getElementById('ongoingCount').innerText = activitiesData.filter(d => d.status === 'ongoing').length;
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div class="no-result">✨ 没有匹配的项目，试试其他关键词吧</div>`;
+            resultInfo.innerText = '共 0 项';
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(item => {
+            const starStr = getStars(item.tier);
+            const color = getTierColor(item.tier);
+            const isDone = item.status === 'done';
+            const badgeClass = isDone ? 'done' : 'ongoing';
+            const badgeText = isDone ? '✅ 已完成' : '⏳ 进行中';
+
+            // 完成时间显示
+            let timeDisplay = '';
+            if (isDone && item.completedDate) {
+                timeDisplay = `📅 ${item.completedDate}`;
+            } else if (!isDone) {
+                timeDisplay = '⏳ 预计2026年';
+            }
+
+            html += `
+                <div class="card">
+                    <div class="tier-line" style="background:${color};"></div>
+                    <div class="head">
+                        <div class="title-area">
+                            <h3>${item.title}</h3>
+                            <div class="sub">${item.subtitle}</div>
+                        </div>
+                        <div class="stars">${starStr}</div>
+                    </div>
+                    <div class="desc">${item.description}</div>
+                    <div class="footer-meta">
+                        <span class="status-badge ${badgeClass}">${badgeText}</span>
+                        <span class="time">${timeDisplay}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        grid.innerHTML = html;
+        resultInfo.innerText = `共 ${filtered.length} 项`;
+    }
+
+    // ----- 绑定事件 -----
+    document.addEventListener('DOMContentLoaded', () => {
+        const statusSelect = document.getElementById('statusFilter');
+        const searchInput = document.getElementById('searchInput');
+
+        function update() {
+            render(statusSelect.value, searchInput.value);
+        }
+
+        statusSelect.addEventListener('change', update);
+        searchInput.addEventListener('input', update);
+
+        // 初始渲染
+        render('all', '');
+    });
+</script>
+</body>
+</html>

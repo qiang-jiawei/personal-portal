@@ -126,14 +126,31 @@ function HonorsTab() {
 
       <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
 
-      <div className="space-y-4">
-        <div className="flex items-start gap-4 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px]">
-          <div className="w-2 h-2 mt-2 bg-[#b8860b] rounded-full shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">荣誉待补充</p>
-            <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mt-1">请在管理员后台添加荣誉信息</p>
+      <div className="space-y-3">
+        {[
+          { title: "计算机软件著作权登记", desc: "基于云计算与大模型的智能医疗交互平台", org: "中华人民共和国国家版权局", date: "2025-11" },
+          { title: "Huawei Certification HCIA-AI", desc: "华为人工智能工程师认证", org: "Huawei Technologies Co., Ltd.", date: "2025-11" },
+          { title: "全国计算机技术与软件专业技术资格（水平）考试", desc: "初级资格 · 信息处理技术员", org: "工业和信息化部 / 人力资源和社会保障部", date: "2025-11" },
+          { title: "全国计算机等级考试", desc: "三级 · 网络技术", org: "教育部教育考试院", date: "2025-09" },
+          { title: "第二十八届中国机器人及人工智能大赛", desc: "云南赛区选拔赛 · 省赛三等奖", org: "中国机器人及人工智能大赛云南赛区组委会", date: "2026-06" },
+          { title: "全国大学英语四级考试", desc: "431 分", org: "教育部教育考试院", date: "2026-03" },
+          { title: "滇池学院 2024-2025 学年优秀学生奖学金", desc: "学业表现优异", org: "滇池学院", date: "2025" },
+          { title: "滇池学院 2024-2025 学年优秀学生干部", desc: "学生工作情况突出", org: "滇池学院", date: "2025" },
+          { title: "全国计算机技术与软件专业技术资格（水平）考试", desc: "中级资格 · 网络工程师（进行中）", org: "工业和信息化部 / 人力资源和社会保障部", date: "备考中" },
+          { title: "全国大学英语六级考试", desc: "进行中", org: "教育部教育考试院", date: "备考中" },
+        ].map((h, i) => (
+          <div key={i} className="flex items-start gap-4 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px]">
+            <div className="w-2 h-2 mt-2 bg-[#b8860b] rounded-full shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">{h.title}</p>
+                <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] shrink-0">{h.date}</span>
+              </div>
+              <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mt-1">{h.desc}</p>
+              <p className="text-xs text-[#9ca3af] dark:text-[#6b7280] mt-0.5">{h.org}</p>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
@@ -144,19 +161,44 @@ function CustomTab() {
     <div className="space-y-6">
       <div>
         <h2 className="font-serif text-2xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-1">
-          其他信息
+          专业技能
         </h2>
-        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">Additional Information</p>
+        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">Skills & Expertise</p>
       </div>
 
       <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
 
-      <div className="space-y-4">
-        <div className="flex items-start gap-4 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px]">
-          <div className="w-2 h-2 mt-2 bg-[#b8860b] rounded-full shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">自定义板块</p>
-            <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mt-1">此板块内容待补充，可在管理员后台进行编辑</p>
+      <div className="space-y-5">
+        <div>
+          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">编程语言</p>
+          <div className="flex flex-wrap gap-2">
+            {["Python", "Java", "C", "C++", "JavaScript", "TypeScript"].map((s) => (
+              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">数据库</p>
+          <div className="flex flex-wrap gap-2">
+            {["MySQL", "PostgreSQL", "Supabase"].map((s) => (
+              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">框架与工具</p>
+          <div className="flex flex-wrap gap-2">
+            {["Next.js", "React", "Tailwind CSS", "Docker", "Kubernetes", "HarmonyOS"].map((s) => (
+              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">专业领域</p>
+          <div className="flex flex-wrap gap-2">
+            {["人工智能", "大模型应用", "云计算", "智能医疗", "前端工程化"].map((s) => (
+              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
+            ))}
           </div>
         </div>
       </div>
