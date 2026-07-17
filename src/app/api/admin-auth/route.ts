@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
         // Session-only cookie (no maxAge = expires when browser closes)
         response.cookies.set("admin_session", btoa(`${username}:${Date.now()}`), {
           httpOnly: true,
-          secure: process.env.COZE_PROJECT_ENV === "PROD",
+          secure: true,
           sameSite: "lax",
           path: "/",
         });
