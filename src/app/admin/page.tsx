@@ -437,13 +437,115 @@ function IousPanel() {
 }
 
 function ContentPanel() {
+  const [tab, setTab] = useState<"notices" | "disclosures">("notices");
+  const [notices, setNotices] = useState<Array<{ id: string; title: string; content: string; pdf_url: string | null; is_pinned: boolean; created_at: string }>>([]);
+  const [disclosures, setDisclosures] = useState<Array<{ id: string; title: string; content: string; pdf_url: string | null; is_pinned: boolean; created_at: string }>>([]);
+  const [error, setError] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState("");
+  const [formTitle, setFormTitle] = useState("");
+  const [formContent, setFormContent] = useState("");
+  const [formPdfUrl, setFormPdfUrl] = useState("");
+  const [formPinned, setFormPinned] = useState(false);
+
+  const loadData = useCallback(() => {
+    const url = tab === "notices" ? "/api/admin/notices" : "/api/admin/disclosures";
+    fetch(url).then((r) => r.json()).then((d) => {
+      if (d.success) {
+        if (tab === "notices") setNotices(d.data);
+        else setDisclosures(d.data);
+      } else setError(d.error || "加载失败");
+    }).catch((e) => setError("网络错误: " + e.message));
+  }, [tab]);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const url = tab === "notices" ? "/api/admin/notices" : "/api/admin/disclosures";
+    const method = editId ? "PUT" : "POST";
+    const body: Record<string, unknown> = { title: formTitle, content: formContent, pdf_url: formPdfUrl, is_pinned: formPinned };
+    if (editId) body.id = editId;
+
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (data.success) {
+      setShowForm(false);
+      setEditId("");
+      setFormTitle("");
+      setFormContent("");
+      setFormPdfUrl("");
+      setFormPinned(false);
+      loadData();
+    } else {
+      setError(data.error || "操作失败");
+    }
+  };
+
+  const handleEdit = (item: { id: string; title: string; content: string; pdf_url: string | null; is_pinned: boolean }) => {
+    setEditId(item.id);
+    setFormTitle(item.title);
+    setFormContent(item.content);
+    setFormPdfUrl(item.pdf_url || "");
+    setFormPinned(item.is_pinned);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("确定删除？")) return;
+    const url = tab === "notices" ? "/api/admin/notices" : "/api/admin/disclosures";
+    const res = await fetch(`${url}?id=${id}`, { method: "DELETE" });
+    const data = await res.json();
+    if (data.success) loadData();
+    else setError(data.error || "删除失败");
+  };
+
+  const items = tab === "notices" ? notices : disclosures;
+
   return (
-    <div className="py-8 text-center">
-      <div className="border border-dashed border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] p-12">
-        <p className="text-sm text-[#6b7280]">内容管理功能</p>
-        <p className="text-xs text-[#6b7280] mt-2">可在此处修改首页大图、增删通知公告、上传PDF文件</p>
-        <p className="text-xs text-[#6b7280] mt-1">该功能将在后续迭代中完善</p>
+    <div className="space-y-0">
+      {error && <div className="py-3 px-4 text-xs text-red-500">{error}</div>}
+
+      <div className="flex items-center justify-between border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
+        <div className="flex">
+          <button onClick={() => { setTab("notices"); setShowForm(false); setEditId(""); }} className={`px-4 py-2.5 text-[13px] transition-colors ${tab === "notices" ? "text-[#b8860b] border-b-2 border-[#b8860b]" : "text-[#6b7280]"}`}>通知公告</button>
+          <button onClick={() => { setTab("disclosures"); setShowForm(false); setEditId(""); }} className={`px-4 py-2.5 text-[13px] transition-colors ${tab === "disclosures" ? "text-[#b8860b] border-b-2 border-[#b8860b]" : "text-[#6b7280]"}`}>信息公开</button>
+        </div>
+        <button onClick={() => { setShowForm(true); setEditId(""); setFormTitle(""); setFormContent(""); setFormPdfUrl(""); setFormPinned(false); }} className="px-3 py-1.5 text-[11px] bg-[#1a1a2e] text-white hover:bg-[#b8860b] transition-colors rounded-[2px]">+ 新增</button>
       </div>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="p-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a] space-y-3">
+          <input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="标题" className="w-full px-3 py-2 text-[13px] bg-[#fafaf9] dark:bg-[#1a1a2e] border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] focus:outline-none focus:border-[#b8860b]" required />
+          <textarea value={formContent} onChange={(e) => setFormContent(e.target.value)} placeholder="正文内容" rows={4} className="w-full px-3 py-2 text-[13px] bg-[#fafaf9] dark:bg-[#1a1a2e] border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] focus:outline-none focus:border-[#b8860b] resize-none" />
+          <input value={formPdfUrl} onChange={(e) => setFormPdfUrl(e.target.value)} placeholder="PDF文件URL（选填）" className="w-full px-3 py-2 text-[13px] bg-[#fafaf9] dark:bg-[#1a1a2e] border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] focus:outline-none focus:border-[#b8860b]" />
+          <label className="flex items-center gap-2 text-[12px] text-[#6b7280]"><input type="checkbox" checked={formPinned} onChange={(e) => setFormPinned(e.target.checked)} /> 置顶显示</label>
+          <div className="flex gap-2">
+            <button type="submit" className="px-4 py-1.5 text-[11px] bg-[#b8860b] text-white hover:bg-[#1a1a2e] transition-colors rounded-[2px]">{editId ? "保存" : "创建"}</button>
+            <button type="button" onClick={() => { setShowForm(false); setEditId(""); }} className="px-4 py-1.5 text-[11px] border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#6b7280] hover:text-[#1a1a1a] dark:hover:text-white transition-colors rounded-[2px]">取消</button>
+          </div>
+        </form>
+      )}
+
+      {items.map((item) => (
+        <div key={item.id} className="py-3 px-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                {item.is_pinned && <span className="text-[10px] border border-[#b8860b] text-[#b8860b] px-1.5 py-0.5 rounded-[1px]">置顶</span>}
+                <span className="text-[13px] font-medium text-[#1a1a1a] dark:text-white truncate">{item.title}</span>
+              </div>
+              {item.pdf_url && <span className="text-[11px] text-[#6b7280] mt-0.5 block">📎 附件</span>}
+            </div>
+            <div className="flex gap-1 ml-4">
+              <button onClick={() => handleEdit(item)} className="px-2 py-1 text-[10px] border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#6b7280] hover:text-[#b8860b] hover:border-[#b8860b] transition-colors rounded-[1px]">编辑</button>
+              <button onClick={() => handleDelete(item.id)} className="px-2 py-1 text-[10px] border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#6b7280] hover:text-red-500 hover:border-red-500 transition-colors rounded-[1px]">删除</button>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {items.length === 0 && !showForm && <div className="py-8 text-center text-[12px] text-[#6b7280]">暂无{tab === "notices" ? "通知公告" : "信息公开"}，点击右上角"新增"添加</div>}
     </div>
   );
 }
