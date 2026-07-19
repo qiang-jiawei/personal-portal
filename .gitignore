@@ -77,7 +77,11 @@ logs/
 *.gz
 
 # 文档类也默认加入
-*.pdf
+# 忽略 assets 目录下的 PDF（模板原文件）
+assets/*.pdf
+
+# 但保留 public 目录下的 PDF（部署用）
+!public/*.pdf
 *.docx
 *.doc
 *.xlsx
