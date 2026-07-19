@@ -368,19 +368,19 @@ export async function POST(request: NextRequest) {
         color: rgb(0, 0, 0),
       });
 
-      // 还款渠道 - fpdf(215.38, 545.49, 137.33, 20)
+      // 还款渠道 (lending method) - adjusted position
       page.drawText(lendingMethod, {
         x: 215.38,
-        y: 276.4,
+        y: 306.4,
         size: 12,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 还款单号 (use verification code as placeholder) - fpdf(244.71, 512.82, 110.67, 22.67)
-      page.drawText(iou.verification_code, {
+      // 还款单号 (repayment channel) - adjusted position
+      page.drawText(lendingMethod, {
         x: 244.71,
-        y: 306.4,
+        y: 276.4,
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -407,20 +407,20 @@ export async function POST(request: NextRequest) {
       // 日 - fpdf(419.38, 638.82, 25.33, 22.67)
       page.drawText(signDay.toString(), { x: 419.38, y: 180.4, size: 14, font, color: rgb(0, 0, 0) });
 
-      // QR code - above verification code
+      // QR code - above verification code (moved higher)
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
-      const qrSize = 60;
+      const qrSize = 50;
       page.drawImage(qrImage, {
         x: 141.38,
-        y: 169.73, // 841.89 - 674.16 - 18 + 20 (above verification code)
+        y: 180, // moved higher to avoid overlap
         width: qrSize,
         height: qrSize,
       });
 
-      // 核验编码 (bottom) - fpdf(141.38, 674.16, 96.67, 18)
+      // 核验编码 (bottom) - moved lower
       page.drawText(iou.verification_code, {
         x: 141.38,
-        y: 149.73,
+        y: 120,
         size: 10,
         font,
         color: rgb(0, 0, 0),
