@@ -320,12 +320,12 @@ function RequestsPanel() {
 }
 
 function IousPanel() {
-  const [ious, setIous] = useState<Array<{ id: string; document_no: string; borrower_phone: string; borrower_name: string | null; status: string; amount: string | null; created_at: string }>>([]);
+  const [ious, setIous] = useState<Array<{ id: string; document_no: string; borrower_phone: string; borrower_name: string | null; status: string; amount: string | null; lending_method: string | null; created_at: string }>>([]);
   const [iousError, setIousError] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [newPhone, setNewPhone] = useState("");
-  const [newDocNo, setNewDocNo] = useState("");
   const [newAmount, setNewAmount] = useState("");
+  const [newLendingMethod, setNewLendingMethod] = useState("银行转账");
 
   const fetchIous = useCallback(async () => {
     try {
@@ -339,19 +339,19 @@ function IousPanel() {
   useEffect(() => { fetchIous(); }, [fetchIous]);
 
   const createIou = async () => {
-    if (!newPhone.trim() || !newDocNo.trim()) return;
+    if (!newPhone.trim()) return;
     const res = await fetch("/api/admin/ious", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ borrower_phone: newPhone.trim(), document_no: newDocNo.trim(), amount: newAmount.trim() || null }),
+      body: JSON.stringify({ borrower_phone: newPhone.trim(), amount: newAmount.trim() || null, lending_method: newLendingMethod }),
     });
     const data = await res.json();
     if (data.success) {
       setShowCreate(false);
-      setNewPhone(""); setNewDocNo(""); setNewAmount("");
+      setNewPhone(""); setNewAmount(""); setNewLendingMethod("银行转账");
       fetchIous();
     } else {
-      alert("录入失败: " + (data.error || "未知错误"));
+      alert("录入失败：" + (data.error || "未知错误"));
     }
   };
 
@@ -376,8 +376,13 @@ function IousPanel() {
       {showCreate && (
         <div className="mb-6 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] space-y-3">
           <input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} className="w-full px-2 py-1.5 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] bg-transparent rounded-[2px] focus:outline-none focus:border-[#b8860b]" placeholder="借款人手机号" />
-          <input value={newDocNo} onChange={(e) => setNewDocNo(e.target.value)} className="w-full px-2 py-1.5 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] bg-transparent rounded-[2px] focus:outline-none focus:border-[#b8860b]" placeholder="借条编号" />
           <input value={newAmount} onChange={(e) => setNewAmount(e.target.value)} className="w-full px-2 py-1.5 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] bg-transparent rounded-[2px] focus:outline-none focus:border-[#b8860b]" placeholder="金额（选填）" />
+          <select value={newLendingMethod} onChange={(e) => setNewLendingMethod(e.target.value)} className="w-full px-2 py-1.5 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] bg-transparent rounded-[2px] focus:outline-none focus:border-[#b8860b]">
+            <option value="银行转账">银行转账</option>
+            <option value="微信">微信</option>
+            <option value="支付宝">支付宝</option>
+            <option value="现金">现金</option>
+          </select>
           <button onClick={createIou} className="px-4 py-1.5 text-xs bg-[#b8860b] text-white rounded-[2px]">确认录入</button>
         </div>
       )}

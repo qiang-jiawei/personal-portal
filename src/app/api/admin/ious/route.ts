@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
+import { generateIOUNumber } from "@/lib/pdf-utils";
 
 async function checkAdmin(request: NextRequest): Promise<boolean> {
   const session = request.cookies.get("admin_session")?.value;
@@ -54,13 +55,17 @@ export async function POST(request: NextRequest) {
   try {
     if (!await checkAdmin(request)) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
     const body = await request.json();
-    const { borrower_phone, document_no, amount } = body;
-    if (!borrower_phone || !document_no) {
-      return NextResponse.json({ success: false, error: "请填写完整信息" }, { status: 400 });
+    const { borrower_phone, amount, lending_method } = body;
+    if (!borrower_phone) {
+      return NextResponse.json({ success: false, error: "请填写借款人手机号" }, { status: 400 });
     }
 
-    const verificationCode = Math.random().toString(36).substring(2, 10).toUpperCase();
     const client = getSupabaseServiceClient();
+
+    // Auto-generate IOU number
+    const document_no = await generateIOUNumber(client);
+
+    const verificationCode = Math.random().toString(36).substring(2, 10).toUpperCase();
 
     // Look up user by phone to set user_id
     const { data: userData } = await client
@@ -73,14 +78,15 @@ export async function POST(request: NextRequest) {
       id: crypto.randomUUID(),
       borrower_phone: borrower_phone.trim(),
       user_id: userData?.id || null,
-      document_no: document_no.trim(),
+      document_no: document_no,
       verification_code: verificationCode,
       status: "valid",
       amount: amount || null,
+      lending_method: lending_method || "银行转账",
     });
 
     if (error) throw new Error(error.message);
-    return NextResponse.json({ success: true, verification_code: verificationCode });
+    return NextResponse.json({ success: true, document_no, verification_code: verificationCode });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
