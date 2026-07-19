@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
       // 2. 借款人姓名
       page.drawText(borrowerName, {
         x: 94.54,
-        y: 529.69,
+        y: 509.69,  // 借款人姓名
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
       // 3. 借款年
       page.drawText(loanDate.getFullYear().toString(), {
         x: 183.88,
-        y: 467.02,
+        y: 447.02,  // 借款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
       // 4. 借款月
       page.drawText((loanDate.getMonth() + 1).toString(), {
         x: 253.21,
-        y: 467.03,
+        y: 447.03,  // 借款月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
       // 5. 借款日
       page.drawText(loanDate.getDate().toString(), {
         x: 309.21,
-        y: 467.69,
+        y: 447.69,  // 借款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
       // 6. 出借方式
       page.drawText(lendingMethod, {
         x: 441.21,
-        y: 467.02,
+        y: 447.02,  // 借款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
       const amount = iou.amount || "0";
       page.drawText(amount, {
         x: 186.54,
-        y: 436.35,
+        y: 416.35,  // 金额数字
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
         x: 325.88,
-        y: 436.35,
+        y: 416.35,  // 金额数字
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -248,7 +248,7 @@ export async function POST(request: NextRequest) {
       // 9. 还款年
       page.drawText(repaymentDate.getFullYear().toString(), {
         x: 189.21,
-        y: 405.69,
+        y: 385.69,  // 还款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
       // 10. 还款月
       page.drawText((repaymentDate.getMonth() + 1).toString(), {
         x: 269.21,
-        y: 405.69,
+        y: 385.69,  // 还款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -266,7 +266,7 @@ export async function POST(request: NextRequest) {
       // 11. 签署年
       page.drawText(signingDate.getFullYear().toString(), {
         x: 332.3,
-        y: 214.51,
+        y: 194.51,  // 签署年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -275,7 +275,7 @@ export async function POST(request: NextRequest) {
       // 12. 签署月
       page.drawText((signingDate.getMonth() + 1).toString(), {
         x: 388.96,
-        y: 215.85,
+        y: 195.85,  // 签署月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -284,7 +284,7 @@ export async function POST(request: NextRequest) {
       // 13. 签署日
       page.drawText(signingDate.getDate().toString(), {
         x: 429.63,
-        y: 215.84,
+        y: 195.84,  // 签署日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -293,7 +293,7 @@ export async function POST(request: NextRequest) {
       // 14. 核验编码
       page.drawText(iou.verification_code, {
         x: 139.88,
-        y: 147.02,
+        y: 127.02,  // 核验编码
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -306,7 +306,7 @@ export async function POST(request: NextRequest) {
         const stampImage = await pdfDoc.embedPng(stampBytes);
         page.drawImage(stampImage, {
           x: 121.21,
-          y: 167.02,
+          y: 147.02,  // 印章
           width: 100,
           height: 102.67,
         });
@@ -317,7 +317,7 @@ export async function POST(request: NextRequest) {
       const qrSize = 50;
       page.drawImage(qrImage, {
         x: 139.88,
-        y: 171.02,
+        y: 151.02,  // QR 码
         width: qrSize,
         height: qrSize,
       });
@@ -338,7 +338,7 @@ export async function POST(request: NextRequest) {
       // 2. 借款年
       page.drawText(loanDate.getFullYear().toString(), {
         x: 202.04,
-        y: 514.51,
+        y: 494.51,  // 借款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -347,7 +347,7 @@ export async function POST(request: NextRequest) {
       // 3. 借款月
       page.drawText((loanDate.getMonth() + 1).toString(), {
         x: 285.38,
-        y: 515.84,
+        y: 495.84,  // 借款月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -356,7 +356,7 @@ export async function POST(request: NextRequest) {
       // 4. 借款日
       page.drawText(loanDate.getDate().toString(), {
         x: 348.71,
-        y: 517.18,
+        y: 497.18,  // 借款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -365,7 +365,7 @@ export async function POST(request: NextRequest) {
       // 5. 出借方式
       page.drawText(lendingMethod, {
         x: 446.71,
-        y: 517.18,
+        y: 497.18,  // 借款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -374,7 +374,7 @@ export async function POST(request: NextRequest) {
       // 6. 借款人姓名
       page.drawText(borrowerName, {
         x: 144.71,
-        y: 487.18,
+        y: 467.18,  // 借款人姓名
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -384,7 +384,7 @@ export async function POST(request: NextRequest) {
       const amount = iou.amount || "0";
       page.drawText(amount, {
         x: 363.38,
-        y: 487.18,
+        y: 467.18,  // 借款人姓名
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -394,7 +394,7 @@ export async function POST(request: NextRequest) {
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
         x: 152.04,
-        y: 455.84,
+        y: 435.84,  // 金额大写
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -403,7 +403,7 @@ export async function POST(request: NextRequest) {
       // 9. 还款年
       page.drawText(repaymentDate.getFullYear().toString(), {
         x: 342.04,
-        y: 454.51,
+        y: 434.51,  // 还款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -412,7 +412,7 @@ export async function POST(request: NextRequest) {
       // 10. 还款月
       page.drawText((repaymentDate.getMonth() + 1).toString(), {
         x: 400.71,
-        y: 455.18,
+        y: 435.18,  // 还款月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -421,7 +421,7 @@ export async function POST(request: NextRequest) {
       // 11. 还款日
       page.drawText(repaymentDate.getDate().toString(), {
         x: 454.71,
-        y: 456.51,
+        y: 436.51,  // 还款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -430,7 +430,7 @@ export async function POST(request: NextRequest) {
       // 12. 签署年
       page.drawText(signingDate.getFullYear().toString(), {
         x: 317.38,
-        y: 297.84,
+        y: 277.84,  // 签署年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -439,7 +439,7 @@ export async function POST(request: NextRequest) {
       // 13. 签署月
       page.drawText((signingDate.getMonth() + 1).toString(), {
         x: 377.38,
-        y: 297.84,
+        y: 277.84,  // 签署年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -448,7 +448,7 @@ export async function POST(request: NextRequest) {
       // 14. 签署日
       page.drawText(signingDate.getDate().toString(), {
         x: 420.71,
-        y: 298.51,
+        y: 278.51,  // 签署日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -457,7 +457,7 @@ export async function POST(request: NextRequest) {
       // 15. 核验编码
       page.drawText(iou.verification_code, {
         x: 141.38,
-        y: 258.51,
+        y: 238.51,  // 核验编码
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -470,7 +470,7 @@ export async function POST(request: NextRequest) {
         const stampImage = await pdfDoc.embedPng(stampBytes);
         page.drawImage(stampImage, {
           x: 123.38,
-          y: 351.84,
+          y: 331.84,  // 印章
           width: 86,
           height: 86.67,
         });
@@ -481,7 +481,7 @@ export async function POST(request: NextRequest) {
       const qrSize = 40;
       page.drawImage(qrImage, {
         x: 50,
-        y: 220,
+        y: 200,  // QR 码
         width: qrSize,
         height: qrSize,
       });
