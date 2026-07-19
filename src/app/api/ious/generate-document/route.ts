@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
 
       // QR code (above verification code)
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
-      const qrSize = 80;
+      const qrSize = 60;
       page.drawImage(qrImage, {
         x: 90,
         y: height - 720,
@@ -394,7 +394,7 @@ export async function POST(request: NextRequest) {
 
       // QR code
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
-      const qrSize = 80;
+      const qrSize = 60;
       page.drawImage(qrImage, {
         x: 90,
         y: height - 720,
