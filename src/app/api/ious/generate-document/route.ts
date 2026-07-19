@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 import { PDFDocument, rgb } from "pdf-lib";
 import QRCode from "qrcode";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 async function getUserFromToken(request: NextRequest) {
   const token = request.cookies.get("user_token")?.value;
@@ -74,9 +76,9 @@ export async function POST(request: NextRequest) {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595, 842]); // A4 size
     const { width, height } = page.getSize();
-    // Load Chinese font
-    const fontUrl = new URL("../../../public/chinese-font.ttf", import.meta.url);
-    const fontBytes = await fetch(fontUrl).then((res) => res.arrayBuffer());
+    // Load Chinese font from local file
+    const fontPath = join(process.cwd(), "public", "chinese-font.ttf");
+    const fontBytes = readFileSync(fontPath);
     const font = await pdfDoc.embedFont(fontBytes);
     const boldFont = await pdfDoc.embedFont(fontBytes);
 
