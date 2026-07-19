@@ -1,0 +1,327 @@
+{
+  "document": "借款证明.pdf",
+  "totalCoordinates": 20,
+  "exportDate": "2026-07-19T09:45:12.335Z",
+  "coordinates": [
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 460.04,
+        "y": 112.16
+      },
+      "pdfjs": {
+        "x": 460.04,
+        "y": 729.18
+      },
+      "width_pt": 80.67,
+      "height_pt": 24.67,
+      "width_mm": 28.46,
+      "height_mm": 8.7,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 208.04,
+        "y": 324.16
+      },
+      "pdfjs": {
+        "x": 208.04,
+        "y": 517.18
+      },
+      "width_pt": 51.33,
+      "height_pt": 20,
+      "width_mm": 18.11,
+      "height_mm": 7.06,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 283.38,
+        "y": 320.16
+      },
+      "pdfjs": {
+        "x": 283.38,
+        "y": 521.18
+      },
+      "width_pt": 42.67,
+      "height_pt": 22.67,
+      "width_mm": 15.05,
+      "height_mm": 8,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 344.71,
+        "y": 318.16
+      },
+      "pdfjs": {
+        "x": 344.71,
+        "y": 523.18
+      },
+      "width_pt": 44,
+      "height_pt": 25.33,
+      "width_mm": 15.52,
+      "height_mm": 8.94,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 444.04,
+        "y": 322.16
+      },
+      "pdfjs": {
+        "x": 444.04,
+        "y": 519.18
+      },
+      "width_pt": 54.67,
+      "height_pt": 21.33,
+      "width_mm": 19.29,
+      "height_mm": 7.53,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 167.38,
+        "y": 348.82
+      },
+      "pdfjs": {
+        "x": 167.38,
+        "y": 492.51
+      },
+      "width_pt": 77.33,
+      "height_pt": 25.33,
+      "width_mm": 27.28,
+      "height_mm": 8.94,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 383.38,
+        "y": 354.16
+      },
+      "pdfjs": {
+        "x": 383.38,
+        "y": 487.18
+      },
+      "width_pt": 69.33,
+      "height_pt": 20,
+      "width_mm": 24.46,
+      "height_mm": 7.06,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 167.38,
+        "y": 384.82
+      },
+      "pdfjs": {
+        "x": 167.38,
+        "y": 456.51
+      },
+      "width_pt": 110.67,
+      "height_pt": 20,
+      "width_mm": 39.04,
+      "height_mm": 7.06,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 346.04,
+        "y": 383.49
+      },
+      "pdfjs": {
+        "x": 346.04,
+        "y": 457.84
+      },
+      "width_pt": 34.67,
+      "height_pt": 20.67,
+      "width_mm": 12.23,
+      "height_mm": 7.29,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 405.38,
+        "y": 385.49
+      },
+      "pdfjs": {
+        "x": 405.38,
+        "y": 455.84
+      },
+      "width_pt": 27.33,
+      "height_pt": 19.33,
+      "width_mm": 9.64,
+      "height_mm": 6.82,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 452.71,
+        "y": 388.82
+      },
+      "pdfjs": {
+        "x": 452.71,
+        "y": 452.51
+      },
+      "width_pt": 34,
+      "height_pt": 16,
+      "width_mm": 12,
+      "height_mm": 5.64,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 245.38,
+        "y": 451.49
+      },
+      "pdfjs": {
+        "x": 245.38,
+        "y": 389.84
+      },
+      "width_pt": 110,
+      "height_pt": 18,
+      "width_mm": 38.81,
+      "height_mm": 6.35,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 244.04,
+        "y": 483.49
+      },
+      "pdfjs": {
+        "x": 244.04,
+        "y": 357.84
+      },
+      "width_pt": 111.33,
+      "height_pt": 19.33,
+      "width_mm": 39.28,
+      "height_mm": 6.82,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 244.71,
+        "y": 512.82
+      },
+      "pdfjs": {
+        "x": 244.71,
+        "y": 328.51
+      },
+      "width_pt": 110.67,
+      "height_pt": 22.67,
+      "width_mm": 39.04,
+      "height_mm": 8,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 215.38,
+        "y": 545.49
+      },
+      "pdfjs": {
+        "x": 215.38,
+        "y": 295.84
+      },
+      "width_pt": 137.33,
+      "height_pt": 20,
+      "width_mm": 48.45,
+      "height_mm": 7.06,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 324.04,
+        "y": 636.16
+      },
+      "pdfjs": {
+        "x": 324.04,
+        "y": 205.18
+      },
+      "width_pt": 38,
+      "height_pt": 22,
+      "width_mm": 13.41,
+      "height_mm": 7.76,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 378.71,
+        "y": 636.16
+      },
+      "pdfjs": {
+        "x": 378.71,
+        "y": 205.18
+      },
+      "width_pt": 24,
+      "height_pt": 22,
+      "width_mm": 8.47,
+      "height_mm": 7.76,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 419.38,
+        "y": 638.82
+      },
+      "pdfjs": {
+        "x": 419.38,
+        "y": 202.51
+      },
+      "width_pt": 25.33,
+      "height_pt": 22.67,
+      "width_mm": 8.94,
+      "height_mm": 8,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 141.38,
+        "y": 674.16
+      },
+      "pdfjs": {
+        "x": 141.38,
+        "y": 167.18
+      },
+      "width_pt": 96.67,
+      "height_pt": 18,
+      "width_mm": 34.11,
+      "height_mm": 6.35,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 116.71,
+        "y": 606.82
+      },
+      "pdfjs": {
+        "x": 116.71,
+        "y": 234.51
+      },
+      "width_pt": 72.67,
+      "height_pt": 72,
+      "width_mm": 25.64,
+      "height_mm": 25.4,
+      "page": 1
+    }
+  ]
+}
