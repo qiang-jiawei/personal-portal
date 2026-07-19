@@ -3,7 +3,7 @@ import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import QRCode from "qrcode";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import {
   amountToChineseCapital,
@@ -300,9 +300,9 @@ export async function POST(request: NextRequest) {
       });
 
       // 15. 印章 - 方形章
-      const stampPath = path.join(process.cwd(), "public/square-seal.png");
-      if (fs.existsSync(stampPath)) {
-        const stampBytes = fs.readFileSync(stampPath);
+      const stampPath = join(process.cwd(), "public/square-seal.png");
+      if (existsSync(stampPath)) {
+        const stampBytes = readFileSync(stampPath);
         const stampImage = await pdfDoc.embedPng(stampBytes);
         page.drawImage(stampImage, {
           x: 121.21,
@@ -464,9 +464,9 @@ export async function POST(request: NextRequest) {
       });
 
       // 16. 印章 - 圆形章
-      const stampPath = path.join(process.cwd(), "public/round-seal.png");
-      if (fs.existsSync(stampPath)) {
-        const stampBytes = fs.readFileSync(stampPath);
+      const stampPath = join(process.cwd(), "public/round-seal.png");
+      if (existsSync(stampPath)) {
+        const stampBytes = readFileSync(stampPath);
         const stampImage = await pdfDoc.embedPng(stampBytes);
         page.drawImage(stampImage, {
           x: 123.38,
