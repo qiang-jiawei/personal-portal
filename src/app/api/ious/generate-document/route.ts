@@ -476,12 +476,12 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // QR code - 左下角（模板自带区域）
+      // QR code - 核验编码、核验网址、联系方式上方，大小 2.8cm (79pt)
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
-      const qrSize = 40;
+      const qrSize = 79;
       page.drawImage(qrImage, {
         x: 50,
-        y: 210,  // QR 码
+        y: 320,  // 核验编码上方约 70pt
         width: qrSize,
         height: qrSize,
       });
