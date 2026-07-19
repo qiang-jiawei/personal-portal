@@ -173,8 +173,8 @@ export async function POST(request: NextRequest) {
 
       // 编号 (top right)
       page.drawText(iou.document_no, {
-        x: 458,
-        y: height - 135,
+        x: 450,
+        y: height - 122,
         size: fontSize,
         font,
         color: rgb(0, 0, 0),
@@ -182,34 +182,25 @@ export async function POST(request: NextRequest) {
 
       // 同志 (borrower name)
       page.drawText(borrowerName, {
-        x: 210,
-        y: height - 310,
+        x: 205,
+        y: height - 299,
         size: 14,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 我方于 (lender name - fixed as "强嘉伟")
-      page.drawText("强嘉伟", {
-        x: 172,
-        y: height - 372,
-        size: 14,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 年 月 日 (loan date)
+            // 年 月 日 (loan date)
       const loanYear = loanDate.getFullYear();
       const loanMonth = loanDate.getMonth() + 1;
       const loanDay = loanDate.getDate();
-      page.drawText(loanYear.toString(), { x: 195, y: height - 372, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(loanMonth.toString(), { x: 255, y: height - 372, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(loanDay.toString(), { x: 305, y: height - 372, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(loanYear.toString(), { x: 170, y: height - 361, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(loanMonth.toString(), { x: 240, y: height - 361, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(loanDay.toString(), { x: 300, y: height - 361, size: 14, font, color: rgb(0, 0, 0) });
 
       // 通过 (lending method)
       page.drawText(lendingMethod, {
         x: 425,
-        y: height - 372,
+        y: height - 361,
         size: 14,
         font,
         color: rgb(0, 0, 0),
@@ -218,8 +209,8 @@ export async function POST(request: NextRequest) {
       // 人民币 (amount)
       const amount = iou.amount || "0";
       page.drawText(amount, {
-        x: 172,
-        y: height - 403,
+        x: 170,
+        y: height - 392,
         size: 14,
         font,
         color: rgb(0, 0, 0),
@@ -229,7 +220,7 @@ export async function POST(request: NextRequest) {
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
         x: 315,
-        y: height - 403,
+        y: height - 392,
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -238,15 +229,15 @@ export async function POST(request: NextRequest) {
       // 预计于 (repayment date)
       const repayYear = repaymentDate.getFullYear();
       const repayMonth = repaymentDate.getMonth() + 1;
-      page.drawText(repayYear.toString(), { x: 195, y: height - 434, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(repayMonth.toString(), { x: 270, y: height - 434, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(repayYear.toString(), { x: 170, y: height - 423, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(repayMonth.toString(), { x: 255, y: height - 423, size: 14, font, color: rgb(0, 0, 0) });
 
       // 签名处 (seal instead of signature)
       if (sealImage) {
         const sealSize = 80;
         page.drawImage(sealImage, {
           x: 350,
-          y: height - 600,
+          y: height - 580,
           width: sealSize,
           height: sealSize,
         });
@@ -256,9 +247,9 @@ export async function POST(request: NextRequest) {
       const signYear = signingDate.getFullYear();
       const signMonth = signingDate.getMonth() + 1;
       const signDay = signingDate.getDate();
-      page.drawText(signYear.toString(), { x: 360, y: height - 620, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signMonth.toString(), { x: 400, y: height - 620, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signDay.toString(), { x: 435, y: height - 620, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signYear.toString(), { x: 375, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signMonth.toString(), { x: 415, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signDay.toString(), { x: 455, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
 
       // QR code (above verification code)
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
@@ -273,7 +264,7 @@ export async function POST(request: NextRequest) {
       // 核验编码
       page.drawText(iou.verification_code, {
         x: 140,
-        y: height - 695,
+        y: height - 684,
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -285,23 +276,14 @@ export async function POST(request: NextRequest) {
 
       // 编号
       page.drawText(iou.document_no, {
-        x: 458,
-        y: height - 135,
+        x: 450,
+        y: height - 122,
         size: fontSize,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 强嘉伟 (lender name)
-      page.drawText("强嘉伟", {
-        x: 172,
-        y: height - 310,
-        size: 14,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 年 月 日 (loan date)
+            // 年 月 日 (loan date)
       const loanYear = loanDate.getFullYear();
       const loanMonth = loanDate.getMonth() + 1;
       const loanDay = loanDate.getDate();
@@ -340,8 +322,8 @@ export async function POST(request: NextRequest) {
       // 大写 (capital amount)
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
-        x: 210,
-        y: height - 370,
+        x: 150,
+        y: height - 361,
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -396,7 +378,7 @@ export async function POST(request: NextRequest) {
         const sealSize = 80;
         page.drawImage(sealImage, {
           x: 350,
-          y: height - 600,
+          y: height - 580,
           width: sealSize,
           height: sealSize,
         });
@@ -406,9 +388,9 @@ export async function POST(request: NextRequest) {
       const signYear = signingDate.getFullYear();
       const signMonth = signingDate.getMonth() + 1;
       const signDay = signingDate.getDate();
-      page.drawText(signYear.toString(), { x: 360, y: height - 620, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signMonth.toString(), { x: 400, y: height - 620, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signDay.toString(), { x: 435, y: height - 620, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signYear.toString(), { x: 375, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signMonth.toString(), { x: 415, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signDay.toString(), { x: 455, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
 
       // QR code
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
@@ -423,7 +405,7 @@ export async function POST(request: NextRequest) {
       // 核验编码 (bottom)
       page.drawText(iou.verification_code, {
         x: 140,
-        y: height - 695,
+        y: height - 684,
         size: 10,
         font,
         color: rgb(0, 0, 0),
