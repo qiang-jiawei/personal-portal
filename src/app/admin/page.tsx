@@ -347,11 +347,37 @@ function IousPanel() {
     });
     const data = await res.json();
     if (data.success) {
-      setShowCreate(false);
-      setNewPhone(""); setNewAmount(""); setNewLendingMethod("银行转账");
+      alert(`录入成功！编号：${data.document_no}，核验码：${data.verification_code}`);
+      setNewPhone(""); setNewAmount(""); setShowCreate(false);
       fetchIous();
     } else {
-      alert("录入失败：" + (data.error || "未知错误"));
+      alert("录入失败: " + (data.error || "未知错误"));
+    }
+  };
+
+  const downloadIouPdf = async (iouId: string, status: string, documentNo: string) => {
+    try {
+      const res = await fetch("/api/ious/generate-document", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ iou_id: iouId, document_type: status }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        alert("下载失败: " + (error.error || "未知错误"));
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${documentNo}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert("下载失败，请重试");
     }
   };
 
@@ -397,12 +423,13 @@ function IousPanel() {
               <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">用户</th>
               <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">金额</th>
               <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">状态</th>
-              <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">操作</th>
+              <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">状态修改</th>
+              <th className="py-2 px-3 text-xs font-medium text-[#6b7280]">下载</th>
             </tr>
           </thead>
           <tbody>
             {ious.length === 0 && !iousError && (
-              <tr><td colSpan={5} className="py-8 text-center text-[#6b7280] text-xs">暂无借据数据</td></tr>
+              <tr><td colSpan={6} className="py-8 text-center text-[#6b7280] text-xs">暂无借据数据</td></tr>
             )}
             {ious.map((iou) => (
               <tr key={iou.id} className="border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
@@ -429,10 +456,18 @@ function IousPanel() {
                     <option value="invalid">无效</option>
                   </select>
                 </td>
+                <td className="py-2 px-3">
+                  <button
+                    onClick={() => downloadIouPdf(iou.id, iou.status, iou.document_no)}
+                    className="text-[10px] text-[#b8860b] hover:underline"
+                  >
+                    下载PDF
+                  </button>
+                </td>
               </tr>
             ))}
             {ious.length === 0 && (
-              <tr><td colSpan={5} className="py-8 text-center text-[#6b7280]">暂无借据</td></tr>
+              <tr><td colSpan={6} className="py-8 text-center text-[#6b7280]">暂无借据</td></tr>
             )}
           </tbody>
         </table>

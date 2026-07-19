@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
 import QRCode from "qrcode";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -28,6 +29,21 @@ async function getUserFromToken(request: NextRequest) {
   return user;
 }
 
+async function checkAdmin(request: NextRequest): Promise<boolean> {
+  const session = request.cookies.get("admin_session")?.value;
+  if (!session) return false;
+  try {
+    const decoded = atob(session);
+    const parts = decoded.split(":");
+    if (parts.length !== 2) return false;
+    const [username] = parts;
+    const adminUser = process.env.ADMIN_USERNAME || "admin";
+    return username === adminUser;
+  } catch {
+    return false;
+  }
+}
+
 // Load PDF template
 function loadTemplate(documentType: string): Buffer {
   const templateMap: Record<string, string> = {
@@ -37,6 +53,7 @@ function loadTemplate(documentType: string): Buffer {
   };
   const filename = templateMap[documentType] || "借据.pdf";
   const templatePath = join(process.cwd(), "assets", filename);
+  console.log("Loading template from:", templatePath);
   return readFileSync(templatePath);
 }
 
@@ -51,6 +68,7 @@ function loadSeal(documentType: string): Buffer | null {
   if (!filename) return null;
 
   const sealPath = join(process.cwd(), "assets", "seals", filename);
+  console.log("Loading seal from:", sealPath);
   try {
     return readFileSync(sealPath);
   } catch {
@@ -61,8 +79,11 @@ function loadSeal(documentType: string): Buffer | null {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if user is logged in or admin
     const user = await getUserFromToken(request);
-    if (!user) {
+    const isAdmin = await checkAdmin(request);
+    
+    if (!user && !isAdmin) {
       return NextResponse.json({ success: false, error: "未登录" }, { status: 401 });
     }
 
@@ -75,13 +96,17 @@ export async function POST(request: NextRequest) {
 
     const client = getSupabaseServiceClient();
 
-    // Get IOU data
-    const { data: iou, error: iouError } = await client
+    // Get IOU data - admin can access any IOU, regular users only their own
+    let query = client
       .from("ious")
       .select("id, document_no, verification_code, status, amount, description, borrower_phone, lending_method, created_at")
-      .eq("id", iou_id)
-      .eq("borrower_phone", user.phone)
-      .maybeSingle();
+      .eq("id", iou_id);
+    
+    if (!isAdmin) {
+      query = query.eq("borrower_phone", user!.phone);
+    }
+    
+    const { data: iou, error: iouError } = await query.maybeSingle();
 
     if (iouError) throw new Error(`查询借据失败：${iouError.message}`);
     if (!iou) {
@@ -92,10 +117,10 @@ export async function POST(request: NextRequest) {
     const { data: userData } = await client
       .from("users")
       .select("name")
-      .eq("phone", user.phone)
+      .eq("phone", iou.borrower_phone)
       .maybeSingle();
 
-    const borrowerName = userData?.name || user.phone;
+    const borrowerName = userData?.name || iou.borrower_phone;
     const loanDate = new Date(iou.created_at);
     const repaymentDate = calculateRepaymentDate(loanDate);
     const signingDate = new Date(); // Current date for signing
@@ -115,6 +140,10 @@ export async function POST(request: NextRequest) {
     // Load template
     const templateBytes = loadTemplate(document_type);
     const pdfDoc = await PDFDocument.load(templateBytes);
+    
+    // Register fontkit for custom fonts
+    pdfDoc.registerFontkit(fontkit);
+    
     const page = pdfDoc.getPage(0);
     const { width, height } = page.getSize();
 

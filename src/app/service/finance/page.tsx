@@ -89,9 +89,9 @@ export default function FinancePage() {
       link.href = url;
 
       const filenames: Record<string, string> = {
-        valid: `借据_${iou.document_no}.docx`,
-        expired: `借款失效证明_${iou.document_no}.docx`,
-        invalid: `借据无效说明_${iou.document_no}.docx`,
+        valid: `借据_${iou.document_no}.pdf`,
+        expired: `借款失效证明_${iou.document_no}.pdf`,
+        invalid: `借据无效说明_${iou.document_no}.pdf`,
       };
       link.download = filenames[iou.status] || `借据_${iou.document_no}.docx`;
 
