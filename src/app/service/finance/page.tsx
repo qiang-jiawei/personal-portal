@@ -26,6 +26,7 @@ export default function FinancePage() {
   const [verifyCode, setVerifyCode] = useState("");
   const [verifyResult, setVerifyResult] = useState<{ success: boolean; message: string } | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth").then((r) => r.json()).then((d) => {
@@ -69,6 +70,13 @@ export default function FinancePage() {
   };
 
   const handleDownload = async (iou: IOU) => {
+    if (downloading) {
+      alert("正在生成文书，请稍候...");
+      return;
+    }
+
+    setDownloading(true);
+
     try {
       const res = await fetch("/api/ious/generate-document", {
         method: "POST",
@@ -78,7 +86,7 @@ export default function FinancePage() {
 
       if (!res.ok) {
         const error = await res.json();
-        alert("下载失败: " + (error.error || "未知错误"));
+        alert("下载失败：" + (error.error || "未知错误"));
         return;
       }
 
@@ -93,7 +101,7 @@ export default function FinancePage() {
         expired: `借款失效证明_${iou.document_no}.pdf`,
         invalid: `借据无效说明_${iou.document_no}.pdf`,
       };
-      link.download = filenames[iou.status] || `借据_${iou.document_no}.docx`;
+      link.download = filenames[iou.status] || `借据_${iou.document_no}.pdf`;
 
       document.body.appendChild(link);
       link.click();
@@ -101,6 +109,8 @@ export default function FinancePage() {
       window.URL.revokeObjectURL(url);
     } catch {
       alert("下载失败，请重试");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -196,9 +206,14 @@ export default function FinancePage() {
                       </span>
                       <button
                         onClick={() => handleDownload(iou)}
-                        className="text-xs text-[#b8860b] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9] transition-colors px-2 py-1 border border-[#b8860b]/30 rounded-[2px] hover:border-[#b8860b]"
+                        disabled={downloading}
+                        className={`text-xs transition-colors px-2 py-1 border rounded-[2px] ${
+                          downloading
+                            ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                            : "text-[#b8860b] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9] border-[#b8860b]/30 hover:border-[#b8860b]"
+                        }`}
                       >
-                        下载文书
+                        {downloading ? "生成中..." : "下载文书"}
                       </button>
                     </div>
                   </div>
