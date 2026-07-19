@@ -1,0 +1,247 @@
+{
+  "document": "借据.pdf",
+  "totalCoordinates": 15,
+  "exportDate": "2026-07-19T09:41:50.880Z",
+  "coordinates": [
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 451.88,
+        "y": 120.87
+      },
+      "pdfjs": {
+        "x": 451.88,
+        "y": 720.47
+      },
+      "width_pt": 88,
+      "height_pt": 12.67,
+      "width_mm": 31.05,
+      "height_mm": 4.47,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 94.54,
+        "y": 297.53
+      },
+      "pdfjs": {
+        "x": 94.54,
+        "y": 543.8
+      },
+      "width_pt": 68,
+      "height_pt": 14.67,
+      "width_mm": 23.99,
+      "height_mm": 5.18,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 183.88,
+        "y": 360.87
+      },
+      "pdfjs": {
+        "x": 183.88,
+        "y": 480.47
+      },
+      "width_pt": 51.33,
+      "height_pt": 14,
+      "width_mm": 18.11,
+      "height_mm": 4.94,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 253.21,
+        "y": 359.53
+      },
+      "pdfjs": {
+        "x": 253.21,
+        "y": 481.8
+      },
+      "width_pt": 40.67,
+      "height_pt": 15.33,
+      "width_mm": 14.35,
+      "height_mm": 5.41,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 309.21,
+        "y": 360.2
+      },
+      "pdfjs": {
+        "x": 309.21,
+        "y": 481.13
+      },
+      "width_pt": 36,
+      "height_pt": 14,
+      "width_mm": 12.7,
+      "height_mm": 4.94,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 441.21,
+        "y": 360.2
+      },
+      "pdfjs": {
+        "x": 441.21,
+        "y": 481.13
+      },
+      "width_pt": 62.67,
+      "height_pt": 14.67,
+      "width_mm": 22.11,
+      "height_mm": 5.18,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 186.54,
+        "y": 392.87
+      },
+      "pdfjs": {
+        "x": 186.54,
+        "y": 448.47
+      },
+      "width_pt": 50,
+      "height_pt": 12.67,
+      "width_mm": 17.64,
+      "height_mm": 4.47,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 325.88,
+        "y": 386.87
+      },
+      "pdfjs": {
+        "x": 325.88,
+        "y": 454.47
+      },
+      "width_pt": 156.67,
+      "height_pt": 18.67,
+      "width_mm": 55.27,
+      "height_mm": 6.59,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 189.21,
+        "y": 420.87
+      },
+      "pdfjs": {
+        "x": 189.21,
+        "y": 420.47
+      },
+      "width_pt": 55.33,
+      "height_pt": 15.33,
+      "width_mm": 19.52,
+      "height_mm": 5.41,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 269.21,
+        "y": 421.53
+      },
+      "pdfjs": {
+        "x": 269.21,
+        "y": 419.8
+      },
+      "width_pt": 41.33,
+      "height_pt": 14.67,
+      "width_mm": 14.58,
+      "height_mm": 5.18,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 139.88,
+        "y": 682.87
+      },
+      "pdfjs": {
+        "x": 139.88,
+        "y": 158.47
+      },
+      "width_pt": 98,
+      "height_pt": 12,
+      "width_mm": 34.57,
+      "height_mm": 4.23,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 121.21,
+        "y": 572.2
+      },
+      "pdfjs": {
+        "x": 121.21,
+        "y": 269.13
+      },
+      "width_pt": 100,
+      "height_pt": 102.67,
+      "width_mm": 35.28,
+      "height_mm": 36.22,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 332.3,
+        "y": 610.71
+      },
+      "pdfjs": {
+        "x": 332.3,
+        "y": 230.62
+      },
+      "width_pt": 40,
+      "height_pt": 16.67,
+      "width_mm": 14.11,
+      "height_mm": 5.88,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 388.96,
+        "y": 610.71
+      },
+      "pdfjs": {
+        "x": 388.96,
+        "y": 230.62
+      },
+      "width_pt": 25.33,
+      "height_pt": 15.33,
+      "width_mm": 8.94,
+      "height_mm": 5.41,
+      "page": 1
+    },
+    {
+      "type": "rect",
+      "fpdf": {
+        "x": 429.63,
+        "y": 611.38
+      },
+      "pdfjs": {
+        "x": 429.63,
+        "y": 229.95
+      },
+      "width_pt": 25.33,
+      "height_pt": 14.67,
+      "width_mm": 8.94,
+      "height_mm": 5.18,
+      "page": 1
+    }
+  ]
+}

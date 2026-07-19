@@ -236,8 +236,8 @@ export async function POST(request: NextRequest) {
       if (sealImage) {
         const sealSize = 80;
         page.drawImage(sealImage, {
-          x: 350,
-          y: height - 580,
+          x: 121,
+          y: height - 270,
           width: sealSize,
           height: sealSize,
         });
@@ -247,9 +247,9 @@ export async function POST(request: NextRequest) {
       const signYear = signingDate.getFullYear();
       const signMonth = signingDate.getMonth() + 1;
       const signDay = signingDate.getDate();
-      page.drawText(signYear.toString(), { x: 375, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signMonth.toString(), { x: 415, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signDay.toString(), { x: 455, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signYear.toString(), { x: 332, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signMonth.toString(), { x: 389, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signDay.toString(), { x: 430, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
 
       // QR code (above verification code)
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
@@ -264,7 +264,7 @@ export async function POST(request: NextRequest) {
       // 核验编码
       page.drawText(iou.verification_code, {
         x: 140,
-        y: height - 684,
+        y: height - 159,
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -377,8 +377,8 @@ export async function POST(request: NextRequest) {
       if (sealImage) {
         const sealSize = 80;
         page.drawImage(sealImage, {
-          x: 350,
-          y: height - 580,
+          x: 121,
+          y: height - 270,
           width: sealSize,
           height: sealSize,
         });
@@ -388,9 +388,9 @@ export async function POST(request: NextRequest) {
       const signYear = signingDate.getFullYear();
       const signMonth = signingDate.getMonth() + 1;
       const signDay = signingDate.getDate();
-      page.drawText(signYear.toString(), { x: 375, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signMonth.toString(), { x: 415, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signDay.toString(), { x: 455, y: height - 611, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signYear.toString(), { x: 332, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signMonth.toString(), { x: 389, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
+      page.drawText(signDay.toString(), { x: 430, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
 
       // QR code
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
@@ -405,7 +405,7 @@ export async function POST(request: NextRequest) {
       // 核验编码 (bottom)
       page.drawText(iou.verification_code, {
         x: 140,
-        y: height - 684,
+        y: height - 159,
         size: 10,
         font,
         color: rgb(0, 0, 0),
