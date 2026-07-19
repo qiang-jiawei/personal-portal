@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, rgb } from "pdf-lib";
 import QRCode from "qrcode";
 
 async function getUserFromToken(request: NextRequest) {
@@ -74,8 +74,11 @@ export async function POST(request: NextRequest) {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595, 842]); // A4 size
     const { width, height } = page.getSize();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    // Load Chinese font
+    const fontUrl = new URL("../../../public/chinese-font.ttf", import.meta.url);
+    const fontBytes = await fetch(fontUrl).then((res) => res.arrayBuffer());
+    const font = await pdfDoc.embedFont(fontBytes);
+    const boldFont = await pdfDoc.embedFont(fontBytes);
 
     // Title based on document type
     let title = "借 据";
