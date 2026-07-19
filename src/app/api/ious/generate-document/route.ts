@@ -52,7 +52,7 @@ function loadTemplate(documentType: string): Buffer {
     invalid: "借据无效情况说明.pdf",
   };
   const filename = templateMap[documentType] || "借据.pdf";
-  const templatePath = join(process.cwd(), "assets", filename);
+  const templatePath = join(process.cwd(), "public", filename);
   console.log("Loading template from:", templatePath);
   return readFileSync(templatePath);
 }
