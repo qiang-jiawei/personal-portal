@@ -74,7 +74,8 @@ export async function POST(request: NextRequest) {
       .eq("phone", borrower_phone.trim())
       .maybeSingle();
 
-    const { error } = await client.from("ious").insert({
+    // Build insert data - only include fields that exist in database
+    const insertData: any = {
       id: crypto.randomUUID(),
       borrower_phone: borrower_phone.trim(),
       user_id: userData?.id || null,
@@ -82,9 +83,24 @@ export async function POST(request: NextRequest) {
       verification_code: verificationCode,
       status: "valid",
       amount: amount || null,
-      lending_method: lending_method || "银行转账",
-      loan_date: loan_date || new Date().toISOString(),
-    });
+    };
+
+    // Try to add optional fields if they exist
+    try {
+      const { error: testError } = await client
+        .from("ious")
+        .select("lending_method")
+        .limit(1);
+      
+      if (!testError) {
+        insertData.lending_method = lending_method || "银行转账";
+        insertData.loan_date = loan_date || new Date().toISOString();
+      }
+    } catch {
+      // Fields don't exist, use defaults
+    }
+
+    const { error } = await client.from("ious").insert(insertData);
 
     if (error) throw new Error(error.message);
     return NextResponse.json({ success: true, document_no, verification_code: verificationCode });
