@@ -480,8 +480,8 @@ export async function POST(request: NextRequest) {
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
       const qrSize = 79;
       page.drawImage(qrImage, {
-        x: 50,
-        y: 320,  // 核验编码上方约 70pt
+        x: 110,  // 向右挪动 3/4d (60pt)
+        y: 260,  // 向下挪动 3/4d (60pt)
         width: qrSize,
         height: qrSize,
       });
