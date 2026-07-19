@@ -171,56 +171,59 @@ export async function POST(request: NextRequest) {
       // 借据 template
       const fontSize = 12;
 
-      // 编号 (top right)
+      // 编号 (top right) - fpdf(451.88, 120.87, 88, 12.67)
       page.drawText(iou.document_no, {
-        x: 450,
-        y: height - 122,
+        x: 451.88,
+        y: 708.35, // 841.89 - 120.87 - 12.67
         size: fontSize,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 同志 (borrower name)
+      // 同志 (borrower name) - fpdf(94.54, 297.53, 68, 14.67)
       page.drawText(borrowerName, {
-        x: 205,
-        y: height - 299,
+        x: 94.54,
+        y: 529.69, // 841.89 - 297.53 - 14.67
         size: 14,
         font,
         color: rgb(0, 0, 0),
       });
 
-            // 年 月 日 (loan date)
+      // 年 月 日 (loan date)
       const loanYear = loanDate.getFullYear();
       const loanMonth = loanDate.getMonth() + 1;
       const loanDay = loanDate.getDate();
-      page.drawText(loanYear.toString(), { x: 170, y: height - 361, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(loanMonth.toString(), { x: 240, y: height - 361, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(loanDay.toString(), { x: 300, y: height - 361, size: 14, font, color: rgb(0, 0, 0) });
+      // 年 - fpdf(183.88, 360.87, 51.33, 14)
+      page.drawText(loanYear.toString(), { x: 183.88, y: 467.02, size: 14, font, color: rgb(0, 0, 0) });
+      // 月 - fpdf(253.21, 359.53, 40.67, 15.33)
+      page.drawText(loanMonth.toString(), { x: 253.21, y: 467.03, size: 14, font, color: rgb(0, 0, 0) });
+      // 日 - fpdf(309.21, 360.2, 36, 14)
+      page.drawText(loanDay.toString(), { x: 309.21, y: 467.69, size: 14, font, color: rgb(0, 0, 0) });
 
-      // 通过 (lending method)
+      // 通过 (lending method) - fpdf(441.21, 360.2, 62.67, 14.67)
       page.drawText(lendingMethod, {
-        x: 425,
-        y: height - 361,
+        x: 441.21,
+        y: 467.02,
         size: 14,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 人民币 (amount)
+      // 人民币 (amount) - fpdf(186.54, 392.87, 50, 12.67)
       const amount = iou.amount || "0";
       page.drawText(amount, {
-        x: 170,
-        y: height - 392,
+        x: 186.54,
+        y: 436.35, // 841.89 - 392.87 - 12.67
         size: 14,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 大写 (capital amount)
+      // 大写 (capital amount) - fpdf(325.88, 386.87, 156.67, 18.67)
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
-        x: 315,
-        y: height - 392,
+        x: 325.88,
+        y: 436.35, // 841.89 - 386.87 - 18.67
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -229,17 +232,18 @@ export async function POST(request: NextRequest) {
       // 预计于 (repayment date)
       const repayYear = repaymentDate.getFullYear();
       const repayMonth = repaymentDate.getMonth() + 1;
-      page.drawText(repayYear.toString(), { x: 170, y: height - 423, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(repayMonth.toString(), { x: 255, y: height - 423, size: 14, font, color: rgb(0, 0, 0) });
+      // 年 - fpdf(189.21, 420.87, 55.33, 15.33)
+      page.drawText(repayYear.toString(), { x: 189.21, y: 405.69, size: 14, font, color: rgb(0, 0, 0) });
+      // 月 - fpdf(269.21, 421.53, 41.33, 14.67)
+      page.drawText(repayMonth.toString(), { x: 269.21, y: 405.69, size: 14, font, color: rgb(0, 0, 0) });
 
-      // 签名处 (seal instead of signature)
+      // 签名处 (seal instead of signature) - fpdf(121.21, 572.2, 100, 102.67)
       if (sealImage) {
-        const sealSize = 80;
         page.drawImage(sealImage, {
-          x: 121,
-          y: height - 270,
-          width: sealSize,
-          height: sealSize,
+          x: 121.21,
+          y: 167.02, // 841.89 - 572.2 - 102.67
+          width: 100,
+          height: 102.67,
         });
       }
 
@@ -247,24 +251,27 @@ export async function POST(request: NextRequest) {
       const signYear = signingDate.getFullYear();
       const signMonth = signingDate.getMonth() + 1;
       const signDay = signingDate.getDate();
-      page.drawText(signYear.toString(), { x: 332, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signMonth.toString(), { x: 389, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signDay.toString(), { x: 430, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
+      // 年 - fpdf(332.3, 610.71, 40, 16.67)
+      page.drawText(signYear.toString(), { x: 332.3, y: 214.51, size: 14, font, color: rgb(0, 0, 0) });
+      // 月 - fpdf(388.96, 610.71, 25.33, 15.33)
+      page.drawText(signMonth.toString(), { x: 388.96, y: 215.85, size: 14, font, color: rgb(0, 0, 0) });
+      // 日 - fpdf(429.63, 611.38, 25.33, 14.67)
+      page.drawText(signDay.toString(), { x: 429.63, y: 215.84, size: 14, font, color: rgb(0, 0, 0) });
 
-      // QR code (above verification code)
+      // QR code (above verification code) - fpdf(139.88, 682.87, 98, 12)
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
       const qrSize = 60;
       page.drawImage(qrImage, {
-        x: 90,
-        y: height - 720,
+        x: 139.88,
+        y: 171.02, // 841.89 - 682.87 - 12 + 20 (above verification code)
         width: qrSize,
         height: qrSize,
       });
 
-      // 核验编码
+      // 核验编码 - fpdf(139.88, 682.87, 98, 12)
       page.drawText(iou.verification_code, {
-        x: 140,
-        y: height - 159,
+        x: 139.88,
+        y: 147.02, // 841.89 - 682.87 - 12
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -274,56 +281,59 @@ export async function POST(request: NextRequest) {
       // 借款证明 template
       const fontSize = 12;
 
-      // 编号
+      // 编号 - fpdf(460.04, 112.16, 80.67, 24.67)
       page.drawText(iou.document_no, {
-        x: 450,
-        y: height - 122,
+        x: 460.04,
+        y: 705.06, // 841.89 - 112.16 - 24.67
         size: fontSize,
         font,
         color: rgb(0, 0, 0),
       });
 
-            // 年 月 日 (loan date)
+      // 年 月 日 (loan date)
       const loanYear = loanDate.getFullYear();
       const loanMonth = loanDate.getMonth() + 1;
       const loanDay = loanDate.getDate();
-      page.drawText(loanYear.toString(), { x: 210, y: height - 310, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(loanMonth.toString(), { x: 260, y: height - 310, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(loanDay.toString(), { x: 300, y: height - 310, size: 14, font, color: rgb(0, 0, 0) });
+      // 年 - fpdf(208.04, 324.16, 51.33, 20)
+      page.drawText(loanYear.toString(), { x: 208.04, y: 497.73, size: 14, font, color: rgb(0, 0, 0) });
+      // 月 - fpdf(283.38, 320.16, 42.67, 22.67)
+      page.drawText(loanMonth.toString(), { x: 283.38, y: 499.06, size: 14, font, color: rgb(0, 0, 0) });
+      // 日 - fpdf(344.71, 318.16, 44, 25.33)
+      page.drawText(loanDay.toString(), { x: 344.71, y: 498.4, size: 14, font, color: rgb(0, 0, 0) });
 
-      // 渠道 (lending method)
+      // 渠道 (lending method) - fpdf(444.04, 322.16, 54.67, 21.33)
       page.drawText(lendingMethod, {
-        x: 330,
-        y: height - 310,
+        x: 444.04,
+        y: 498.4,
         size: 14,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 同志 (borrower name)
+      // 同志 (borrower name) - fpdf(167.38, 348.82, 77.33, 25.33)
       page.drawText(borrowerName, {
-        x: 172,
-        y: height - 340,
+        x: 167.38,
+        y: 467.74,
         size: 14,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 人民币 (amount)
+      // 人民币 (amount) - fpdf(383.38, 354.16, 69.33, 20)
       const amount = iou.amount || "0";
       page.drawText(amount, {
-        x: 330,
-        y: height - 340,
+        x: 383.38,
+        y: 467.73,
         size: 14,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 大写 (capital amount)
+      // 大写 (capital amount) - fpdf(167.38, 384.82, 110.67, 20)
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
-        x: 150,
-        y: height - 361,
+        x: 167.38,
+        y: 437.07,
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -333,54 +343,56 @@ export async function POST(request: NextRequest) {
       const repayYear = repaymentDate.getFullYear();
       const repayMonth = repaymentDate.getMonth() + 1;
       const repayDay = repaymentDate.getDate();
-      page.drawText(repayYear.toString(), { x: 330, y: height - 370, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(repayMonth.toString(), { x: 380, y: height - 370, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(repayDay.toString(), { x: 420, y: height - 370, size: 14, font, color: rgb(0, 0, 0) });
+      // 年 - fpdf(346.04, 383.49, 34.67, 20.67)
+      page.drawText(repayYear.toString(), { x: 346.04, y: 437.73, size: 14, font, color: rgb(0, 0, 0) });
+      // 月 - fpdf(405.38, 385.49, 27.33, 19.33)
+      page.drawText(repayMonth.toString(), { x: 405.38, y: 437.07, size: 14, font, color: rgb(0, 0, 0) });
+      // 日 - fpdf(452.71, 388.82, 34, 16)
+      page.drawText(repayDay.toString(), { x: 452.71, y: 437.07, size: 14, font, color: rgb(0, 0, 0) });
 
-      // 借据编号
+      // 借据编号 - fpdf(245.38, 451.49, 110, 18)
       page.drawText(iou.document_no, {
-        x: 172,
-        y: height - 420,
+        x: 245.38,
+        y: 372.4,
         size: 12,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 核验编码
+      // 核验编码 - fpdf(141.38, 674.16, 96.67, 18)
       page.drawText(iou.verification_code, {
-        x: 172,
-        y: height - 450,
+        x: 141.38,
+        y: 149.73,
         size: 12,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 还款渠道
+      // 还款渠道 - fpdf(215.38, 545.49, 137.33, 20)
       page.drawText(lendingMethod, {
-        x: 172,
-        y: height - 480,
+        x: 215.38,
+        y: 276.4,
         size: 12,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 还款单号 (use verification code as placeholder)
+      // 还款单号 (use verification code as placeholder) - fpdf(244.71, 512.82, 110.67, 22.67)
       page.drawText(iou.verification_code, {
-        x: 172,
-        y: height - 510,
+        x: 244.71,
+        y: 306.4,
         size: 12,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 签名处 (seal)
+      // 签名处 (seal) - fpdf(116.71, 606.82, 72.67, 72)
       if (sealImage) {
-        const sealSize = 80;
         page.drawImage(sealImage, {
-          x: 121,
-          y: height - 270,
-          width: sealSize,
-          height: sealSize,
+          x: 116.71,
+          y: 163.07, // 841.89 - 606.82 - 72
+          width: 72.67,
+          height: 72,
         });
       }
 
@@ -388,24 +400,27 @@ export async function POST(request: NextRequest) {
       const signYear = signingDate.getFullYear();
       const signMonth = signingDate.getMonth() + 1;
       const signDay = signingDate.getDate();
-      page.drawText(signYear.toString(), { x: 332, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signMonth.toString(), { x: 389, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
-      page.drawText(signDay.toString(), { x: 430, y: height - 231, size: 14, font, color: rgb(0, 0, 0) });
+      // 年 - fpdf(324.04, 636.16, 38, 22)
+      page.drawText(signYear.toString(), { x: 324.04, y: 183.73, size: 14, font, color: rgb(0, 0, 0) });
+      // 月 - fpdf(378.71, 636.16, 24, 22)
+      page.drawText(signMonth.toString(), { x: 378.71, y: 183.73, size: 14, font, color: rgb(0, 0, 0) });
+      // 日 - fpdf(419.38, 638.82, 25.33, 22.67)
+      page.drawText(signDay.toString(), { x: 419.38, y: 180.4, size: 14, font, color: rgb(0, 0, 0) });
 
-      // QR code
+      // QR code - above verification code
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
       const qrSize = 60;
       page.drawImage(qrImage, {
-        x: 90,
-        y: height - 720,
+        x: 141.38,
+        y: 169.73, // 841.89 - 674.16 - 18 + 20 (above verification code)
         width: qrSize,
         height: qrSize,
       });
 
-      // 核验编码 (bottom)
+      // 核验编码 (bottom) - fpdf(141.38, 674.16, 96.67, 18)
       page.drawText(iou.verification_code, {
-        x: 140,
-        y: height - 159,
+        x: 141.38,
+        y: 149.73,
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -414,13 +429,12 @@ export async function POST(request: NextRequest) {
     } else if (document_type === "invalid") {
       // 借据无效情况说明 template - no fields to fill, just add seal below text
       if (sealImage) {
-        const sealSize = 100;
-        // Place seal below the text content
+        // Place seal below the text content (centered, below text)
         page.drawImage(sealImage, {
-          x: width / 2 - sealSize / 2,
-          y: height - 550,
-          width: sealSize,
-          height: sealSize,
+          x: width / 2 - 50,
+          y: 200, // Below text content
+          width: 100,
+          height: 100,
         });
       }
     }
