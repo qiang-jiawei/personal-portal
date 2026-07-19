@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PDF 坐标测量工具</title>
+  <style>
+    body { margin: 0; padding: 20px; font-family: sans-serif; }
+    #canvas { border: 1px solid #ccc; cursor: crosshair; }
+    #info { margin-top: 10px; padding: 10px; background: #f0f0f0; }
+    .coord { display: inline-block; margin-right: 20px; }
+  </style>
+</head>
+<body>
+  <h2>PDF 坐标测量工具</h2>
+  <p>点击 PDF 页面任意位置，获取坐标（用于 pdf-lib）</p>
+  <canvas id="canvas" width="595" height="842"></canvas>
+  <div id="info">
+    <div class="coord">点击位置 (x, y): <span id="clickPos">-</span></div>
+    <div class="coord">pdf-lib 坐标：x=<span id="pdfX">-</span>, y=<span id="pdfY">-</span></div>
+    <div class="coord">代码写法：y: height - <span id="codeY">-</span></div>
+  </div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 绘制 A4 页面网格
+    function drawGrid() {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, 595, 842);
+      
+      // 网格线
+      ctx.strokeStyle = '#e0e0e0';
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x <= 595; x += 50) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 842);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= 842; y += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(595, y);
+        ctx.stroke();
+      }
+      
+      // 坐标轴
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, 842);
+      ctx.lineTo(595, 842);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, 842);
+      ctx.stroke();
+    }
+    
+    drawGrid();
+    
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.round(e.clientX - rect.left);
+      const y = Math.round(e.clientY - rect.top);
+      
+      // PDF 坐标（原点在左下角）
+      const pdfX = x;
+      const pdfY = 842 - y;
+      
+      document.getElementById('clickPos').textContent = `(${x}, ${y})`;
+      document.getElementById('pdfX').textContent = pdfX;
+      document.getElementById('pdfY').textContent = pdfY;
+      document.getElementById('codeY').textContent = y;
+      
+      // 绘制标记
+      drawGrid();
+      ctx.fillStyle = 'red';
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#000';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`(${pdfX}, ${pdfY})`, x + 10, y - 10);
+    });
+  </script>
+</body>
+</html>
