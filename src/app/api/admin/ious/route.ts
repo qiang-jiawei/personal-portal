@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   try {
     if (!await checkAdmin(request)) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
     const body = await request.json();
-    const { borrower_phone, amount } = body;
+    const { borrower_phone, amount, lending_method, loan_date } = body;
     if (!borrower_phone) {
       return NextResponse.json({ success: false, error: "请填写借款人手机号" }, { status: 400 });
     }
@@ -82,6 +82,8 @@ export async function POST(request: NextRequest) {
       verification_code: verificationCode,
       status: "valid",
       amount: amount || null,
+      lending_method: lending_method || "银行转账",
+      loan_date: loan_date || new Date().toISOString(),
     });
 
     if (error) throw new Error(error.message);

@@ -136,6 +136,7 @@ export const ious = pgTable(
     status: varchar("status", { length: 20 }).notNull().default("valid"), // valid, expired, invalid
     amount: varchar("amount", { length: 50 }),
     lending_method: varchar("lending_method", { length: 50 }).default("银行转账"),
+    loan_date: timestamp("loan_date", { withTimezone: true }),
     description: text("description"),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

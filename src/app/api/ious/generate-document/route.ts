@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     // Get IOU data - admin can access any IOU, regular users only their own
     let query = client
       .from("ious")
-      .select("id, document_no, verification_code, status, amount, description, borrower_phone, created_at")
+      .select("id, document_no, verification_code, status, amount, description, borrower_phone, lending_method, loan_date, created_at")
       .eq("id", iou_id);
     
     if (!isAdmin) {
@@ -113,8 +113,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "借据不存在" }, { status: 404 });
     }
 
-    // Use default lending method if not available
-    const lendingMethod = "银行转账";
+    // Use lending method from database or default
+    const lendingMethod = iou.lending_method || "银行转账";
+    // Use loan_date from database or created_at
+    const loanDate = iou.loan_date ? new Date(iou.loan_date) : new Date(iou.created_at);
 
     // Get user name
     const { data: userData } = await client
@@ -124,7 +126,6 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     const borrowerName = userData?.name || iou.borrower_phone;
-    const loanDate = new Date(iou.created_at);
     const repaymentDate = calculateRepaymentDate(loanDate);
     const signingDate = new Date(); // Current date for signing
 
