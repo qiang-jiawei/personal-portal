@@ -312,14 +312,41 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // QR code - 核验编码上方
+      // QR code - 上方居中，大小 2.8cm (79pt)
       const qrImage = await pdfDoc.embedPng(qrCodeBytes);
-      const qrSize = 50;
+      const qrSize = 79;
       page.drawImage(qrImage, {
-        x: 139.88,
-        y: 151.02,  // QR 码
+        x: 140,
+        y: 200,
         width: qrSize,
         height: qrSize,
+      });
+
+      // 核验编码 - QR 码下方
+      page.drawText("核验编码：" + iou.verification_code, {
+        x: 50,
+        y: 170,
+        size: 10,
+        font,
+        color: rgb(0, 0, 0),
+      });
+
+      // 核验网址
+      page.drawText("核验网址：www.jiaweiqiang.cn", {
+        x: 50,
+        y: 150,
+        size: 10,
+        font,
+        color: rgb(0, 0, 0),
+      });
+
+      // 联系方式
+      page.drawText("联系方式：jiawei-qiang@foxmail.com", {
+        x: 50,
+        y: 130,
+        size: 10,
+        font,
+        color: rgb(0, 0, 0),
       });
 
     } else if (document_type === "expired") {
