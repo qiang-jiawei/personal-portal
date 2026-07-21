@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
       // 2. 借款人姓名
       page.drawText(borrowerName, {
         x: 94.54,
-        y: 509.69,  // 借款人姓名
+        y: 529.69,  // 借款人姓名
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
       // 3. 借款年
       page.drawText(loanDate.getFullYear().toString(), {
         x: 183.88,
-        y: 447.02,  // 借款年
+        y: 467.02,  // 借款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
       // 4. 借款月
       page.drawText((loanDate.getMonth() + 1).toString(), {
         x: 253.21,
-        y: 447.03,  // 借款月
+        y: 467.03,  // 借款月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
       // 5. 借款日
       page.drawText(loanDate.getDate().toString(), {
         x: 309.21,
-        y: 447.69,  // 借款日
+        y: 467.69,  // 借款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
       // 6. 出借方式
       page.drawText(lendingMethod, {
         x: 441.21,
-        y: 447.02,  // 借款年
+        y: 467.02,  // 借款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
       const amount = iou.amount || "0";
       page.drawText(amount, {
         x: 186.54,
-        y: 416.35,  // 金额数字
+        y: 436.35,  // 金额数字
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
         x: 325.88,
-        y: 416.35,  // 金额数字
+        y: 436.35,  // 金额数字
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -248,7 +248,7 @@ export async function POST(request: NextRequest) {
       // 9. 还款年
       page.drawText(repaymentDate.getFullYear().toString(), {
         x: 189.21,
-        y: 385.69,  // 还款年
+        y: 405.69,  // 还款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
       // 10. 还款月
       page.drawText((repaymentDate.getMonth() + 1).toString(), {
         x: 269.21,
-        y: 385.69,  // 还款年
+        y: 405.69,  // 还款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -266,7 +266,7 @@ export async function POST(request: NextRequest) {
       // 11. 签署年
       page.drawText(signingDate.getFullYear().toString(), {
         x: 332.3,
-        y: 194.51,  // 签署年
+        y: 214.51,  // 签署年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -275,7 +275,7 @@ export async function POST(request: NextRequest) {
       // 12. 签署月
       page.drawText((signingDate.getMonth() + 1).toString(), {
         x: 388.96,
-        y: 195.85,  // 签署月
+        y: 215.85,  // 签署月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -284,7 +284,7 @@ export async function POST(request: NextRequest) {
       // 13. 签署日
       page.drawText(signingDate.getDate().toString(), {
         x: 429.63,
-        y: 195.84,  // 签署日
+        y: 215.84,  // 签署日
         size: 12,
         font,
         color: rgb(0, 0, 0),
