@@ -338,7 +338,7 @@ export async function POST(request: NextRequest) {
       // 2. 借款年
       page.drawText(loanDate.getFullYear().toString(), {
         x: 202.04,
-        y: 504.51,  // 借款年
+        y: 497.51,  // 借款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -347,7 +347,7 @@ export async function POST(request: NextRequest) {
       // 3. 借款月
       page.drawText((loanDate.getMonth() + 1).toString(), {
         x: 285.38,
-        y: 505.84,  // 借款月
+        y: 498.84,  // 借款月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -356,7 +356,7 @@ export async function POST(request: NextRequest) {
       // 4. 借款日
       page.drawText(loanDate.getDate().toString(), {
         x: 348.71,
-        y: 507.18,  // 借款日
+        y: 500.18,  // 借款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -365,7 +365,7 @@ export async function POST(request: NextRequest) {
       // 5. 出借方式
       page.drawText(lendingMethod, {
         x: 446.71,
-        y: 507.18,  // 借款日
+        y: 500.18,  // 借款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -374,7 +374,7 @@ export async function POST(request: NextRequest) {
       // 6. 借款人姓名
       page.drawText(borrowerName, {
         x: 144.71,
-        y: 477.18,  // 借款人姓名
+        y: 470.18,  // 借款人姓名
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -384,7 +384,7 @@ export async function POST(request: NextRequest) {
       const amount = iou.amount || "0";
       page.drawText(amount, {
         x: 363.38,
-        y: 477.18,  // 借款人姓名
+        y: 470.18,  // 借款人姓名
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -394,7 +394,7 @@ export async function POST(request: NextRequest) {
       const amountCapital = amountToChineseCapital(amount);
       page.drawText(amountCapital, {
         x: 152.04,
-        y: 445.84,  // 金额大写
+        y: 438.84,  // 金额大写
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -403,7 +403,7 @@ export async function POST(request: NextRequest) {
       // 9. 还款年
       page.drawText(repaymentDate.getFullYear().toString(), {
         x: 342.04,
-        y: 444.51,  // 还款年
+        y: 437.51,  // 还款年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -412,7 +412,7 @@ export async function POST(request: NextRequest) {
       // 10. 还款月
       page.drawText((repaymentDate.getMonth() + 1).toString(), {
         x: 400.71,
-        y: 445.18,  // 还款月
+        y: 438.18,  // 还款月
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -421,7 +421,7 @@ export async function POST(request: NextRequest) {
       // 11. 还款日
       page.drawText(repaymentDate.getDate().toString(), {
         x: 454.71,
-        y: 446.51,  // 还款日
+        y: 439.51,  // 还款日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -430,7 +430,7 @@ export async function POST(request: NextRequest) {
       // 12. 签署年
       page.drawText(signingDate.getFullYear().toString(), {
         x: 317.38,
-        y: 287.84,  // 签署年
+        y: 280.84,  // 签署年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -439,7 +439,7 @@ export async function POST(request: NextRequest) {
       // 13. 签署月
       page.drawText((signingDate.getMonth() + 1).toString(), {
         x: 377.38,
-        y: 287.84,  // 签署年
+        y: 280.84,  // 签署年
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -448,7 +448,7 @@ export async function POST(request: NextRequest) {
       // 14. 签署日
       page.drawText(signingDate.getDate().toString(), {
         x: 420.71,
-        y: 288.51,  // 签署日
+        y: 281.51,  // 签署日
         size: 12,
         font,
         color: rgb(0, 0, 0),
@@ -457,7 +457,7 @@ export async function POST(request: NextRequest) {
       // 15. 核验编码
       page.drawText(iou.verification_code, {
         x: 141.38,
-        y: 248.51,  // 核验编码
+        y: 241.51,  // 核验编码
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -470,7 +470,7 @@ export async function POST(request: NextRequest) {
         const stampImage = await pdfDoc.embedPng(stampBytes);
         page.drawImage(stampImage, {
           x: 123.38,
-          y: 341.84,  // 印章
+          y: 334.84,  // 印章
           width: 86,
           height: 86.67,
         });
