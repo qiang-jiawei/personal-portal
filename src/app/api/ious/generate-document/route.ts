@@ -325,7 +325,7 @@ export async function POST(request: NextRequest) {
       // 核验编码 - QR 码下方
       page.drawText("核验编码：" + iou.verification_code, {
         x: 50,
-        y: 170,
+        y: 100,
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -334,7 +334,7 @@ export async function POST(request: NextRequest) {
       // 核验网址
       page.drawText("核验网址：www.jiaweiqiang.cn", {
         x: 50,
-        y: 150,
+        y: 80,
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -343,7 +343,7 @@ export async function POST(request: NextRequest) {
       // 联系方式
       page.drawText("联系方式：jiawei-qiang@foxmail.com", {
         x: 50,
-        y: 130,
+        y: 60,
         size: 10,
         font,
         color: rgb(0, 0, 0),
