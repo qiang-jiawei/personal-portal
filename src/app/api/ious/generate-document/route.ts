@@ -322,10 +322,10 @@ export async function POST(request: NextRequest) {
         height: qrSize,
       });
 
-      // 核验编码值（模板已有"核验编码："标签）
+      // 核验编码值（模板已有"核验编码："标签）- 向上 1.5 行
       page.drawText(iou.verification_code, {
         x: 140,
-        y: 120,
+        y: 150,
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -334,7 +334,7 @@ export async function POST(request: NextRequest) {
       // 核验网址（模板已有"核验网址："标签）
       page.drawText("www.jiaweiqiang.cn", {
         x: 140,
-        y: 95,
+        y: 125,
         size: 10,
         font,
         color: rgb(0, 0, 0),
@@ -343,7 +343,7 @@ export async function POST(request: NextRequest) {
       // 联系方式（模板已有"联系方式："标签）
       page.drawText("jiawei-qiang@foxmail.com", {
         x: 140,
-        y: 70,
+        y: 100,
         size: 10,
         font,
         color: rgb(0, 0, 0),
