@@ -322,27 +322,27 @@ export async function POST(request: NextRequest) {
         height: qrSize,
       });
 
-      // 核验编码 - QR 码下方
-      page.drawText("核验编码：" + iou.verification_code, {
-        x: 50,
+      // 核验编码值（模板已有"核验编码："标签）
+      page.drawText(iou.verification_code, {
+        x: 140,
         y: 120,
         size: 10,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 核验网址
-      page.drawText("核验网址：www.jiaweiqiang.cn", {
-        x: 50,
+      // 核验网址（模板已有"核验网址："标签）
+      page.drawText("www.jiaweiqiang.cn", {
+        x: 140,
         y: 95,
         size: 10,
         font,
         color: rgb(0, 0, 0),
       });
 
-      // 联系方式
-      page.drawText("联系方式：jiawei-qiang@foxmail.com", {
-        x: 50,
+      // 联系方式（模板已有"联系方式："标签）
+      page.drawText("jiawei-qiang@foxmail.com", {
+        x: 140,
         y: 70,
         size: 10,
         font,
