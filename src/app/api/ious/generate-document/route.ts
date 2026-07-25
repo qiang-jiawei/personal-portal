@@ -3,79 +3,17 @@ import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import QRCode from "qrcode";
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
 import {
   amountToChineseCapital,
   generateIOUNumber,
   calculateRepaymentDate,
   formatDateChinese,
   formatDateShort,
+  loadPdfTemplate,
+  loadSealImage,
+  loadPdfFont,
 } from "@/lib/pdf-utils";
-
-async function getUserFromToken(request: NextRequest) {
-  const token = request.cookies.get("user_token")?.value;
-  if (!token) return null;
-
-  const client = getSupabaseServiceClient();
-  const { data: user } = await client
-    .from("users")
-    .select("id, phone, name, token_expires_at")
-    .eq("login_token", token)
-    .maybeSingle();
-
-  if (!user) return null;
-  if (user.token_expires_at && new Date(user.token_expires_at) < new Date()) return null;
-  return user;
-}
-
-async function checkAdmin(request: NextRequest): Promise<boolean> {
-  const session = request.cookies.get("admin_session")?.value;
-  if (!session) return false;
-  try {
-    const decoded = atob(session);
-    const parts = decoded.split(":");
-    if (parts.length !== 2) return false;
-    const [username] = parts;
-    const adminUser = process.env.ADMIN_USERNAME || "admin";
-    return username === adminUser;
-  } catch {
-    return false;
-  }
-}
-
-// Load PDF template
-function loadTemplate(documentType: string): Buffer {
-  const templateMap: Record<string, string> = {
-    valid: "借据.pdf",
-    expired: "借款证明.pdf",
-    invalid: "借据无效情况说明.pdf",
-  };
-  const filename = templateMap[documentType] || "借据.pdf";
-  const templatePath = join(process.cwd(), "public", filename);
-  console.log("Loading template from:", templatePath);
-  return readFileSync(templatePath);
-}
-
-// Load seal image
-function loadSeal(documentType: string): Buffer | null {
-  const sealMap: Record<string, string> = {
-    valid: "square-seal.png", // 强嘉伟印
-    expired: "round-seal.png", // 强嘉伟证明专用章
-    invalid: "round-seal.png", // 强嘉伟证明专用章
-  };
-  const filename = sealMap[documentType];
-  if (!filename) return null;
-
-  const sealPath = join(process.cwd(), "assets", "seals", filename);
-  console.log("Loading seal from:", sealPath);
-  try {
-    return readFileSync(sealPath);
-  } catch {
-    console.warn(`Seal image not found: ${sealPath}`);
-    return null;
-  }
-}
+import { getUserFromToken, checkAdmin } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -141,7 +79,7 @@ export async function POST(request: NextRequest) {
     const qrCodeBytes = Buffer.from(qrCodeBase64.split(",")[1], "base64");
 
     // Load template
-    const templateBytes = loadTemplate(document_type);
+    const templateBytes = loadPdfTemplate(document_type);
     const pdfDoc = await PDFDocument.load(templateBytes);
     
     // Register fontkit for custom fonts
@@ -151,13 +89,12 @@ export async function POST(request: NextRequest) {
     const { width, height } = page.getSize();
 
     // Load Chinese font
-    const fontPath = join(process.cwd(), "public", "chinese-font.ttf");
-    const fontBytes = readFileSync(fontPath);
+    const fontBytes = loadPdfFont();
     const font = await pdfDoc.embedFont(fontBytes);
 
     // Load seal image
-    const sealBytes = loadSeal(document_type);
-    let sealImage: any = null;
+    const sealBytes = loadSealImage(document_type);
+    let sealImage: import("pdf-lib").PDFImage | null = null;
     if (sealBytes) {
       try {
         sealImage = await pdfDoc.embedPng(sealBytes);
@@ -300,11 +237,8 @@ export async function POST(request: NextRequest) {
       });
 
       // 15. 印章 - 方形章
-      const stampPath = join(process.cwd(), "public/square-seal.png");
-      if (existsSync(stampPath)) {
-        const stampBytes = readFileSync(stampPath);
-        const stampImage = await pdfDoc.embedPng(stampBytes);
-        page.drawImage(stampImage, {
+      if (sealImage) {
+        page.drawImage(sealImage, {
           x: 121.21,
           y: 147.02,  // 印章
           width: 100,
@@ -466,11 +400,8 @@ export async function POST(request: NextRequest) {
       });
 
       // 16. 印章 - 圆形章
-      const stampPath = join(process.cwd(), "public/round-seal.png");
-      if (existsSync(stampPath)) {
-        const stampBytes = readFileSync(stampPath);
-        const stampImage = await pdfDoc.embedPng(stampBytes);
-        page.drawImage(stampImage, {
+      if (sealImage) {
+        page.drawImage(sealImage, {
           x: 123.38,
           y: 334.84,  // 印章
           width: 86,

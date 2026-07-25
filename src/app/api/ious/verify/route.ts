@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
+import { handleApiError, errorResponse } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,7 +8,7 @@ export async function POST(request: NextRequest) {
     const { document_no, verification_code } = body;
 
     if (!document_no?.trim() || !verification_code?.trim()) {
-      return NextResponse.json({ success: false, message: "请填写完整信息" }, { status: 400 });
+      return errorResponse("请填写完整信息", 400);
     }
 
     const client = getSupabaseServiceClient();
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
       .eq("verification_code", verification_code.trim())
       .maybeSingle();
 
-    if (error) throw new Error(`查询失败: ${error.message}`);
+    if (error) throw new Error(`查询失败：${error.message}`);
 
     let success = false;
     let message = "";
@@ -46,7 +47,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success, message });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ success: false, message }, { status: 500 });
+    return handleApiError(error);
   }
 }

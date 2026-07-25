@@ -1,21 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 import { generateIOUNumber } from "@/lib/pdf-utils";
-
-async function checkAdmin(request: NextRequest): Promise<boolean> {
-  const session = request.cookies.get("admin_session")?.value;
-  if (!session) return false;
-  try {
-    const decoded = atob(session);
-    const parts = decoded.split(":");
-    if (parts.length !== 2) return false;
-    const [username] = parts;
-    const adminUser = process.env.ADMIN_USERNAME || "admin";
-    return username === adminUser;
-  } catch {
-    return false;
-  }
-}
+import { checkAdmin } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,7 +14,7 @@ export async function GET(request: NextRequest) {
     if (error) throw new Error(error.message);
 
     // Batch fetch user names
-    const phoneList = [...new Set((data || []).map((item: any) => item.borrower_phone).filter(Boolean))];
+    const phoneList = [...new Set((data || []).map((item: { borrower_phone: string }) => item.borrower_phone).filter(Boolean))];
     let userMap: Record<string, string> = {};
     if (phoneList.length > 0) {
       const { data: users } = await client
@@ -36,11 +22,11 @@ export async function GET(request: NextRequest) {
         .select("phone, name")
         .in("phone", phoneList);
       if (users) {
-        userMap = Object.fromEntries(users.map((u: any) => [u.phone, u.name || ""]));
+        userMap = Object.fromEntries(users.map((u: { phone: string; name: string | null }) => [u.phone, u.name || ""]));
       }
     }
 
-    const enriched = (data || []).map((item: any) => ({
+    const enriched = (data || []).map((item: { borrower_phone: string }) => ({
       ...item,
       borrower_name: userMap[item.borrower_phone] || null,
     }));
@@ -63,7 +49,7 @@ export async function POST(request: NextRequest) {
     const client = getSupabaseServiceClient();
 
     // Auto-generate IOU number
-    const document_no = await generateIOUNumber(client);
+    const document_no = await generateIOUNumber(client as any);
 
     const verificationCode = Math.random().toString(36).substring(2, 10).toUpperCase();
 
@@ -75,7 +61,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     // Build insert data - only include fields that exist in database
-    const insertData: any = {
+    const insertData: Record<string, unknown> = {
       id: crypto.randomUUID(),
       borrower_phone: borrower_phone.trim(),
       user_id: userData?.id || null,

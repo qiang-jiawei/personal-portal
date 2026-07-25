@@ -1,21 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
-
-async function getUserFromToken(request: NextRequest) {
-  const token = request.cookies.get("user_token")?.value;
-  if (!token) return null;
-
-  const client = getSupabaseServiceClient();
-  const { data: user } = await client
-    .from("users")
-    .select("id, phone, token_expires_at")
-    .eq("login_token", token)
-    .maybeSingle();
-
-  if (!user) return null;
-  if (user.token_expires_at && new Date(user.token_expires_at) < new Date()) return null;
-  return user;
-}
+import { getUserFromToken } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {

@@ -67,7 +67,7 @@ export function amountToChineseCapital(amount: number | string): string {
  * 例如：2026年7月第3份 → PN1426073
  */
 export async function generateIOUNumber(
-  supabase: any,
+  supabase: { from: (table: string) => { select: (columns: string, options?: { count?: string; head?: boolean }) => { gte: (column: string, value: string) => { lte: (column: string, value: string) => Promise<{ count: number | null }> } } } },
   createdAt?: Date
 ): Promise<string> {
   const now = createdAt || new Date();
@@ -120,4 +120,66 @@ export function formatDateShort(date: Date): string {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   return `${year} 年 ${month} 月`;
+}
+
+/**
+ * PDF 模板文件映射
+ */
+export const PDF_TEMPLATES: Record<string, string> = {
+  valid: "借据.pdf",
+  expired: "借款证明.pdf",
+  invalid: "借据无效情况说明.pdf",
+};
+
+/**
+ * 印章文件映射
+ */
+export const SEAL_FILES: Record<string, string> = {
+  valid: "square-seal.png",    // 强嘉伟印
+  expired: "round-seal.png",   // 强嘉伟证明专用章
+  invalid: "round-seal.png",   // 强嘉伟证明专用章
+};
+
+/**
+ * 加载 PDF 模板文件
+ */
+export function loadPdfTemplate(documentType: string): Buffer {
+  const { readFileSync } = require("fs");
+  const { join } = require("path");
+  
+  const filename = PDF_TEMPLATES[documentType] || PDF_TEMPLATES.valid;
+  const templatePath = join(process.cwd(), "public", filename);
+  console.log("Loading template from:", templatePath);
+  return readFileSync(templatePath);
+}
+
+/**
+ * 加载印章图片
+ */
+export function loadSealImage(documentType: string): Buffer | null {
+  const { readFileSync, existsSync } = require("fs");
+  const { join } = require("path");
+  
+  const filename = SEAL_FILES[documentType];
+  if (!filename) return null;
+
+  const sealPath = join(process.cwd(), "public", filename);
+  console.log("Loading seal from:", sealPath);
+  try {
+    return readFileSync(sealPath);
+  } catch {
+    console.warn(`Seal image not found: ${sealPath}`);
+    return null;
+  }
+}
+
+/**
+ * 加载 PDF 字体文件
+ */
+export function loadPdfFont(): Buffer {
+  const { readFileSync } = require("fs");
+  const { join } = require("path");
+  
+  const fontPath = join(process.cwd(), "public", "chinese-font.ttf");
+  return readFileSync(fontPath);
 }

@@ -1,20 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
-
-async function checkAdmin(request: NextRequest): Promise<boolean> {
-  const session = request.cookies.get("admin_session")?.value;
-  if (!session) return false;
-  try {
-    const decoded = atob(session);
-    const parts = decoded.split(":");
-    if (parts.length !== 2) return false;
-    const [username] = parts;
-    const adminUser = process.env.ADMIN_USERNAME || "admin";
-    return username === adminUser;
-  } catch {
-    return false;
-  }
-}
+import { checkAdmin } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
