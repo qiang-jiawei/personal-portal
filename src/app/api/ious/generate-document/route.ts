@@ -322,32 +322,7 @@ export async function POST(request: NextRequest) {
         height: qrSize,
       });
 
-      // 核验编码值（模板已有"核验编码："标签）- 向上 1.5 行
-      page.drawText(iou.verification_code, {
-        x: 140,
-        y: 150,
-        size: 10,
-        font,
-        color: rgb(0, 0, 0),
-      });
 
-      // 核验网址（模板已有"核验网址："标签）
-      page.drawText("www.jiaweiqiang.cn", {
-        x: 140,
-        y: 125,
-        size: 10,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 联系方式（模板已有"联系方式："标签）
-      page.drawText("jiawei-qiang@foxmail.com", {
-        x: 140,
-        y: 100,
-        size: 10,
-        font,
-        color: rgb(0, 0, 0),
-      });
 
     } else if (document_type === "expired") {
       // === 借款证明模板（新版 - 16 个字段） ===
