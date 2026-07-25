@@ -290,10 +290,10 @@ export async function POST(request: NextRequest) {
         color: rgb(0, 0, 0),
       });
 
-      // 14. 核验编码
+      // 14. 核验编码（向上移动 1.5 行）
       page.drawText(iou.verification_code, {
         x: 139.88,
-        y: 127.02,  // 核验编码
+        y: 157.02,  // 核验编码（原 127.02，向上移动 30pt）
         size: 10,
         font,
         color: rgb(0, 0, 0),
