@@ -183,3 +183,39 @@ export function loadPdfFont(): Buffer {
   const fontPath = join(process.cwd(), "public", "chinese-font.ttf");
   return readFileSync(fontPath);
 }
+
+/**
+ * 加载印章图片并转换为 base64
+ */
+export async function loadSealBase64(filename: string): Promise<string | null> {
+  try {
+    const { readFileSync } = require("fs");
+    const { join } = require("path");
+    
+    const sealPath = join(process.cwd(), "public", filename);
+    const buffer = readFileSync(sealPath);
+    const ext = filename.split('.').pop()?.toLowerCase() || 'png';
+    const mimeType = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'image/png';
+    return `data:${mimeType};base64,${buffer.toString('base64')}`;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 加载背景图片并转换为 base64
+ */
+export async function loadBackgroundBase64(filename: string): Promise<string | null> {
+  try {
+    const { readFileSync } = require("fs");
+    const { join } = require("path");
+    
+    const bgPath = join(process.cwd(), "public", filename);
+    const buffer = readFileSync(bgPath);
+    const ext = filename.split('.').pop()?.toLowerCase() || 'png';
+    const mimeType = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'image/png';
+    return `data:${mimeType};base64,${buffer.toString('base64')}`;
+  } catch {
+    return null;
+  }
+}

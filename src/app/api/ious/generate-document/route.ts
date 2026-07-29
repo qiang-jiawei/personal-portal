@@ -9,38 +9,10 @@ import {
 } from "@/lib/pdf-utils";
 import { getUserFromToken, checkAdmin } from "@/lib/auth";
 import {
-  generateIouHtml,
+  generateIOUHtml,
   generateProofHtml,
-  generateInvalidIouHtml,
+  generateInvalidStatementHtml,
 } from "@/lib/iou-html";
-
-async function loadSealBase64(documentType: string): Promise<string | null> {
-  const sealMap: Record<string, string> = {
-    valid: "square-seal.png",
-    expired: "round-seal.png",
-    invalid: "round-seal.png",
-  };
-  const filename = sealMap[documentType];
-  if (!filename) return null;
-
-  const sealPath = join(process.cwd(), "public", filename);
-  try {
-    const bytes = readFileSync(sealPath);
-    return `data:image/png;base64,${bytes.toString("base64")}`;
-  } catch {
-    return null;
-  }
-}
-
-async function loadBackgroundBase64(): Promise<string | null> {
-  const bgPath = join(process.cwd(), "public", "借据背景.png");
-  try {
-    const bytes = readFileSync(bgPath);
-    return `data:image/png;base64,${bytes.toString("base64")}`;
-  } catch {
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -100,29 +72,21 @@ export async function POST(request: NextRequest) {
       color: { dark: "#000000", light: "#ffffff" },
     });
 
-    // Load seal image
-    const sealBase64 = await loadSealBase64(document_type);
-    const backgroundBase64 = await loadBackgroundBase64();
+    // Load seal and background images
+    const sealMap: Record<string, string> = {
+      valid: "square-seal.png",
+      expired: "round-seal.png",
+      invalid: "round-seal.png",
+    };
+    const sealBase64 = await loadSealBase64(sealMap[document_type] || "square-seal.png");
+    const backgroundBase64 = await loadBackgroundBase64("借据背景.png");
 
     // Generate HTML based on document type
     let html: string;
     let filename: string;
 
     if (document_type === "valid") {
-      html = await generateIouHtml({
-        document_no: iou.document_no,
-        borrower_name: borrowerName,
-        loan_date: loanDate,
-        lending_method: lendingMethod,
-        amount: iou.amount || "0",
-        amount_capital: amountToChineseCapital(iou.amount || "0"),
-        repayment_date: repaymentDate,
-        signing_date: signingDate,
-        verification_code: iou.verification_code,
-        seal_base64: sealBase64 || undefined,
-        qr_code_base64: qrCodeBase64,
-        background_base64: backgroundBase64 || undefined,
-      });
+      html = await generateIOUHtml(iou, borrowerName, amountToChineseCapital(iou.amount || "0"), loanDate, repaymentDate, signingDate);
       filename = `借据_${iou.document_no}.html`;
     } else if (document_type === "expired") {
       html = await generateProofHtml({
@@ -135,16 +99,10 @@ export async function POST(request: NextRequest) {
         repayment_date: repaymentDate,
         signing_date: signingDate,
         verification_code: iou.verification_code,
-        seal_base64: sealBase64 || undefined,
-        qr_code_base64: qrCodeBase64,
       });
       filename = `借款证明_${iou.document_no}.html`;
     } else if (document_type === "invalid") {
-      html = await generateInvalidIouHtml({
-        document_no: iou.document_no,
-        verification_code: iou.verification_code,
-        seal_base64: sealBase64 || undefined,
-      });
+      html = await generateInvalidStatementHtml(iou, signingDate);
       filename = `借据无效说明_${iou.document_no}.html`;
     } else {
       return NextResponse.json({ success: false, error: "无效的文档类型" }, { status: 400 });
