@@ -15,6 +15,7 @@ export async function generateIouHtml(params: {
   verification_code: string;
   seal_base64?: string;
   qr_code_base64?: string;
+  background_base64?: string;
 }): Promise<string> {
   const {
     document_no,
@@ -28,6 +29,7 @@ export async function generateIouHtml(params: {
     verification_code,
     seal_base64,
     qr_code_base64,
+    background_base64,
   } = params;
 
   const loanYear = loan_date.getFullYear();
@@ -69,15 +71,15 @@ export async function generateIouHtml(params: {
       width: 100%;
       height: 100%;
       z-index: -2;
-      background-image: url('/借据背景.png');
+      ${background_base64 ? `background-image: url('${background_base64}');` : ''}
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
     .seal {
       position: absolute;
-      right: 150px;
-      bottom: 200px;
+      right: 80px;
+      top: 580px;
       width: 120px;
       height: 120px;
       z-index: -1;

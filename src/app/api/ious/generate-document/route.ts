@@ -32,6 +32,16 @@ async function loadSealBase64(documentType: string): Promise<string | null> {
   }
 }
 
+async function loadBackgroundBase64(): Promise<string | null> {
+  const bgPath = join(process.cwd(), "public", "借据背景.png");
+  try {
+    const bytes = readFileSync(bgPath);
+    return `data:image/png;base64,${bytes.toString("base64")}`;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromToken(request);
@@ -92,6 +102,7 @@ export async function POST(request: NextRequest) {
 
     // Load seal image
     const sealBase64 = await loadSealBase64(document_type);
+    const backgroundBase64 = await loadBackgroundBase64();
 
     // Generate HTML based on document type
     let html: string;
@@ -110,6 +121,7 @@ export async function POST(request: NextRequest) {
         verification_code: iou.verification_code,
         seal_base64: sealBase64 || undefined,
         qr_code_base64: qrCodeBase64,
+        background_base64: backgroundBase64 || undefined,
       });
       filename = `借据_${iou.document_no}.html`;
     } else if (document_type === "expired") {
