@@ -6,6 +6,8 @@ import { join } from "path";
 import {
   amountToChineseCapital,
   calculateRepaymentDate,
+  loadSealBase64,
+  loadBackgroundBase64,
 } from "@/lib/pdf-utils";
 import { getUserFromToken, checkAdmin } from "@/lib/auth";
 import {
