@@ -16,6 +16,14 @@ import {
   generateInvalidStatementHtml,
 } from "@/lib/iou-html";
 
+// 格式化日期为 YYYY-MM-DD
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromToken(request);
@@ -52,16 +60,11 @@ export async function POST(request: NextRequest) {
 
     const lendingMethod = iou.lending_method || "微信";
     const loanDate = iou.loan_date ? new Date(iou.loan_date) : new Date(iou.created_at);
-
-    const { data: userData } = await client
-      .from("users")
-      .select("name")
-      .eq("phone", iou.borrower_phone)
-      .maybeSingle();
-
-    const borrowerName = userData?.name || iou.borrower_phone;
+    const loanDateStr = formatDate(loanDate);
     const repaymentDate = calculateRepaymentDate(loanDate);
+    const repaymentDateStr = formatDate(repaymentDate);
     const signingDate = new Date();
+    const signingDateStr = formatDate(signingDate);
 
     // Generate QR code
     const qrData = JSON.stringify({
@@ -88,13 +91,13 @@ export async function POST(request: NextRequest) {
     let filename: string;
 
     if (document_type === "valid") {
-      html = await generateIOUHtml(iou, borrowerName, amountToChineseCapital(iou.amount || "0"), loanDate, repaymentDate, signingDate);
+      html = await generateIOUHtml(iou, borrowerName, amountToChineseCapital(iou.amount || "0"), loanDateStr, repaymentDateStr, signingDateStr);
       filename = `借据_${iou.document_no}.html`;
     } else if (document_type === "expired") {
-      html = await generateProofHtml(iou, borrowerName, amountToChineseCapital(iou.amount || "0"), loanDate, repaymentDate, signingDate);
+      html = await generateProofHtml(iou, borrowerName, amountToChineseCapital(iou.amount || "0"), loanDateStr, repaymentDateStr, signingDateStr);
       filename = `借款证明_${iou.document_no}.html`;
     } else if (document_type === "invalid") {
-      html = await generateInvalidStatementHtml(iou, signingDate);
+      html = await generateInvalidStatementHtml(iou, signingDateStr);
       filename = `借据无效说明_${iou.document_no}.html`;
     } else {
       return NextResponse.json({ success: false, error: "无效的文档类型" }, { status: 400 });
