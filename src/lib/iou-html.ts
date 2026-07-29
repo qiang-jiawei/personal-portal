@@ -7,7 +7,7 @@ import { loadSealBase64 } from "./pdf-utils";
 export async function generateIOUHtml(
   iou: {
     document_no: string;
-    borrower_name: string;
+    borrower_name?: string;
     loan_date?: string;
     lending_method?: string;
     amount?: string;
@@ -233,7 +233,7 @@ export async function generateIOUHtml(
 export async function generateProofHtml(
   iou: {
     document_no: string;
-    borrower_name: string;
+    borrower_name?: string;
     loan_date?: string;
     lending_method?: string;
     amount?: string;
