@@ -107,6 +107,7 @@ export default function FinancePage() {
 
       if (!res.ok) {
         const error = await res.json();
+        newWindow.document.open();
         newWindow.document.write(`
           <html>
             <head><title>生成失败</title></head>
@@ -117,14 +118,17 @@ export default function FinancePage() {
             </body>
           </html>
         `);
+        newWindow.document.close();
         return;
       }
 
       // Write HTML content to new window
       const html = await res.text();
+      newWindow.document.open();
       newWindow.document.write(html);
       newWindow.document.close();
     } catch {
+      newWindow.document.open();
       newWindow.document.write(`
         <html>
           <head><title>生成失败</title></head>
@@ -135,6 +139,7 @@ export default function FinancePage() {
           </body>
         </html>
       `);
+      newWindow.document.close();
     } finally {
       setDownloading(false);
     }
