@@ -59,6 +59,10 @@ export async function generateIouHtml(params: {
       max-width: 800px;
       margin: 0 auto;
       padding: 40px;
+      background-image: url('/借据背景.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .header {
       text-align: right;
@@ -133,7 +137,8 @@ export async function generateIouHtml(params: {
     }
     .qr-section {
       margin-top: 40px;
-      text-align: center;
+      text-align: left;
+      margin-left: 40px;
     }
     .qr-section img {
       width: 100px;
