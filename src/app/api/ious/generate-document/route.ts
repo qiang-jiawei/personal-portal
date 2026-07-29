@@ -66,6 +66,19 @@ export async function POST(request: NextRequest) {
     const signingDate = new Date();
     const signingDateStr = formatDate(signingDate);
 
+    // 获取借款人姓名
+    let borrowerName = "未知";
+    if (iou.borrower_phone) {
+      const { data: userData } = await client
+        .from("users")
+        .select("name")
+        .eq("phone", iou.borrower_phone)
+        .maybeSingle();
+      if (userData?.name) {
+        borrowerName = userData.name;
+      }
+    }
+
     // Generate QR code
     const qrData = JSON.stringify({
       document_no: iou.document_no,
