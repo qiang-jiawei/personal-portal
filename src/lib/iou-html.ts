@@ -59,10 +59,29 @@ export async function generateIouHtml(params: {
       max-width: 800px;
       margin: 0 auto;
       padding: 40px;
+      position: relative;
+      min-height: 100vh;
+    }
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
       background-image: url('/借据背景.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+    }
+    .seal {
+      position: absolute;
+      right: 150px;
+      bottom: 200px;
+      width: 120px;
+      height: 120px;
+      z-index: -1;
+      opacity: 0.8;
     }
     .header {
       text-align: right;
@@ -155,6 +174,9 @@ export async function generateIouHtml(params: {
   </style>
 </head>
 <body>
+  <div class="background"></div>
+  ${seal_base64 ? `<img class="seal" src="${seal_base64}" alt="印章"/>` : ''}
+  
   <div class="header">
     <span class="number">编号：${document_no}</span>
   </div>
