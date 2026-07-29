@@ -91,17 +91,7 @@ export async function POST(request: NextRequest) {
       html = await generateIOUHtml(iou, borrowerName, amountToChineseCapital(iou.amount || "0"), loanDate, repaymentDate, signingDate);
       filename = `借据_${iou.document_no}.html`;
     } else if (document_type === "expired") {
-      html = await generateProofHtml({
-        document_no: iou.document_no,
-        borrower_name: borrowerName,
-        loan_date: loanDate,
-        lending_method: lendingMethod,
-        amount: iou.amount || "0",
-        amount_capital: amountToChineseCapital(iou.amount || "0"),
-        repayment_date: repaymentDate,
-        signing_date: signingDate,
-        verification_code: iou.verification_code,
-      });
+      html = await generateProofHtml(iou, borrowerName, amountToChineseCapital(iou.amount || "0"), loanDate, repaymentDate, signingDate);
       filename = `借款证明_${iou.document_no}.html`;
     } else if (document_type === "invalid") {
       html = await generateInvalidStatementHtml(iou, signingDate);
