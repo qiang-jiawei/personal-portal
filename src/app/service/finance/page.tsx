@@ -77,6 +77,27 @@ export default function FinancePage() {
 
     setDownloading(true);
 
+    // Open blank window immediately to avoid popup blocker
+    const newWindow = window.open("", "_blank");
+    if (!newWindow) {
+      alert("请允许浏览器打开新窗口");
+      setDownloading(false);
+      return;
+    }
+
+    // Show loading message in new window
+    newWindow.document.write(`
+      <html>
+        <head><title>正在生成文书...</title></head>
+        <body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+          <div style="text-align:center;">
+            <h2>正在生成文书，请稍候...</h2>
+            <p>请勿关闭此窗口</p>
+          </div>
+        </body>
+      </html>
+    `);
+
     try {
       const res = await fetch("/api/ious/generate-document", {
         method: "POST",
@@ -86,26 +107,34 @@ export default function FinancePage() {
 
       if (!res.ok) {
         const error = await res.json();
-        alert("生成失败：" + (error.error || "未知错误"));
+        newWindow.document.write(`
+          <html>
+            <head><title>生成失败</title></head>
+            <body style="padding:40px;font-family:sans-serif;">
+              <h2>生成失败</h2>
+              <p>${error.error || "未知错误"}</p>
+              <button onclick="window.close()" style="padding:10px 20px;margin-top:20px;">关闭窗口</button>
+            </body>
+          </html>
+        `);
         return;
       }
 
-      // Open HTML in new window for preview and print
+      // Write HTML content to new window
       const html = await res.text();
-      const blob = new Blob([html], { type: "text/html" });
-      const url = window.URL.createObjectURL(blob);
-      const newWindow = window.open(url, "_blank");
-      
-      if (!newWindow) {
-        alert("请允许浏览器打开新窗口");
-      }
-      
-      // Clean up after a delay
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-      }, 60000);
+      newWindow.document.write(html);
+      newWindow.document.close();
     } catch {
-      alert("生成失败，请重试");
+      newWindow.document.write(`
+        <html>
+          <head><title>生成失败</title></head>
+          <body style="padding:40px;font-family:sans-serif;">
+            <h2>生成失败</h2>
+            <p>请重试</p>
+            <button onclick="window.close()" style="padding:10px 20px;margin-top:20px;">关闭窗口</button>
+          </body>
+        </html>
+      `);
     } finally {
       setDownloading(false);
     }
