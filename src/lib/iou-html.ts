@@ -76,14 +76,14 @@ export async function generateIouHtml(params: {
       font-family: "黑体", "SimHei", sans-serif;
       font-size: 48pt;
       font-weight: bold;
-      color: #257abe;
+      color: #000;
       margin: 0;
       letter-spacing: 8pt;
     }
     .title .subtitle {
       font-family: "Monotype Corsiva", cursive;
       font-size: 18pt;
-      color: #257abe;
+      color: #000;
       margin-top: 10px;
       letter-spacing: 1pt;
     }
@@ -184,16 +184,16 @@ export async function generateIouHtml(params: {
     <p>${signYear} 年 ${signMonth} 月 ${signDay} 日</p>
   </div>
 
-  <div class="footer">
-    <p><span class="label">核验编码：</span>${verification_code}</p>
-    <p><span class="label">核验网址：</span>www.jiaweiqiang.cn</p>
-  </div>
-
   ${qr_code_base64 ? `
   <div class="qr-section">
     <img src="${qr_code_base64}" alt="核验二维码"/>
   </div>
   ` : ''}
+
+  <div class="footer">
+    <p><span class="label">核验编码：</span>${verification_code}</p>
+    <p><span class="label">核验网址：</span>www.jiaweiqiang.cn</p>
+  </div>
 
   <div class="no-print" style="margin-top: 40px; text-align: center; padding: 20px; border-top: 1px dashed #ccc;">
     <button onclick="window.print()" style="padding: 10px 30px; font-size: 14px; background: #257abe; color: white; border: none; border-radius: 4px; cursor: pointer;">
