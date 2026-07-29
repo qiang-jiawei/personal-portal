@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         .limit(1);
       
       if (!testError) {
-        insertData.lending_method = lending_method || "银行转账";
+        insertData.lending_method = lending_method || "微信";
         insertData.loan_date = loan_date || new Date().toISOString();
       }
     } catch {

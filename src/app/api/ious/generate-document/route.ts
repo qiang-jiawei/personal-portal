@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "借据不存在" }, { status: 404 });
     }
 
-    const lendingMethod = iou.lending_method || "银行转账";
+    const lendingMethod = iou.lending_method || "微信";
     const loanDate = iou.loan_date ? new Date(iou.loan_date) : new Date(iou.created_at);
 
     const { data: userData } = await client
