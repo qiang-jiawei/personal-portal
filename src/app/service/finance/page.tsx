@@ -86,29 +86,26 @@ export default function FinancePage() {
 
       if (!res.ok) {
         const error = await res.json();
-        alert("下载失败：" + (error.error || "未知错误"));
+        alert("生成失败：" + (error.error || "未知错误"));
         return;
       }
 
-      // Download the file
-      const blob = await res.blob();
+      // Open HTML in new window for preview and print
+      const html = await res.text();
+      const blob = new Blob([html], { type: "text/html" });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-
-      const filenames: Record<string, string> = {
-        valid: `借据_${iou.document_no}.pdf`,
-        expired: `借款失效证明_${iou.document_no}.pdf`,
-        invalid: `借据无效说明_${iou.document_no}.pdf`,
-      };
-      link.download = filenames[iou.status] || `借据_${iou.document_no}.pdf`;
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const newWindow = window.open(url, "_blank");
+      
+      if (!newWindow) {
+        alert("请允许浏览器打开新窗口");
+      }
+      
+      // Clean up after a delay
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 60000);
     } catch {
-      alert("下载失败，请重试");
+      alert("生成失败，请重试");
     } finally {
       setDownloading(false);
     }

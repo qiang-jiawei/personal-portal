@@ -1,23 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import fontkit from "@pdf-lib/fontkit";
 import QRCode from "qrcode";
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
 import {
   amountToChineseCapital,
-  generateIOUNumber,
   calculateRepaymentDate,
-  formatDateChinese,
-  formatDateShort,
-  loadPdfTemplate,
-  loadSealImage,
-  loadPdfFont,
 } from "@/lib/pdf-utils";
 import { getUserFromToken, checkAdmin } from "@/lib/auth";
+import {
+  generateIouHtml,
+  generateProofHtml,
+  generateInvalidIouHtml,
+} from "@/lib/iou-html";
+
+async function loadSealBase64(documentType: string): Promise<string | null> {
+  const sealMap: Record<string, string> = {
+    valid: "square-seal.png",
+    expired: "round-seal.png",
+    invalid: "round-seal.png",
+  };
+  const filename = sealMap[documentType];
+  if (!filename) return null;
+
+  const sealPath = join(process.cwd(), "public", filename);
+  try {
+    const bytes = readFileSync(sealPath);
+    return `data:image/png;base64,${bytes.toString("base64")}`;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if user is logged in or admin
     const user = await getUserFromToken(request);
     const isAdmin = await checkAdmin(request);
     
@@ -34,10 +50,9 @@ export async function POST(request: NextRequest) {
 
     const client = getSupabaseServiceClient();
 
-    // Get IOU data - admin can access any IOU, regular users only their own
     let query = client
       .from("ious")
-      .select("id, document_no, verification_code, status, amount, description, borrower_phone, created_at")
+      .select("id, document_no, verification_code, status, amount, description, borrower_phone, created_at, lending_method, loan_date")
       .eq("id", iou_id);
     
     if (!isAdmin) {
@@ -51,11 +66,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "借据不存在" }, { status: 404 });
     }
 
-    // Use defaults - lending method and loan date will be added when database is updated
-    const lendingMethod = "银行转账";
-    const loanDate = new Date(iou.created_at);
+    const lendingMethod = iou.lending_method || "银行转账";
+    const loanDate = iou.loan_date ? new Date(iou.loan_date) : new Date(iou.created_at);
 
-    // Get user name
     const { data: userData } = await client
       .from("users")
       .select("name")
@@ -64,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     const borrowerName = userData?.name || iou.borrower_phone;
     const repaymentDate = calculateRepaymentDate(loanDate);
-    const signingDate = new Date(); // Current date for signing
+    const signingDate = new Date();
 
     // Generate QR code
     const qrData = JSON.stringify({
@@ -76,382 +89,64 @@ export async function POST(request: NextRequest) {
       margin: 1,
       color: { dark: "#000000", light: "#ffffff" },
     });
-    const qrCodeBytes = Buffer.from(qrCodeBase64.split(",")[1], "base64");
-
-    // Load template
-    const templateBytes = loadPdfTemplate(document_type);
-    const pdfDoc = await PDFDocument.load(templateBytes);
-    
-    // Register fontkit for custom fonts
-    pdfDoc.registerFontkit(fontkit);
-    
-    const page = pdfDoc.getPage(0);
-    const { width, height } = page.getSize();
-
-    // Load Chinese font
-    const fontBytes = loadPdfFont();
-    const font = await pdfDoc.embedFont(fontBytes);
 
     // Load seal image
-    const sealBytes = loadSealImage(document_type);
-    let sealImage: import("pdf-lib").PDFImage | null = null;
-    if (sealBytes) {
-      try {
-        sealImage = await pdfDoc.embedPng(sealBytes);
-      } catch (e) {
-        console.warn("Failed to embed seal image:", e);
-      }
-    }
+    const sealBase64 = await loadSealBase64(document_type);
 
-    // Fill fields based on document type
+    // Generate HTML based on document type
+    let html: string;
+    let filename: string;
+
     if (document_type === "valid") {
-      // === 借据模板（15 个字段） ===
-      // 使用 pdfjs 坐标（Y 轴从下到上）
-
-      // 1. 编号 - 右上角
-      page.drawText(iou.document_no, {
-        x: 451.88,
-        y: 708.35,
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
+      html = await generateIouHtml({
+        document_no: iou.document_no,
+        borrower_name: borrowerName,
+        loan_date: loanDate,
+        lending_method: lendingMethod,
+        amount: iou.amount || "0",
+        amount_capital: amountToChineseCapital(iou.amount || "0"),
+        repayment_date: repaymentDate,
+        signing_date: signingDate,
+        verification_code: iou.verification_code,
+        seal_base64: sealBase64 || undefined,
+        qr_code_base64: qrCodeBase64,
       });
-
-      // 2. 借款人姓名
-      page.drawText(borrowerName, {
-        x: 94.54,
-        y: 529.69,  // 借款人姓名
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 3. 借款年
-      page.drawText(loanDate.getFullYear().toString(), {
-        x: 183.88,
-        y: 467.02,  // 借款年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 4. 借款月
-      page.drawText((loanDate.getMonth() + 1).toString(), {
-        x: 253.21,
-        y: 467.03,  // 借款月
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 5. 借款日
-      page.drawText(loanDate.getDate().toString(), {
-        x: 309.21,
-        y: 467.69,  // 借款日
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 6. 出借方式
-      page.drawText(lendingMethod, {
-        x: 441.21,
-        y: 467.02,  // 借款年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 7. 金额数字
-      const amount = iou.amount || "0";
-      page.drawText(amount, {
-        x: 186.54,
-        y: 436.35,  // 金额数字
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 8. 金额大写
-      const amountCapital = amountToChineseCapital(amount);
-      page.drawText(amountCapital, {
-        x: 325.88,
-        y: 436.35,  // 金额数字
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 9. 还款年
-      page.drawText(repaymentDate.getFullYear().toString(), {
-        x: 189.21,
-        y: 405.69,  // 还款年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 10. 还款月
-      page.drawText((repaymentDate.getMonth() + 1).toString(), {
-        x: 269.21,
-        y: 405.69,  // 还款年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 11. 签署年
-      page.drawText(signingDate.getFullYear().toString(), {
-        x: 332.3,
-        y: 214.51,  // 签署年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 12. 签署月
-      page.drawText((signingDate.getMonth() + 1).toString(), {
-        x: 388.96,
-        y: 215.85,  // 签署月
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 13. 签署日
-      page.drawText(signingDate.getDate().toString(), {
-        x: 429.63,
-        y: 215.84,  // 签署日
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 14. 核验编码（向上移动 1.5 行）
-      page.drawText(iou.verification_code, {
-        x: 139.88,
-        y: 157.02,  // 核验编码（原 127.02，向上移动 30pt）
-        size: 10,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 15. 印章 - 方形章
-      if (sealImage) {
-        page.drawImage(sealImage, {
-          x: 121.21,
-          y: 147.02,  // 印章
-          width: 100,
-          height: 102.67,
-        });
-      }
-
-      // QR code - 上方居中，大小 2.8cm (79pt)
-      const qrImage = await pdfDoc.embedPng(qrCodeBytes);
-      const qrSize = 79;
-      page.drawImage(qrImage, {
-        x: 140,
-        y: 200,
-        width: qrSize,
-        height: qrSize,
-      });
-
-
-
+      filename = `借据_${iou.document_no}.html`;
     } else if (document_type === "expired") {
-      // === 借款证明模板（新版 - 16 个字段） ===
-      // 使用 pdfjs 坐标（Y 轴从下到上，与 pdf-lib 一致）
-
-      // 1. 编号 - 右上角
-      page.drawText(iou.document_no, {
-        x: 452.71,
-        y: 725.84,
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
+      html = await generateProofHtml({
+        document_no: iou.document_no,
+        borrower_name: borrowerName,
+        loan_date: loanDate,
+        lending_method: lendingMethod,
+        amount: iou.amount || "0",
+        amount_capital: amountToChineseCapital(iou.amount || "0"),
+        repayment_date: repaymentDate,
+        signing_date: signingDate,
+        verification_code: iou.verification_code,
+        seal_base64: sealBase64 || undefined,
+        qr_code_base64: qrCodeBase64,
       });
-
-      // 2. 借款年
-      page.drawText(loanDate.getFullYear().toString(), {
-        x: 202.04,
-        y: 497.51,  // 借款年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 3. 借款月
-      page.drawText((loanDate.getMonth() + 1).toString(), {
-        x: 285.38,
-        y: 498.84,  // 借款月
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 4. 借款日
-      page.drawText(loanDate.getDate().toString(), {
-        x: 348.71,
-        y: 500.18,  // 借款日
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 5. 出借方式
-      page.drawText(lendingMethod, {
-        x: 446.71,
-        y: 500.18,  // 借款日
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 6. 借款人姓名
-      page.drawText(borrowerName, {
-        x: 144.71,
-        y: 470.18,  // 借款人姓名
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 7. 金额数字
-      const amount = iou.amount || "0";
-      page.drawText(amount, {
-        x: 363.38,
-        y: 470.18,  // 借款人姓名
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 8. 金额大写
-      const amountCapital = amountToChineseCapital(amount);
-      page.drawText(amountCapital, {
-        x: 152.04,
-        y: 438.84,  // 金额大写
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 9. 还款年
-      page.drawText(repaymentDate.getFullYear().toString(), {
-        x: 342.04,
-        y: 437.51,  // 还款年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 10. 还款月
-      page.drawText((repaymentDate.getMonth() + 1).toString(), {
-        x: 400.71,
-        y: 438.18,  // 还款月
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 11. 还款日
-      page.drawText(repaymentDate.getDate().toString(), {
-        x: 454.71,
-        y: 439.51,  // 还款日
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 12. 签署年
-      page.drawText(signingDate.getFullYear().toString(), {
-        x: 317.38,
-        y: 280.84,  // 签署年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 13. 签署月
-      page.drawText((signingDate.getMonth() + 1).toString(), {
-        x: 377.38,
-        y: 280.84,  // 签署年
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 14. 签署日
-      page.drawText(signingDate.getDate().toString(), {
-        x: 420.71,
-        y: 281.51,  // 签署日
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 15. 核验编码
-      page.drawText(iou.verification_code, {
-        x: 141.38,
-        y: 241.51,  // 核验编码
-        size: 10,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      // 16. 印章 - 圆形章
-      if (sealImage) {
-        page.drawImage(sealImage, {
-          x: 123.38,
-          y: 334.84,  // 印章
-          width: 86,
-          height: 86.67,
-        });
-      }
-
-      // QR code - 核验编码、核验网址、联系方式上方，大小 2.8cm (79pt)
-      const qrImage = await pdfDoc.embedPng(qrCodeBytes);
-      const qrSize = 79;
-      page.drawImage(qrImage, {
-        x: 110,  // 向右挪动 3/4d (60pt)
-        y: 260,  // 向下挪动 3/4d (60pt)
-        width: qrSize,
-        height: qrSize,
-      });
-
+      filename = `借款证明_${iou.document_no}.html`;
     } else if (document_type === "invalid") {
-      // 借据无效情况说明 template - no fields to fill, just add seal below text
-      if (sealImage) {
-        // Place seal below the text content (centered, below text)
-        page.drawImage(sealImage, {
-          x: width / 2 - 50,
-          y: 200, // Below text content
-          width: 100,
-          height: 100,
-        });
-      }
+      html = await generateInvalidIouHtml({
+        document_no: iou.document_no,
+        verification_code: iou.verification_code,
+        seal_base64: sealBase64 || undefined,
+      });
+      filename = `借据无效说明_${iou.document_no}.html`;
+    } else {
+      return NextResponse.json({ success: false, error: "无效的文档类型" }, { status: 400 });
     }
 
-    // Serialize PDF
-    const pdfBytes = await pdfDoc.save();
-
-    // Set filename
-    const filenames: Record<string, string> = {
-      valid: `借据_${iou.document_no}.pdf`,
-      expired: `借款证明_${iou.document_no}.pdf`,
-      invalid: `借据无效说明_${iou.document_no}.pdf`,
-    };
-    const filename = filenames[document_type] || `借据_${iou.document_no}.pdf`;
-
-    return new NextResponse(new Uint8Array(pdfBytes), {
+    return new NextResponse(html, {
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(filename)}"`,
+        "Content-Type": "text/html; charset=utf-8",
+        "Content-Disposition": `inline; filename="${encodeURIComponent(filename)}"`,
       },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("PDF 生成错误:", message);
+    console.error("HTML 生成错误:", message);
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
