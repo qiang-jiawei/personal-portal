@@ -35,7 +35,7 @@ export async function generateIOUHtml(
   <style>
     @page {
       size: A4;
-      margin: 20mm 25mm;
+      margin: 15mm 20mm;
     }
     * {
       margin: 0;
@@ -44,43 +44,43 @@ export async function generateIOUHtml(
     }
     body {
       font-family: "仿宋", "FangSong", "STFangsong", serif;
-      font-size: 16pt;
-      line-height: 2.2;
+      font-size: 14pt;
+      line-height: 2;
       color: #000;
-      padding: 40px 50px;
+      padding: 30px 40px;
       position: relative;
       min-height: 100vh;
     }
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
     .document-no {
       position: absolute;
-      top: 40px;
-      right: 50px;
-      font-size: 14pt;
+      top: 30px;
+      right: 40px;
+      font-size: 12pt;
     }
     .title {
       font-family: "黑体", "SimHei", sans-serif;
-      font-size: 48pt;
+      font-size: 36pt;
       font-weight: bold;
       color: #000;
-      letter-spacing: 20px;
-      margin-bottom: 10px;
+      letter-spacing: 15px;
+      margin-bottom: 5px;
     }
     .subtitle {
       font-family: "Monotype Corsiva", "Times New Roman", serif;
-      font-size: 18pt;
+      font-size: 14pt;
       font-style: italic;
       color: #000;
     }
     .content {
-      margin: 40px 0;
+      margin: 30px 0;
     }
     .borrower {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
     .borrower-name {
       display: inline-block;
@@ -106,8 +106,9 @@ export async function generateIOUHtml(
     }
     .signature {
       text-align: right;
-      margin-top: 60px;
+      margin-top: 40px;
       position: relative;
+      padding-right: 120px;
     }
     .signature-text {
       margin-bottom: 10px;
@@ -115,32 +116,33 @@ export async function generateIOUHtml(
     .seal {
       position: absolute;
       right: 0;
-      top: -20px;
-      width: 120px;
-      height: 120px;
-      opacity: 0.85;
+      top: 0;
+      width: 100px;
+      height: 100px;
+      opacity: 0.9;
       z-index: 1;
     }
     .signature-date {
-      margin-top: 20px;
+      margin-top: 10px;
     }
     .footer {
-      margin-top: 80px;
+      margin-top: 40px;
       position: relative;
     }
     .qr-section {
       display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-top: 20px;
+      align-items: flex-start;
+      gap: 15px;
+      margin-top: 10px;
     }
     .qr-code {
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
     }
     .verification-info {
-      font-size: 14pt;
-      line-height: 1.8;
+      font-size: 12pt;
+      line-height: 1.6;
+      padding-top: 5px;
     }
     .print-button {
       position: fixed;
@@ -205,8 +207,8 @@ export async function generateIOUHtml(
 
   <div class="signature">
     <div class="signature-text">强嘉伟（盖章）</div>
-    <img src="${sealBase64}" alt="印章" class="seal">
     <div class="signature-date">${signingDate} 年 ${signingDate} 月 ${signingDate} 日</div>
+    <img src="${sealBase64}" alt="印章" class="seal">
   </div>
 
   <div class="footer">
