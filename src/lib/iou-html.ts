@@ -26,6 +26,20 @@ export async function generateIOUHtml(
     { width: 100, margin: 1 }
   );
 
+  // 解析日期
+  const loanDateObj = loanDate ? new Date(loanDate) : new Date();
+  const repaymentDateObj = repaymentDate ? new Date(repaymentDate) : new Date();
+  const signingDateObj = signingDate ? new Date(signingDate) : new Date();
+
+  const loanYear = loanDateObj.getFullYear();
+  const loanMonth = loanDateObj.getMonth() + 1;
+  const loanDay = loanDateObj.getDate();
+  const repaymentYear = repaymentDateObj.getFullYear();
+  const repaymentMonth = repaymentDateObj.getMonth() + 1;
+  const signingYear = signingDateObj.getFullYear();
+  const signingMonth = signingDateObj.getMonth() + 1;
+  const signingDay = signingDateObj.getDate();
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -79,14 +93,14 @@ export async function generateIOUHtml(
       margin: 30px 0;
     }
     .borrower {
-      text-align: center;
+      text-align: left;
       margin-bottom: 20px;
     }
     .borrower-name {
       display: inline-block;
       border-bottom: 1px solid #000;
-      padding: 0 20px;
-      min-width: 120px;
+      padding: 0 15px;
+      min-width: 80px;
       text-align: center;
     }
     .paragraph {
@@ -97,12 +111,12 @@ export async function generateIOUHtml(
     .field {
       display: inline-block;
       border-bottom: 1px solid #000;
-      padding: 0 10px;
-      min-width: 60px;
+      padding: 0 5px;
+      min-width: 30px;
       text-align: center;
     }
     .field-wide {
-      min-width: 100px;
+      min-width: 60px;
     }
     .signature {
       text-align: right;
@@ -193,11 +207,11 @@ export async function generateIOUHtml(
     </div>
 
     <div class="paragraph">
-      我方于 <span class="field">${loanDate}</span> 年 <span class="field">${loanDate}</span> 月 <span class="field">${loanDate}</span> 日向您通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写： <span class="field field-wide">${amountCapital}</span> ）。
+      我方于 <span class="field">${loanYear}</span> 年 <span class="field">${loanMonth}</span> 月 <span class="field">${loanDay}</span> 日向您通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写：<span class="field field-wide">${amountCapital}</span>）。
     </div>
 
     <div class="paragraph">
-      预计于 <span class="field">${repaymentDate}</span> 年 <span class="field">${repaymentDate}</span> 月通过原渠道进行偿还，具体请关注相关通知。
+      预计于 <span class="field">${repaymentYear}</span> 年 <span class="field">${repaymentMonth}</span> 月通过原渠道进行偿还，具体请关注相关通知。
     </div>
 
     <div class="paragraph">
@@ -207,7 +221,7 @@ export async function generateIOUHtml(
 
   <div class="signature">
     <div class="signature-text">强嘉伟（盖章）</div>
-    <div class="signature-date">${signingDate} 年 ${signingDate} 月 ${signingDate} 日</div>
+    <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
     <img src="${sealBase64}" alt="印章" class="seal">
   </div>
 
@@ -399,7 +413,7 @@ export async function generateProofHtml(
     </div>
 
     <div class="paragraph">
-      强嘉伟于 <span class="field">${loanDate}</span> 年 <span class="field">${loanDate}</span> 月 <span class="field">${loanDate}</span> 日通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 渠道向 <span class="field field-wide">${borrowerName}</span> 同志借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写： <span class="field field-wide">${amountCapital}</span> ），已于 <span class="field">${repaymentDate}</span> 年 <span class="field">${repaymentDate}</span> 月 <span class="field">${repaymentDate}</span> 日进行归还。
+      强嘉伟于 <span class="field">${loanYear}</span> 年 <span class="field">${loanMonth}</span> 月 <span class="field">${loanDay}</span> 日通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 渠道向 <span class="field field-wide">${borrowerName}</span> 同志借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写： <span class="field field-wide">${amountCapital}</span> ），已于 <span class="field">${repaymentYear}</span> 年 <span class="field">${repaymentMonth}</span> 月 <span class="field">${repaymentDay}</span> 日进行归还。
     </div>
 
     <div class="paragraph">
@@ -410,12 +424,14 @@ export async function generateProofHtml(
   <div class="signature">
     <div class="signature-text">强嘉伟（盖章）</div>
     <img src="${sealBase64}" alt="印章" class="seal">
-    <div class="signature-date">${signingDate} 年 ${signingDate} 月 ${signingDate} 日</div>
+    <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
   </div>
 
   <div class="footer">
     <div class="qr-section">
-      <img src="${qrCodeDataUrl}" alt="核验二维码" class="qr-code">
+      <div class="qr-code-container">
+        <img src="${qrCodeDataUrl}" alt="核验二维码" class="qr-code">
+      </div>
       <div class="verification-info">
         <div>核验编码：${iou.verification_code || "N/A"}</div>
         <div>核验网址：www.jiaweiqiang.cn</div>
@@ -564,7 +580,7 @@ export async function generateInvalidStatementHtml(
   <div class="signature">
     <div class="signature-text">强嘉伟（盖章）</div>
     <img src="${sealBase64}" alt="印章" class="seal">
-    <div class="signature-date">${signingDate} 年 ${signingDate} 月 ${signingDate} 日</div>
+    <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
   </div>
 
   <div class="print-hint">提示：点击按钮后，在打印对话框中选择"另存为 PDF"即可保存</div>
