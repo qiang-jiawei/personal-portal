@@ -465,6 +465,7 @@ export async function generateProofHtml(
   </div>
 
   <div class="signature">
+    <img src="${sealBase64}" alt="印章" class="seal">
     <div class="signature-text">强嘉伟</div>
     <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
   </div>
@@ -623,9 +624,8 @@ export async function generateInvalidStatementHtml(
   </div>
 
   <div class="signature">
-    <div class="signature-text">强嘉伟（盖章）</div>
+    <div class="signature-text">强嘉伟</div>
     <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
-    <img src="${sealBase64}" alt="印章" class="seal">
   </div>
 
   <div class="print-hint">提示：点击按钮后，在打印对话框中选择"另存为 PDF"即可保存</div>
