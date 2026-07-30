@@ -7,6 +7,35 @@ import { loadSealBase64 } from "./pdf-utils";
 import QRCode from "qrcode";
 
 /**
+ * 固定宽度填充（类似 Python 的 format）
+ * @param text 填充内容
+ * @param width 总宽度（字符数）
+ * @returns 填充后的字符串（不足部分用空格补齐）
+ */
+function padCenter(text: string, width: number): string {
+  const padding = width - text.length;
+  if (padding <= 0) return text;
+  const leftPad = Math.floor(padding / 2);
+  const rightPad = padding - leftPad;
+  return " ".repeat(leftPad) + text + " ".repeat(rightPad);
+}
+
+/**
+ * 生成固定宽度的填充内容（类似 Python 的 format）
+ * @param text 填充内容
+ * @param width 总宽度（字符数）
+ * @returns 填充后的内容（不足部分用空格补齐）
+ */
+function padCenter(text: string, width: number): string {
+  const len = text.length;
+  if (len >= width) return text;
+  const padding = width - len;
+  const leftPad = Math.floor(padding / 2);
+  const rightPad = padding - leftPad;
+  return ' '.repeat(leftPad) + text + ' '.repeat(rightPad);
+}
+
+/**
  * 生成借据 HTML
  */
 export async function generateIOUHtml(
@@ -115,11 +144,11 @@ export async function generateIOUHtml(
     .field {
       display: inline-block;
       min-width: 60px;
-      border-bottom: 1px solid #000;
       text-align: center;
-      padding: 0 8px;
+      padding: 0 4px;
       vertical-align: bottom;
       line-height: 1.8;
+      font-family: 'FangSong', '仿宋', serif;
     }
     .field-wide {
       min-width: 100px;
@@ -144,8 +173,8 @@ export async function generateIOUHtml(
     }
     .seal {
       position: absolute;
-      right: -20px;
-      top: 5px;
+      right: 30px;
+      top: -10px;
       width: 100px;
       height: 100px;
       opacity: 0.85;
@@ -219,11 +248,11 @@ export async function generateIOUHtml(
     </div>
 
     <div class="paragraph">
-      我方于 <span class="field">${loanYear}</span> 年 <span class="field">${loanMonth}</span> 月 <span class="field">${loanDay}</span> 日向您通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写：<span class="field field-wide">${amountCapital}</span>）。
+      我方于 <span class="field">${padCenter(loanYear, 4)}</span> 年 <span class="field">${padCenter(loanMonth, 2)}</span> 月 <span class="field">${padCenter(loanDay, 2)}</span> 日向您通过 <span class="field field-wide">${padCenter(iou.lending_method || "微信", 4)}</span> 借取人民币 <span class="field">${padCenter(iou.amount || "0", 6)}</span> 元（大写：<span class="field field-wide">${padCenter(amountCapital, 8)}</span>）。
     </div>
 
     <div class="paragraph">
-      预计于 <span class="field">${repaymentYear}</span> 年 <span class="field">${repaymentMonth}</span> 月通过原渠道进行偿还，具体请关注相关通知。
+      预计于 <span class="field">${padCenter(repaymentYear, 4)}</span> 年 <span class="field">${padCenter(repaymentMonth, 2)}</span> 月通过原渠道进行偿还，具体请关注相关通知。
     </div>
 
     <div class="paragraph">
@@ -447,7 +476,7 @@ export async function generateProofHtml(
       兹证明：
     </div>
     <div class="paragraph">
-      强嘉伟于 <span class="field">${loanYear}</span> 年 <span class="field">${loanMonth}</span> 月 <span class="field">${loanDay}</span> 日通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 渠道向 <span class="field field-wide">${borrowerName}</span> 同志借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写：<span class="field field-wide">${amountCapital}</span>），已于 <span class="field">${repaymentYear}</span> 年 <span class="field">${repaymentMonth}</span> 月 <span class="field">${repaymentDay}</span> 日进行归还。
+      强嘉伟于 <span class="field">${padCenter(loanYear, 4)}</span> 年 <span class="field">${padCenter(loanMonth, 2)}</span> 月 <span class="field">${padCenter(loanDay, 2)}</span> 日通过 <span class="field">${padCenter(iou.lending_method || "微信", 4)}</span> 渠道向 <span class="field">${padCenter(borrowerName, 6)}</span> 同志借取人民币 <span class="field">${padCenter(iou.amount || "0", 6)}</span> 元（大写：<span class="field">${padCenter(amountCapital, 10)}</span>），已于 <span class="field">${padCenter(repaymentYear, 4)}</span> 年 <span class="field">${padCenter(repaymentMonth, 2)}</span> 月 <span class="field">${padCenter(repaymentDay, 2)}</span> 日进行归还。
     </div>
     <div class="paragraph">
       特此证明。
