@@ -117,8 +117,9 @@ export async function generateIOUHtml(
       min-width: 60px;
       border-bottom: 1px solid #000;
       text-align: center;
-      padding: 0 5px;
+      padding: 0 8px;
       vertical-align: bottom;
+      line-height: 1.8;
     }
     .field-wide {
       min-width: 100px;
@@ -143,12 +144,12 @@ export async function generateIOUHtml(
     }
     .seal {
       position: absolute;
-      right: 0;
-      top: -10px;
+      right: -20px;
+      top: 5px;
       width: 100px;
       height: 100px;
       opacity: 0.85;
-      z-index: 0;
+      z-index: -1;
     }
     .footer {
       margin-top: 40px;
@@ -163,6 +164,7 @@ export async function generateIOUHtml(
     .qr-code {
       width: 90px;
       height: 90px;
+      margin-left: 45px;
     }
     .verification-info {
       font-size: 12pt;
