@@ -228,7 +228,7 @@ export async function generateIOUHtml(
     </div>
 
     <div class="paragraph">
-      我方于 <span class="field">${padField(String(loanYear))}</span> 年 <span class="field">${padField(String(loanMonth))}</span> 月 <span class="field">${padField(String(loanDay))}</span> 日向您通过 <span class="field field-wide">${padField(iou.lending_method || "微信", 4)}</span> 借取人民币 <span class="field">${padField(String(iou.amount || "0"), 6)}</span> 元（大写：<span class="field field-wide">${padField(amountCapital, 8)}</span>）。
+      我方于 <span class="field">${padField(String(loanYear))}</span> 年 <span class="field">${padField(String(loanMonth))}</span> 月 <span class="field">${padField(String(loanDay))}</span> 日向您通过 <span class="field field-wide">${padField(iou.lending_method || "微信")}</span> 借取人民币 <span class="field">${padField(String(iou.amount || "0"))}</span> 元（大写：<span class="field field-wide">${padField(amountCapital)}</span>）。
     </div>
 
     <div class="paragraph">
@@ -456,7 +456,7 @@ export async function generateProofHtml(
       兹证明：
     </div>
     <div class="paragraph">
-      强嘉伟于 <span class="field">${padField(String(loanYear))}</span> 年 <span class="field">${padField(String(loanMonth))}</span> 月 <span class="field">${padField(String(loanDay))}</span> 日通过 <span class="field">${padField(iou.lending_method || "微信", 4)}</span> 渠道向 <span class="field">${padField(borrowerName, 6)}</span> 同志借取人民币 <span class="field">${padField(String(iou.amount || "0"), 6)}</span> 元（大写：<span class="field">${padField(amountCapital, 10)}</span>），已于 <span class="field">${padField(String(repaymentYear))}</span> 年 <span class="field">${padField(String(repaymentMonth))}</span> 月 <span class="field">${padField(String(repaymentDay), 2)}</span> 日进行归还。
+      强嘉伟于 <span class="field">${padField(String(loanYear))}</span> 年 <span class="field">${padField(String(loanMonth))}</span> 月 <span class="field">${padField(String(loanDay))}</span> 日通过 <span class="field">${padField(iou.lending_method || "微信")}</span> 渠道向 <span class="field">${padField(borrowerName)}</span> 同志借取人民币 <span class="field">${padField(String(iou.amount || "0"))}</span> 元（大写：<span class="field">${padField(amountCapital)}</span>），已于 <span class="field">${padField(String(repaymentYear))}</span> 年 <span class="field">${padField(String(repaymentMonth))}</span> 月 <span class="field">${padField(String(repaymentDay))}</span> 日进行归还。
     </div>
     <div class="paragraph">
       特此证明。
