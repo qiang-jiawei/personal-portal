@@ -1,8 +1,13 @@
-import QRCode from "qrcode";
+/**
+ * 借据 HTML 模板生成
+ * 严格保持 docx 模板的排版风格
+ */
+
 import { loadSealBase64 } from "./pdf-utils";
+import QRCode from "qrcode";
 
 /**
- * 生成借据 HTML（无背景图版本）
+ * 生成借据 HTML
  */
 export async function generateIOUHtml(
   iou: {
@@ -62,92 +67,92 @@ export async function generateIOUHtml(
       line-height: 2;
       color: #000;
       padding: 30px 40px;
-      position: relative;
-      min-height: 100vh;
+      max-width: 210mm;
+      margin: 0 auto;
+    }
+    .document-no {
+      text-align: right;
+      font-size: 12pt;
+      margin-bottom: 20px;
     }
     .header {
       text-align: center;
       margin-bottom: 30px;
     }
-    .document-no {
-      position: absolute;
-      top: 30px;
-      right: 40px;
-      font-size: 12pt;
-    }
     .title {
       font-family: "黑体", "SimHei", sans-serif;
       font-size: 36pt;
       font-weight: bold;
-      color: #000;
-      letter-spacing: 15px;
+      letter-spacing: 8px;
       margin-bottom: 5px;
     }
     .subtitle {
       font-family: "Monotype Corsiva", "Times New Roman", serif;
       font-size: 14pt;
       font-style: italic;
-      color: #000;
+      color: #333;
     }
     .content {
-      margin: 30px 0;
+      margin-bottom: 40px;
     }
     .borrower {
       text-align: left;
       margin-bottom: 20px;
+      font-size: 14pt;
     }
     .borrower-name {
       display: inline-block;
-      border-bottom: 1px solid #000;
-      padding: 0 15px;
       min-width: 80px;
+      border-bottom: 1px solid #000;
       text-align: center;
+      padding: 0 10px;
     }
     .paragraph {
+      margin-bottom: 15px;
       text-indent: 2em;
-      margin-bottom: 20px;
-      line-height: 2.5;
+      text-align: justify;
     }
     .field {
       display: inline-block;
+      min-width: 60px;
       border-bottom: 1px solid #000;
-      padding: 0 5px;
-      min-width: 30px;
       text-align: center;
+      padding: 0 5px;
     }
     .field-wide {
-      min-width: 60px;
+      min-width: 100px;
     }
     .signature {
       text-align: right;
-      margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 40px;
       position: relative;
-      padding-right: 120px;
+      padding-right: 100px;
     }
     .signature-text {
       margin-bottom: 10px;
+      font-size: 14pt;
+    }
+    .signature-date {
+      font-size: 14pt;
     }
     .seal {
       position: absolute;
       right: 0;
-      top: 0;
+      top: -10px;
       width: 100px;
       height: 100px;
-      opacity: 0.9;
-      z-index: 1;
-    }
-    .signature-date {
-      margin-top: 10px;
+      opacity: 0.85;
     }
     .footer {
       margin-top: 40px;
-      position: relative;
+      text-align: left;
     }
     .qr-section {
       display: flex;
+      flex-direction: column;
       align-items: flex-start;
-      gap: 15px;
-      margin-top: 10px;
+      gap: 10px;
     }
     .qr-code {
       width: 90px;
@@ -155,33 +160,32 @@ export async function generateIOUHtml(
     }
     .verification-info {
       font-size: 12pt;
-      line-height: 1.6;
-      padding-top: 5px;
+      line-height: 1.8;
     }
     .print-button {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      background: #2563eb;
+      padding: 12px 24px;
+      background: #257abe;
       color: white;
       border: none;
-      padding: 15px 30px;
-      font-size: 16pt;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     .print-button:hover {
-      background: #1d4ed8;
+      background: #1a5a8a;
     }
     .print-hint {
       position: fixed;
-      bottom: 30px;
-      right: 180px;
-      font-size: 12pt;
+      bottom: 80px;
+      right: 30px;
+      font-size: 12px;
       color: #666;
-      z-index: 1000;
+      text-align: right;
+      max-width: 200px;
     }
     @media print {
       .print-button, .print-hint {
@@ -242,7 +246,7 @@ export async function generateIOUHtml(
 }
 
 /**
- * 生成借款证明 HTML（无背景图版本）
+ * 生成借款证明 HTML
  */
 export async function generateProofHtml(
   iou: {
@@ -266,6 +270,21 @@ export async function generateProofHtml(
     { width: 100, margin: 1 }
   );
 
+  // 解析日期
+  const loanDateObj = loanDate ? new Date(loanDate) : new Date();
+  const repaymentDateObj = repaymentDate ? new Date(repaymentDate) : new Date();
+  const signingDateObj = signingDate ? new Date(signingDate) : new Date();
+
+  const loanYear = loanDateObj.getFullYear();
+  const loanMonth = loanDateObj.getMonth() + 1;
+  const loanDay = loanDateObj.getDate();
+  const repaymentYear = repaymentDateObj.getFullYear();
+  const repaymentMonth = repaymentDateObj.getMonth() + 1;
+  const repaymentDay = repaymentDateObj.getDate();
+  const signingYear = signingDateObj.getFullYear();
+  const signingMonth = signingDateObj.getMonth() + 1;
+  const signingDay = signingDateObj.getDate();
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -275,7 +294,7 @@ export async function generateProofHtml(
   <style>
     @page {
       size: A4;
-      margin: 20mm 25mm;
+      margin: 15mm 20mm;
     }
     * {
       margin: 0;
@@ -284,45 +303,49 @@ export async function generateProofHtml(
     }
     body {
       font-family: "仿宋", "FangSong", "STFangsong", serif;
-      font-size: 16pt;
-      line-height: 2.2;
+      font-size: 14pt;
+      line-height: 2;
       color: #000;
-      padding: 40px 50px;
-      position: relative;
-      min-height: 100vh;
+      padding: 30px 40px;
+      max-width: 210mm;
+      margin: 0 auto;
+    }
+    .document-no {
+      text-align: right;
+      font-size: 12pt;
+      margin-bottom: 20px;
     }
     .header {
       text-align: center;
-      margin-bottom: 40px;
-    }
-    .document-no {
-      position: absolute;
-      top: 40px;
-      right: 50px;
-      font-size: 14pt;
+      margin-bottom: 30px;
     }
     .title {
       font-family: "黑体", "SimHei", sans-serif;
       font-size: 36pt;
       font-weight: bold;
-      color: #000;
-      letter-spacing: 10px;
-      margin-bottom: 10px;
+      letter-spacing: 8px;
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      font-family: "Monotype Corsiva", "Times New Roman", serif;
+      font-size: 14pt;
+      font-style: italic;
+      color: #333;
     }
     .content {
-      margin: 40px 0;
+      margin-bottom: 40px;
     }
     .paragraph {
+      margin-bottom: 15px;
       text-indent: 2em;
-      margin-bottom: 20px;
-      line-height: 2.5;
+      text-align: justify;
     }
     .field {
       display: inline-block;
-      border-bottom: 1px solid #000;
-      padding: 0 10px;
       min-width: 60px;
+      border-bottom: 1px solid #000;
       text-align: center;
+      padding: 0 5px;
     }
     .field-wide {
       min-width: 100px;
@@ -330,65 +353,67 @@ export async function generateProofHtml(
     .signature {
       text-align: right;
       margin-top: 60px;
+      margin-bottom: 40px;
       position: relative;
+      padding-right: 100px;
     }
     .signature-text {
       margin-bottom: 10px;
+      font-size: 14pt;
+    }
+    .signature-date {
+      font-size: 14pt;
     }
     .seal {
       position: absolute;
       right: 0;
-      top: -20px;
-      width: 120px;
-      height: 120px;
+      top: -10px;
+      width: 100px;
+      height: 100px;
       opacity: 0.85;
-      z-index: 1;
-    }
-    .signature-date {
-      margin-top: 20px;
     }
     .footer {
-      margin-top: 80px;
-      position: relative;
+      margin-top: 40px;
+      text-align: left;
     }
     .qr-section {
       display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-top: 20px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
     }
     .qr-code {
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
     }
     .verification-info {
-      font-size: 14pt;
+      font-size: 12pt;
       line-height: 1.8;
     }
     .print-button {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      background: #2563eb;
+      padding: 12px 24px;
+      background: #257abe;
       color: white;
       border: none;
-      padding: 15px 30px;
-      font-size: 16pt;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     .print-button:hover {
-      background: #1d4ed8;
+      background: #1a5a8a;
     }
     .print-hint {
       position: fixed;
-      bottom: 30px;
-      right: 180px;
-      font-size: 12pt;
+      bottom: 80px;
+      right: 30px;
+      font-size: 12px;
       color: #666;
-      z-index: 1000;
+      text-align: right;
+      max-width: 200px;
     }
     @media print {
       .print-button, .print-hint {
@@ -405,17 +430,16 @@ export async function generateProofHtml(
   
   <div class="header">
     <div class="title">借款证明</div>
+    <div class="subtitle">Loan Certificate</div>
   </div>
 
   <div class="content">
     <div class="paragraph">
       兹证明：
     </div>
-
     <div class="paragraph">
-      强嘉伟于 <span class="field">${loanYear}</span> 年 <span class="field">${loanMonth}</span> 月 <span class="field">${loanDay}</span> 日通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 渠道向 <span class="field field-wide">${borrowerName}</span> 同志借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写： <span class="field field-wide">${amountCapital}</span> ），已于 <span class="field">${repaymentYear}</span> 年 <span class="field">${repaymentMonth}</span> 月 <span class="field">${repaymentDay}</span> 日进行归还。
+      强嘉伟于 <span class="field">${loanYear}</span> 年 <span class="field">${loanMonth}</span> 月 <span class="field">${loanDay}</span> 日通过 <span class="field field-wide">${iou.lending_method || "微信"}</span> 渠道向 <span class="field field-wide">${borrowerName}</span> 同志借取人民币 <span class="field">${iou.amount || "0"}</span> 元（大写：<span class="field field-wide">${amountCapital}</span>），已于 <span class="field">${repaymentYear}</span> 年 <span class="field">${repaymentMonth}</span> 月 <span class="field">${repaymentDay}</span> 日进行归还。
     </div>
-
     <div class="paragraph">
       特此证明。
     </div>
@@ -423,15 +447,13 @@ export async function generateProofHtml(
 
   <div class="signature">
     <div class="signature-text">强嘉伟（盖章）</div>
-    <img src="${sealBase64}" alt="印章" class="seal">
     <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
+    <img src="${sealBase64}" alt="印章" class="seal">
   </div>
 
   <div class="footer">
     <div class="qr-section">
-      <div class="qr-code-container">
-        <img src="${qrCodeDataUrl}" alt="核验二维码" class="qr-code">
-      </div>
+      <img src="${qrCodeDataUrl}" alt="核验二维码" class="qr-code">
       <div class="verification-info">
         <div>核验编码：${iou.verification_code || "N/A"}</div>
         <div>核验网址：www.jiaweiqiang.cn</div>
@@ -447,7 +469,7 @@ export async function generateProofHtml(
 }
 
 /**
- * 生成借据无效说明 HTML（无背景图版本）
+ * 生成借据无效说明 HTML
  */
 export async function generateInvalidStatementHtml(
   iou: {
@@ -458,6 +480,11 @@ export async function generateInvalidStatementHtml(
 ): Promise<string> {
   const sealBase64 = await loadSealBase64("round-seal.png");
 
+  const signingDateObj = signingDate ? new Date(signingDate) : new Date();
+  const signingYear = signingDateObj.getFullYear();
+  const signingMonth = signingDateObj.getMonth() + 1;
+  const signingDay = signingDateObj.getDate();
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -467,7 +494,7 @@ export async function generateInvalidStatementHtml(
   <style>
     @page {
       size: A4;
-      margin: 20mm 25mm;
+      margin: 15mm 20mm;
     }
     * {
       margin: 0;
@@ -476,83 +503,83 @@ export async function generateInvalidStatementHtml(
     }
     body {
       font-family: "仿宋", "FangSong", "STFangsong", serif;
-      font-size: 16pt;
-      line-height: 2.2;
+      font-size: 14pt;
+      line-height: 2;
       color: #000;
-      padding: 40px 50px;
-      position: relative;
-      min-height: 100vh;
+      padding: 30px 40px;
+      max-width: 210mm;
+      margin: 0 auto;
+    }
+    .document-no {
+      text-align: right;
+      font-size: 12pt;
+      margin-bottom: 20px;
     }
     .header {
       text-align: center;
-      margin-bottom: 40px;
-    }
-    .document-no {
-      position: absolute;
-      top: 40px;
-      right: 50px;
-      font-size: 14pt;
+      margin-bottom: 30px;
     }
     .title {
       font-family: "黑体", "SimHei", sans-serif;
       font-size: 36pt;
       font-weight: bold;
-      color: #000;
-      letter-spacing: 10px;
-      margin-bottom: 10px;
+      letter-spacing: 4px;
+      margin-bottom: 5px;
     }
     .content {
-      margin: 40px 0;
+      margin-bottom: 40px;
     }
     .paragraph {
+      margin-bottom: 15px;
       text-indent: 2em;
-      margin-bottom: 20px;
-      line-height: 2.5;
+      text-align: justify;
     }
     .signature {
       text-align: right;
       margin-top: 60px;
+      margin-bottom: 40px;
       position: relative;
+      padding-right: 100px;
     }
     .signature-text {
       margin-bottom: 10px;
+      font-size: 14pt;
+    }
+    .signature-date {
+      font-size: 14pt;
     }
     .seal {
       position: absolute;
       right: 0;
-      top: -20px;
-      width: 120px;
-      height: 120px;
+      top: -10px;
+      width: 100px;
+      height: 100px;
       opacity: 0.85;
-      z-index: 1;
-    }
-    .signature-date {
-      margin-top: 20px;
     }
     .print-button {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      background: #2563eb;
+      padding: 12px 24px;
+      background: #257abe;
       color: white;
       border: none;
-      padding: 15px 30px;
-      font-size: 16pt;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     .print-button:hover {
-      background: #1d4ed8;
+      background: #1a5a8a;
     }
     .print-hint {
       position: fixed;
-      bottom: 30px;
-      right: 180px;
-      font-size: 12pt;
+      bottom: 80px;
+      right: 30px;
+      font-size: 12px;
       color: #666;
-      z-index: 1000;
+      text-align: right;
+      max-width: 200px;
     }
     @media print {
       .print-button, .print-hint {
@@ -579,8 +606,8 @@ export async function generateInvalidStatementHtml(
 
   <div class="signature">
     <div class="signature-text">强嘉伟（盖章）</div>
-    <img src="${sealBase64}" alt="印章" class="seal">
     <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
+    <img src="${sealBase64}" alt="印章" class="seal">
   </div>
 
   <div class="print-hint">提示：点击按钮后，在打印对话框中选择"另存为 PDF"即可保存</div>
