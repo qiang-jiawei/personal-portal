@@ -7,20 +7,6 @@ import { loadSealBase64 } from "./pdf-utils";
 import QRCode from "qrcode";
 
 /**
- * 固定宽度填充（类似 Python 的 format）
- * @param text 填充内容
- * @param width 总宽度（字符数）
- * @returns 填充后的字符串（不足部分用空格补齐）
- */
-function padCenter(text: string, width: number): string {
-  const padding = width - text.length;
-  if (padding <= 0) return text;
-  const leftPad = Math.floor(padding / 2);
-  const rightPad = padding - leftPad;
-  return " ".repeat(leftPad) + text + " ".repeat(rightPad);
-}
-
-/**
  * 生成固定宽度的填充内容（类似 Python 的 format）
  * @param text 填充内容
  * @param width 总宽度（字符数）
