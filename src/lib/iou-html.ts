@@ -389,6 +389,7 @@ export async function generateProofHtml(
       width: 100px;
       height: 100px;
       opacity: 0.85;
+      z-index: -1;
     }
     .footer {
       margin-top: 40px;
