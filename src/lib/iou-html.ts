@@ -384,7 +384,7 @@ export async function generateProofHtml(
     }
     .seal {
       position: absolute;
-      right: -100px;
+      right: 100px;
       top: -10px;
       width: 100px;
       height: 100px;
@@ -465,9 +465,8 @@ export async function generateProofHtml(
   </div>
 
   <div class="signature">
-    <div class="signature-text">强嘉伟（盖章）</div>
+    <div class="signature-text">强嘉伟</div>
     <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
-    <img src="${sealBase64}" alt="印章" class="seal">
   </div>
 
   <div class="footer">
