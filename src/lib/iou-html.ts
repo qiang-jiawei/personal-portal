@@ -282,7 +282,7 @@ export async function generateProofHtml(
   repaymentDate: string,
   signingDate: string
 ): Promise<string> {
-  const sealBase64 = await loadSealBase64("round-seal.png");
+  const sealBase64 = await loadSealBase64("round-seal.png") || await loadSealBase64("square-seal.png");
   const qrCodeDataUrl = await QRCode.toDataURL(
     `https://jiaweiqiang.cn/verify?code=${iou.verification_code}`,
     { width: 100, margin: 1 }
