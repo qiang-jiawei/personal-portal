@@ -384,7 +384,7 @@ export async function generateProofHtml(
     }
     .seal {
       position: absolute;
-      right: 0;
+      right: -100px;
       top: -10px;
       width: 100px;
       height: 100px;
@@ -403,6 +403,7 @@ export async function generateProofHtml(
     .qr-code {
       width: 90px;
       height: 90px;
+      margin-left: 20px;
     }
     .verification-info {
       font-size: 12pt;
