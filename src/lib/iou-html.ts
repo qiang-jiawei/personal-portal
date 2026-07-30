@@ -118,6 +118,7 @@ export async function generateIOUHtml(
       border-bottom: 1px solid #000;
       text-align: center;
       padding: 0 5px;
+      vertical-align: bottom;
     }
     .field-wide {
       min-width: 100px;
@@ -132,9 +133,13 @@ export async function generateIOUHtml(
     .signature-text {
       margin-bottom: 10px;
       font-size: 14pt;
+      position: relative;
+      z-index: 1;
     }
     .signature-date {
       font-size: 14pt;
+      position: relative;
+      z-index: 1;
     }
     .seal {
       position: absolute;
@@ -143,6 +148,7 @@ export async function generateIOUHtml(
       width: 100px;
       height: 100px;
       opacity: 0.85;
+      z-index: 0;
     }
     .footer {
       margin-top: 40px;
@@ -223,19 +229,20 @@ export async function generateIOUHtml(
     </div>
   </div>
 
-  <div class="signature">
-    <div class="signature-text">强嘉伟（盖章）</div>
-    <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
-    <img src="${sealBase64}" alt="印章" class="seal">
-  </div>
-
-  <div class="footer">
-    <div class="qr-section">
-      <img src="${qrCodeDataUrl}" alt="核验二维码" class="qr-code">
-      <div class="verification-info">
-        <div>核验编码：${iou.verification_code || "N/A"}</div>
-        <div>核验网址：www.jiaweiqiang.cn</div>
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 60px;">
+    <div class="footer" style="margin-top: 0;">
+      <div class="qr-section">
+        <img src="${qrCodeDataUrl}" alt="核验二维码" class="qr-code">
+        <div class="verification-info">
+          <div>核验编码：${iou.verification_code || "N/A"}</div>
+          <div>核验网址：www.jiaweiqiang.cn</div>
+        </div>
       </div>
+    </div>
+    <div class="signature">
+      <img src="${sealBase64}" alt="印章" class="seal">
+      <div class="signature-text">强嘉伟（盖章）</div>
+      <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
     </div>
   </div>
 
