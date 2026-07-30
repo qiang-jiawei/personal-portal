@@ -234,11 +234,11 @@ export async function generateIOUHtml(
     </div>
 
     <div class="paragraph">
-      我方于 <span class="field">${padCenter(loanYear, 4)}</span> 年 <span class="field">${padCenter(loanMonth, 2)}</span> 月 <span class="field">${padCenter(loanDay, 2)}</span> 日向您通过 <span class="field field-wide">${padCenter(iou.lending_method || "微信", 4)}</span> 借取人民币 <span class="field">${padCenter(iou.amount || "0", 6)}</span> 元（大写：<span class="field field-wide">${padCenter(amountCapital, 8)}</span>）。
+      我方于 <span class="field">${padCenter(String(loanYear), 4)}</span> 年 <span class="field">${padCenter(String(loanMonth), 2)}</span> 月 <span class="field">${padCenter(String(loanDay), 2)}</span> 日向您通过 <span class="field field-wide">${padCenter(iou.lending_method || "微信", 4)}</span> 借取人民币 <span class="field">${padCenter(String(iou.amount || "0"), 6)}</span> 元（大写：<span class="field field-wide">${padCenter(amountCapital, 8)}</span>）。
     </div>
 
     <div class="paragraph">
-      预计于 <span class="field">${padCenter(repaymentYear, 4)}</span> 年 <span class="field">${padCenter(repaymentMonth, 2)}</span> 月通过原渠道进行偿还，具体请关注相关通知。
+      预计于 <span class="field">${padCenter(String(repaymentYear), 4)}</span> 年 <span class="field">${padCenter(String(repaymentMonth), 2)}</span> 月通过原渠道进行偿还，具体请关注相关通知。
     </div>
 
     <div class="paragraph">
@@ -462,7 +462,7 @@ export async function generateProofHtml(
       兹证明：
     </div>
     <div class="paragraph">
-      强嘉伟于 <span class="field">${padCenter(loanYear, 4)}</span> 年 <span class="field">${padCenter(loanMonth, 2)}</span> 月 <span class="field">${padCenter(loanDay, 2)}</span> 日通过 <span class="field">${padCenter(iou.lending_method || "微信", 4)}</span> 渠道向 <span class="field">${padCenter(borrowerName, 6)}</span> 同志借取人民币 <span class="field">${padCenter(iou.amount || "0", 6)}</span> 元（大写：<span class="field">${padCenter(amountCapital, 10)}</span>），已于 <span class="field">${padCenter(repaymentYear, 4)}</span> 年 <span class="field">${padCenter(repaymentMonth, 2)}</span> 月 <span class="field">${padCenter(repaymentDay, 2)}</span> 日进行归还。
+      强嘉伟于 <span class="field">${padCenter(String(loanYear), 4)}</span> 年 <span class="field">${padCenter(String(loanMonth), 2)}</span> 月 <span class="field">${padCenter(String(loanDay), 2)}</span> 日通过 <span class="field">${padCenter(iou.lending_method || "微信", 4)}</span> 渠道向 <span class="field">${padCenter(borrowerName, 6)}</span> 同志借取人民币 <span class="field">${padCenter(String(iou.amount || "0"), 6)}</span> 元（大写：<span class="field">${padCenter(amountCapital, 10)}</span>），已于 <span class="field">${padCenter(String(repaymentYear), 4)}</span> 年 <span class="field">${padCenter(String(repaymentMonth), 2)}</span> 月 <span class="field">${padCenter(String(repaymentDay), 2)}</span> 日进行归还。
     </div>
     <div class="paragraph">
       特此证明。
