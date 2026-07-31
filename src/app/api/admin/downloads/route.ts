@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "标题和文件 URL 不能为空" }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseServiceClient();
     const { data, error } = await supabase
       .from("downloads")
       .insert({
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ success: false, error: "缺少 ID" }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseServiceClient();
     const { data, error } = await supabase
       .from("downloads")
       .update({
@@ -124,7 +124,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: "缺少 ID" }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseServiceClient();
     const { error } = await supabase.from("downloads").delete().eq("id", id);
 
     if (error) {
