@@ -172,83 +172,89 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              {/* 教育背景 */}
-              <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
-                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
-                  <GraduationCap className="h-5 w-5 text-[#b8860b]" />
-                  教育背景
-                </h3>
+              {/* 教育背景 + 技能/社交 并排 */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* 教育背景 */}
+                <div className="rounded-lg border border-[#e5e5e5] bg-white p-5 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+                  <h3 className="mb-3 flex items-center gap-2 text-base font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                    <GraduationCap className="h-4 w-4 text-[#b8860b]" />
+                    教育背景
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="relative border-l-2 border-[#e5e5e5] pl-3 dark:border-[#2a2a3a]">
+                      <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#b8860b]" />
+                      <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#fafaf9]">滇池学院</div>
+                      <div className="text-xs text-[#6b7280]">人工智能 · 本科</div>
+                      <div className="text-[10px] text-[#6b7280]">2024.08-2028.07</div>
+                    </div>
+                    <div className="relative border-l-2 border-[#e5e5e5] pl-3 dark:border-[#2a2a3a]">
+                      <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
+                      <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#fafaf9]">法门高中</div>
+                      <div className="text-xs text-[#6b7280]">高中</div>
+                      <div className="text-[10px] text-[#6b7280]">2021.09-2024.06</div>
+                    </div>
+                    <div className="relative border-l-2 border-[#e5e5e5] pl-3 dark:border-[#2a2a3a]">
+                      <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
+                      <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#fafaf9]">南阳初级中学</div>
+                      <div className="text-xs text-[#6b7280]">初中</div>
+                      <div className="text-[10px] text-[#6b7280]">2018.09-2021.06</div>
+                    </div>
+                    <div className="relative border-l-2 border-[#e5e5e5] pl-3 dark:border-[#2a2a3a]">
+                      <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
+                      <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#fafaf9]">天度中心小学</div>
+                      <div className="text-xs text-[#6b7280]">小学</div>
+                      <div className="text-[10px] text-[#6b7280]">2012.09-2018.06</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 技能 + 社交 */}
                 <div className="space-y-4">
-                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
-                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#b8860b]" />
-                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">滇池学院</div>
-                    <div className="text-sm text-[#6b7280]">人工智能专业 · 本科</div>
-                    <div className="text-xs text-[#6b7280]">2024.08 - 2028.07（预计）</div>
+                  {/* 技能标签 */}
+                  <div className="rounded-lg border border-[#e5e5e5] bg-white p-5 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+                    <h3 className="mb-3 flex items-center gap-2 text-base font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                      <Briefcase className="h-4 w-4 text-[#b8860b]" />
+                      技能特长
+                    </h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["Python", "Java", "人工智能", "云计算", "大模型", "Next.js", "Supabase"].map(
+                        (skill) => (
+                          <span
+                            key={skill}
+                            className="rounded bg-[#1a1a2e] px-2 py-0.5 text-[10px] text-[#b8860b] dark:bg-[#b8860b] dark:text-[#1a1a2e]"
+                          >
+                            {skill}
+                          </span>
+                        )
+                      )}
+                    </div>
                   </div>
-                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
-                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
-                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">扶风县法门高中</div>
-                    <div className="text-sm text-[#6b7280]">高中</div>
-                    <div className="text-xs text-[#6b7280]">2021.09 - 2024.06</div>
-                  </div>
-                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
-                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
-                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">扶风县天度镇南阳初级中学</div>
-                    <div className="text-sm text-[#6b7280]">初中</div>
-                    <div className="text-xs text-[#6b7280]">2018.09 - 2021.06</div>
-                  </div>
-                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
-                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
-                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">扶风县天度镇天度中心小学</div>
-                    <div className="text-sm text-[#6b7280]">小学</div>
-                    <div className="text-xs text-[#6b7280]">2012.09 - 2018.06</div>
-                  </div>
-                </div>
-              </div>
 
-              {/* 技能标签 */}
-              <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
-                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
-                  <Briefcase className="h-5 w-5 text-[#b8860b]" />
-                  技能特长
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {["Python", "Java", "人工智能", "云计算", "大模型", "Next.js", "Supabase"].map(
-                    (skill) => (
-                      <span
-                        key={skill}
-                        className="rounded bg-[#1a1a2e] px-3 py-1 text-xs text-[#b8860b] dark:bg-[#b8860b] dark:text-[#1a1a2e]"
+                  {/* 社交链接 */}
+                  <div className="rounded-lg border border-[#e5e5e5] bg-white p-5 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+                    <h3 className="mb-3 flex items-center gap-2 text-base font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                      <Github className="h-4 w-4 text-[#b8860b]" />
+                      社交链接
+                    </h3>
+                    <div className="space-y-2">
+                      <a
+                        href="https://github.com/qiang-jiawei"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-xs text-[#6b7280] hover:text-[#b8860b]"
                       >
-                        {skill}
-                      </span>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* 社交链接 */}
-              <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
-                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
-                  <Github className="h-5 w-5 text-[#b8860b]" />
-                  社交链接
-                </h3>
-                <div className="space-y-2">
-                  <a
-                    href="https://github.com/qiang-jiawei"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-[#6b7280] hover:text-[#b8860b]"
-                  >
-                    <Github className="h-4 w-4" />
-                    GitHub
-                  </a>
-                  <a
-                    href="mailto:jiawei-qiang@foxmail.com"
-                    className="flex items-center gap-2 text-sm text-[#6b7280] hover:text-[#b8860b]"
-                  >
-                    <Mail className="h-4 w-4" />
-                    jiawei-qiang@foxmail.com
-                  </a>
+                        <Github className="h-3.5 w-3.5" />
+                        GitHub
+                      </a>
+                      <a
+                        href="mailto:jiawei-qiang@foxmail.com"
+                        className="flex items-center gap-2 text-xs text-[#6b7280] hover:text-[#b8860b]"
+                      >
+                        <Mail className="h-3.5 w-3.5" />
+                        jiawei-qiang@foxmail.com
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
