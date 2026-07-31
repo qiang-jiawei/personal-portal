@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-type AdminTab = "users" | "consultations" | "requests" | "ious" | "content" | "feedback" | "logs";
+type AdminTab = "users" | "consultations" | "requests" | "ious" | "content" | "downloads" | "feedback" | "logs";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -48,6 +48,7 @@ export default function AdminPage() {
     { key: "requests", label: "申请管理" },
     { key: "ious", label: "借据台账" },
     { key: "content", label: "内容管理" },
+    { key: "downloads", label: "下载管理" },
     { key: "feedback", label: "反馈管理" },
     { key: "logs", label: "操作日志" },
   ];
@@ -103,6 +104,7 @@ export default function AdminPage() {
       {activeTab === "requests" && <RequestsPanel />}
       {activeTab === "ious" && <IousPanel />}
       {activeTab === "content" && <ContentPanel />}
+      {activeTab === "downloads" && <DownloadsPanel />}
       {activeTab === "feedback" && <FeedbackPanel />}
       {activeTab === "logs" && <LogsPanel />}
     </div>
@@ -596,6 +598,242 @@ function ContentPanel() {
       ))}
 
       {items.length === 0 && !showForm && <div className="py-8 text-center text-[12px] text-[#6b7280]">暂无{tab === "notices" ? "通知公告" : "信息公开"}，点击右上角"新增"添加</div>}
+    </div>
+  );
+}
+
+function DownloadsPanel() {
+  const [downloads, setDownloads] = useState<Array<{ id: string; title: string; category: string; file_url: string; file_size: number; file_type: string; description: string; download_count: number; created_at: string }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState("");
+  const [formTitle, setFormTitle] = useState("");
+  const [formCategory, setFormCategory] = useState("Word");
+  const [formDescription, setFormDescription] = useState("");
+  const [formFileUrl, setFormFileUrl] = useState("");
+  const [formFileType, setFormFileType] = useState("");
+  const [formFileSize, setFormFileSize] = useState(0);
+  const [uploading, setUploading] = useState(false);
+
+  const categories = ["Word", "Excel", "PPT", "PDF", "压缩包", "视频", "音频", "其他"];
+
+  const loadDownloads = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/downloads");
+      const data = await res.json();
+      if (data.success) {
+        setDownloads(data.data);
+        setError("");
+      } else {
+        setError(data.error || "加载失败");
+      }
+    } catch (e) {
+      setError("网络错误: " + (e as Error).message);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { loadDownloads(); }, [loadDownloads]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      // 上传文件到 Supabase Storage
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setFormFileUrl(data.url);
+        setFormFileType(file.name.split(".").pop() || "");
+        setFormFileSize(file.size);
+        if (!formTitle) {
+          setFormTitle(file.name.replace(/\.[^/.]+$/, ""));
+        }
+      } else {
+        setError("上传失败: " + (data.error || "未知错误"));
+      }
+    } catch (e) {
+      setError("上传异常: " + (e as Error).message);
+    }
+    setUploading(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formFileUrl) {
+      setError("请先上传文件");
+      return;
+    }
+
+    const method = editId ? "PUT" : "POST";
+    const body: Record<string, unknown> = {
+      title: formTitle,
+      category: formCategory,
+      file_url: formFileUrl,
+      file_size: formFileSize,
+      file_type: formFileType,
+      description: formDescription,
+    };
+    if (editId) body.id = editId;
+
+    try {
+      const res = await fetch("/api/admin/downloads", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.success) {
+        resetForm();
+        loadDownloads();
+      } else {
+        setError(data.error || "操作失败");
+      }
+    } catch (e) {
+      setError("网络错误: " + (e as Error).message);
+    }
+  };
+
+  const handleEdit = (item: { id: string; title: string; category: string; file_url: string; file_size: number; file_type: string; description: string }) => {
+    setEditId(item.id);
+    setFormTitle(item.title);
+    setFormCategory(item.category);
+    setFormFileUrl(item.file_url);
+    setFormFileSize(item.file_size);
+    setFormFileType(item.file_type);
+    setFormDescription(item.description || "");
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("确定删除该文件？")) return;
+    try {
+      const res = await fetch(`/api/admin/downloads?id=${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) loadDownloads();
+      else setError(data.error || "删除失败");
+    } catch (e) {
+      setError("网络错误: " + (e as Error).message);
+    }
+  };
+
+  const resetForm = () => {
+    setShowForm(false);
+    setEditId("");
+    setFormTitle("");
+    setFormCategory("Word");
+    setFormDescription("");
+    setFormFileUrl("");
+    setFormFileType("");
+    setFormFileSize(0);
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "未知";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  if (loading) return <div className="py-8 text-center text-sm text-[#6b7280]">加载中...</div>;
+
+  return (
+    <div className="space-y-0">
+      {error && <div className="py-3 px-4 text-xs text-red-500">{error}</div>}
+
+      <div className="flex items-center justify-between border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
+        <span className="px-4 py-2.5 text-[13px] text-[#6b7280]">共 {downloads.length} 个文件</span>
+        <button
+          onClick={() => { setShowForm(true); setEditId(""); resetForm(); }}
+          className="px-3 py-1.5 text-[11px] bg-[#1a1a2e] text-white hover:bg-[#b8860b] transition-colors rounded-[2px]"
+        >
+          + 上传文件
+        </button>
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="p-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a] space-y-3">
+          <div>
+            <label className="block text-[11px] text-[#6b7280] mb-1">上传文件</label>
+            <input
+              type="file"
+              onChange={handleFileUpload}
+              className="w-full px-3 py-2 text-[13px] bg-[#fafaf9] dark:bg-[#1a1a2e] border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px]"
+              disabled={uploading}
+            />
+            {uploading && <span className="text-[10px] text-[#b8860b]">上传中...</span>}
+            {formFileUrl && <span className="text-[10px] text-green-600">✓ 已上传</span>}
+          </div>
+          <input
+            value={formTitle}
+            onChange={(e) => setFormTitle(e.target.value)}
+            placeholder="文件标题"
+            className="w-full px-3 py-2 text-[13px] bg-[#fafaf9] dark:bg-[#1a1a2e] border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] focus:outline-none focus:border-[#b8860b]"
+            required
+          />
+          <select
+            value={formCategory}
+            onChange={(e) => setFormCategory(e.target.value)}
+            className="w-full px-3 py-2 text-[13px] bg-[#fafaf9] dark:bg-[#1a1a2e] border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] focus:outline-none focus:border-[#b8860b]"
+          >
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+          <textarea
+            value={formDescription}
+            onChange={(e) => setFormDescription(e.target.value)}
+            placeholder="文件描述（选填）"
+            rows={2}
+            className="w-full px-3 py-2 text-[13px] bg-[#fafaf9] dark:bg-[#1a1a2e] border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] focus:outline-none focus:border-[#b8860b] resize-none"
+          />
+          <div className="flex gap-2">
+            <button type="submit" className="px-4 py-1.5 text-[11px] bg-[#b8860b] text-white hover:bg-[#1a1a2e] transition-colors rounded-[2px]">
+              {editId ? "保存" : "创建"}
+            </button>
+            <button type="button" onClick={resetForm} className="px-4 py-1.5 text-[11px] border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#6b7280] hover:text-[#1a1a1a] dark:hover:text-white transition-colors rounded-[2px]">
+              取消
+            </button>
+          </div>
+        </form>
+      )}
+
+      {downloads.map((item) => (
+        <div key={item.id} className="py-3 px-4 border-b border-[#e5e5e5] dark:border-[#2a2a3a]">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] border border-[#b8860b] text-[#b8860b] px-1.5 py-0.5 rounded-[1px]">{item.category}</span>
+                <span className="text-[13px] font-medium text-[#1a1a1a] dark:text-white truncate">{item.title}</span>
+                <span className="text-[10px] text-[#6b7280]">{formatFileSize(item.file_size)}</span>
+                <span className="text-[10px] text-[#6b7280]">{item.download_count} 次下载</span>
+              </div>
+              {item.description && (
+                <p className="text-[11px] text-[#6b7280] mt-1 truncate">{item.description}</p>
+              )}
+            </div>
+            <div className="flex gap-1 ml-4">
+              <button onClick={() => handleEdit(item)} className="px-2 py-1 text-[10px] border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#6b7280] hover:text-[#b8860b] hover:border-[#b8860b] transition-colors rounded-[1px]">编辑</button>
+              <button onClick={() => handleDelete(item.id)} className="px-2 py-1 text-[10px] border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#6b7280] hover:text-red-500 hover:border-red-500 transition-colors rounded-[1px]">删除</button>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {downloads.length === 0 && !showForm && (
+        <div className="py-8 text-center text-[12px] text-[#6b7280]">暂无下载文件，点击右上角"上传文件"添加</div>
+      )}
     </div>
   );
 }

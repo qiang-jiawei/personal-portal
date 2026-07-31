@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: "个人简介", href: "/profile" },
   { label: "通知公告", href: "/notices" },
   { label: "信息公开", href: "/disclosure" },
+  { label: "下载中心", href: "/downloads" },
   { label: "服务大厅", href: "/service" },
 ];
 

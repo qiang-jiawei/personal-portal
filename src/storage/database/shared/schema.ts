@@ -232,3 +232,24 @@ export const site_settings = pgTable(
     index("site_settings_key_idx").on(table.key),
   ]
 );
+
+// Downloads / Resource Center
+export const downloads = pgTable(
+  "downloads",
+  {
+    id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+    title: varchar("title", { length: 300 }).notNull(),
+    category: varchar("category", { length: 50 }).notNull().default("其他"),
+    file_url: text("file_url").notNull(),
+    file_size: integer("file_size").default(0),
+    file_type: varchar("file_type", { length: 50 }).default(""),
+    description: text("description"),
+    download_count: integer("download_count").default(0),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("downloads_category_idx").on(table.category),
+    index("downloads_created_at_idx").on(table.created_at),
+  ]
+);
