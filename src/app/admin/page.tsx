@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-type AdminTab = "users" | "consultations" | "requests" | "ious" | "content" | "downloads" | "feedback" | "logs";
+type AdminTab = "users" | "consultations" | "requests" | "ious" | "content" | "downloads" | "honors" | "feedback" | "logs";
 
 export default function AdminPage() {
   const router = useRouter();
