@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, organization, date, sort_order } = body;
+    const { title, description, organization, date, category, sort_order } = body;
 
     if (!title) {
       return NextResponse.json({ success: false, error: "标题不能为空" }, { status: 400 });
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     const data = await fetchFromSupabase("honors", {
       method: "POST",
-      body: { title, description: description || "", organization: organization || "", date: date || "", sort_order: sort_order || 0 },
+      body: { title, description: description || "", organization: organization || "", date: date || "", category: category || "其他", sort_order: sort_order || 0 },
     });
 
     return NextResponse.json({ success: true, data: data?.[0] });
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, title, description, organization, date, sort_order } = body;
+    const { id, title, description, organization, date, category, sort_order } = body;
 
     if (!id) {
       return NextResponse.json({ success: false, error: "缺少 ID" }, { status: 400 });
@@ -87,7 +87,7 @@ export async function PUT(request: NextRequest) {
 
     const data = await fetchFromSupabase(`honors?id=eq.${id}`, {
       method: "PATCH",
-      body: { title, description: description || "", organization: organization || "", date: date || "", sort_order: sort_order || 0 },
+      body: { title, description: description || "", organization: organization || "", date: date || "", category: category || "其他", sort_order: sort_order || 0 },
     });
 
     return NextResponse.json({ success: true, data: data?.[0] });
