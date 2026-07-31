@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.COZE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.COZE_SUPABASE_ANON_KEY;
 
 export async function GET() {
   try {
+    if (!SUPABASE_URL) {
+      throw new Error("SUPABASE_URL 未配置");
+    }
+
     const res = await fetch(`${SUPABASE_URL}/rest/v1/honors?order=sort_order.asc`, {
       headers: {
         apikey: SUPABASE_ANON_KEY || "",
@@ -13,7 +17,8 @@ export async function GET() {
     });
 
     if (!res.ok) {
-      throw new Error(`Supabase API 错误：${res.status}`);
+      const errorText = await res.text();
+      throw new Error(`Supabase API 错误：${res.status} - ${errorText}`);
     }
 
     const data = await res.json();

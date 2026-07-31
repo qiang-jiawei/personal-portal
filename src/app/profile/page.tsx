@@ -133,20 +133,20 @@ export default function ProfilePage() {
               强嘉伟
             </h1>
             <p className="mb-4 text-lg text-[#6b7280]">
-              滇池学院 · 计算机科学与技术专业
+              全栈开发者 · 人工智能与云计算方向
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-[#6b7280]">
               <div className="flex items-center gap-1">
                 <Mail className="h-4 w-4" />
-                <span>3080562453@qq.com</span>
+                <span>jiawei-qiang@foxmail.com</span>
               </div>
               <div className="flex items-center gap-1">
                 <Phone className="h-4 w-4" />
-                <span>18213912070</span>
+                <span>15398575367 / 17791789885</span>
               </div>
               <div className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
-                <span>云南昆明</span>
+                <span>云南昆明 & 陕西扶风</span>
               </div>
             </div>
           </div>
@@ -224,11 +224,11 @@ export default function ProfilePage() {
                     GitHub
                   </a>
                   <a
-                    href="#"
+                    href="mailto:jiawei-qiang@foxmail.com"
                     className="flex items-center gap-2 text-sm text-[#6b7280] hover:text-[#b8860b]"
                   >
-                    <Linkedin className="h-4 w-4" />
-                    LinkedIn
+                    <Mail className="h-4 w-4" />
+                    jiawei-qiang@foxmail.com
                   </a>
                 </div>
               </div>
