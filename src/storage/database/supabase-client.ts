@@ -20,12 +20,16 @@ export function getSupabaseClient(): SupabaseClient {
   const url = getSupabaseUrl();
   const anonKey = getSupabaseAnonKey();
 
-  if (!url || !anonKey) {
-    throw new Error('Supabase 环境变量未配置。请在 Vercel 中设置 SUPABASE_URL 和 SUPABASE_ANON_KEY。');
+  if (!url) {
+    throw new Error('SUPABASE_URL 未配置。请在 Vercel 环境变量中设置 SUPABASE_URL（格式：https://你的项目 ID.supabase.co）');
+  }
+
+  if (!anonKey) {
+    throw new Error('SUPABASE_ANON_KEY 未配置。请在 Vercel 环境变量中设置 SUPABASE_ANON_KEY。获取方式：Supabase 控制台 → Settings → API → anon/public key');
   }
 
   if (!validateUrl(url)) {
-    throw new Error(`SUPABASE_URL 格式错误。正确格式: https://你的项目ID.supabase.co，当前值: ${url}`);
+    throw new Error(`SUPABASE_URL 格式错误。正确格式：https://你的项目 ID.supabase.co，当前值：${url}`);
   }
 
   return createClient(url, anonKey);
@@ -35,12 +39,16 @@ export function getSupabaseServiceClient(): SupabaseClient {
   const url = getSupabaseUrl();
   const serviceKey = getSupabaseServiceRoleKey();
 
-  if (!url || !serviceKey) {
-    throw new Error('Supabase 环境变量未配置。请在 Vercel 中设置 SUPABASE_URL 和 SUPABASE_SERVICE_ROLE_KEY。');
+  if (!url) {
+    throw new Error('SUPABASE_URL 未配置。请在 Vercel 环境变量中设置 SUPABASE_URL（格式：https://你的项目 ID.supabase.co）');
+  }
+
+  if (!serviceKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY 未配置。请在 Vercel 环境变量中设置 SUPABASE_SERVICE_ROLE_KEY。获取方式：Supabase 控制台 → Settings → API → Service Role Key（secret）');
   }
 
   if (!validateUrl(url)) {
-    throw new Error(`SUPABASE_URL 格式错误。正确格式: https://你的项目ID.supabase.co，当前值: ${url}`);
+    throw new Error(`SUPABASE_URL 格式错误。正确格式：https://你的项目 ID.supabase.co，当前值：${url}`);
   }
 
   return createClient(url, serviceKey, {
