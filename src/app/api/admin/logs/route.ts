@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 
 async function checkAdmin(request: NextRequest): Promise<boolean> {
   const session = request.cookies.get("admin_session")?.value;
@@ -19,7 +19,7 @@ async function checkAdmin(request: NextRequest): Promise<boolean> {
 export async function GET(request: NextRequest) {
   try {
     if (!await checkAdmin(request)) return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
-    const client = getSupabaseClient();
+    const client = getSupabaseServiceClient();
     const { data, error } = await client
       .from("audit_logs")
       .select("*")

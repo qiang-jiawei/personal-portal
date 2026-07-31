@@ -67,14 +67,32 @@ export async function POST(request: NextRequest) {
 
     if (error) throw new Error(`创建失败：${error.message}`);
 
-    await client.from("audit_logs").insert({
-      id: crypto.randomUUID(),
-      user_id: null,
-      action: "create_notice",
-      target_type: "notice",
-      target_id: data.id,
-      detail: `创建通知公告：${title}`,
-    });
+    // 写入审计日志（使用 fetch 绕过 schema cache）
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (supabaseUrl && serviceKey) {
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/audit_logs`, {
+          method: "POST",
+          headers: {
+            "apikey": serviceKey,
+            "Authorization": `Bearer ${serviceKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal",
+          },
+          body: JSON.stringify({
+            id: crypto.randomUUID(),
+            user_id: null,
+            action: "create_notice",
+            target_type: "notice",
+            target_id: data.id,
+            detail: `创建通知公告：${title}`,
+          }),
+        });
+      } catch (e) {
+        console.error("[Audit Log Error]", e);
+      }
+    }
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
@@ -113,14 +131,32 @@ export async function PUT(request: NextRequest) {
 
     if (error) throw new Error(`更新失败：${error.message}`);
 
-    await client.from("audit_logs").insert({
-      id: crypto.randomUUID(),
-      user_id: null,
-      action: "update_notice",
-      target_type: "notice",
-      target_id: id,
-      detail: `更新通知公告：${title}`,
-    });
+    // 写入审计日志（使用 fetch 绕过 schema cache）
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (supabaseUrl && serviceKey) {
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/audit_logs`, {
+          method: "POST",
+          headers: {
+            "apikey": serviceKey,
+            "Authorization": `Bearer ${serviceKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal",
+          },
+          body: JSON.stringify({
+            id: crypto.randomUUID(),
+            user_id: null,
+            action: "update_notice",
+            target_type: "notice",
+            target_id: id,
+            detail: `更新通知公告：${title}`,
+          }),
+        });
+      } catch (e) {
+        console.error("[Audit Log Error]", e);
+      }
+    }
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
@@ -147,14 +183,32 @@ export async function DELETE(request: NextRequest) {
 
     if (error) throw new Error(`删除失败：${error.message}`);
 
-    await client.from("audit_logs").insert({
-      id: crypto.randomUUID(),
-      user_id: null,
-      action: "delete_notice",
-      target_type: "notice",
-      target_id: id,
-      detail: `删除通知公告`,
-    });
+    // 写入审计日志（使用 fetch 绕过 schema cache）
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (supabaseUrl && serviceKey) {
+      try {
+        await fetch(`${supabaseUrl}/rest/v1/audit_logs`, {
+          method: "POST",
+          headers: {
+            "apikey": serviceKey,
+            "Authorization": `Bearer ${serviceKey}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal",
+          },
+          body: JSON.stringify({
+            id: crypto.randomUUID(),
+            user_id: null,
+            action: "delete_notice",
+            target_type: "notice",
+            target_id: id,
+            detail: `删除通知公告`,
+          }),
+        });
+      } catch (e) {
+        console.error("[Audit Log Error]", e);
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
