@@ -728,7 +728,6 @@ function DownloadsPanel() {
   };
 
   const resetForm = () => {
-    setShowForm(false);
     setEditId("");
     setFormTitle("");
     setFormCategory("Word");
