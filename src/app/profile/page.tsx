@@ -178,11 +178,30 @@ export default function ProfilePage() {
                   <GraduationCap className="h-5 w-5 text-[#b8860b]" />
                   教育背景
                 </h3>
-                <div className="space-y-3">
-                  <div>
+                <div className="space-y-4">
+                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
+                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#b8860b]" />
                     <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">滇池学院</div>
-                    <div className="text-sm text-[#6b7280]">计算机科学与技术 · 本科</div>
-                    <div className="text-xs text-[#6b7280]">2024 - 2028（预计）</div>
+                    <div className="text-sm text-[#6b7280]">人工智能专业 · 本科</div>
+                    <div className="text-xs text-[#6b7280]">2024.08 - 2028.07（预计）</div>
+                  </div>
+                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
+                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
+                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">扶风县法门高中</div>
+                    <div className="text-sm text-[#6b7280]">高中</div>
+                    <div className="text-xs text-[#6b7280]">2021.09 - 2024.06</div>
+                  </div>
+                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
+                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
+                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">扶风县天度镇南阳初级中学</div>
+                    <div className="text-sm text-[#6b7280]">初中</div>
+                    <div className="text-xs text-[#6b7280]">2018.09 - 2021.06</div>
+                  </div>
+                  <div className="relative border-l-2 border-[#e5e5e5] pl-4 dark:border-[#2a2a3a]">
+                    <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-[#6b7280]" />
+                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">扶风县天度镇天度中心小学</div>
+                    <div className="text-sm text-[#6b7280]">小学</div>
+                    <div className="text-xs text-[#6b7280]">2012.09 - 2018.06</div>
                   </div>
                 </div>
               </div>
