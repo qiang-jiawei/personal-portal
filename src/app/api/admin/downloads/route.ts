@@ -1,6 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServiceClient } from "@/storage/database/supabase-client";
 import { checkAdmin } from "@/lib/auth";
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// 直接使用 fetch 调用 PostgREST API，绕过 supabase-js 的 schema cache
+async function fetchFromSupabase(path: string, options: RequestInit = {}) {
+  const url = `${SUPABASE_URL}/rest/v1${path}`;
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      "apikey": SUPABASE_SERVICE_ROLE_KEY!,
+      "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation",
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Supabase API 错误：${response.status} - ${error}`);
+  }
+
+  return response.json();
+}
 
 // GET /api/admin/downloads - 获取所有下载文件（管理员）
 export async function GET(request: NextRequest) {
@@ -10,16 +34,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "未授权" }, { status: 401 });
     }
 
-    const supabase = getSupabaseServiceClient();
-    const { data, error } = await supabase
-      .from("downloads")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Supabase 查询错误:", error);
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-    }
+    const data = await fetchFromSupabase("/downloads?select=*&order=created_at.desc");
 
     return NextResponse.json({ success: true, data: data || [] });
   } catch (error: unknown) {
@@ -43,25 +58,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "标题和文件 URL 不能为空" }, { status: 400 });
     }
 
-    const supabase = getSupabaseServiceClient();
-    const { data, error } = await supabase
-      .from("downloads")
-      .insert({
+    const data = await fetchFromSupabase("/downloads", {
+      method: "POST",
+      body: JSON.stringify({
         title,
         category: category || "其他",
         file_url,
         file_size: file_size || 0,
         file_type: file_type || "",
         description: description || "",
-      })
-      .select()
-      .single();
+      }),
+    });
 
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: data[0] });
   } catch (error: unknown) {
     console.error("添加下载文件异常:", error);
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
@@ -83,10 +92,9 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ success: false, error: "缺少 ID" }, { status: 400 });
     }
 
-    const supabase = getSupabaseServiceClient();
-    const { data, error } = await supabase
-      .from("downloads")
-      .update({
+    const data = await fetchFromSupabase(`/downloads?id=eq.${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
         title,
         category,
         file_url,
@@ -94,16 +102,10 @@ export async function PUT(request: NextRequest) {
         file_type,
         description,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single();
+      }),
+    });
 
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: data[0] });
   } catch (error: unknown) {
     console.error("更新下载文件异常:", error);
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
@@ -125,12 +127,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: "缺少 ID" }, { status: 400 });
     }
 
-    const supabase = getSupabaseServiceClient();
-    const { error } = await supabase.from("downloads").delete().eq("id", id);
-
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-    }
+    await fetchFromSupabase(`/downloads?id=eq.${id}`, {
+      method: "DELETE",
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
