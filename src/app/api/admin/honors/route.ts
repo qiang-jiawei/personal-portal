@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkAdmin } from "@/lib/auth";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -32,17 +33,6 @@ async function fetchFromSupabase(
 
   if (method === "DELETE") return null;
   return res.json();
-}
-
-async function checkAdmin(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get("admin_token")?.value;
-  if (!token) return false;
-  try {
-    const payload = JSON.parse(atob(token));
-    return payload.isAdmin === true;
-  } catch {
-    return false;
-  }
 }
 
 export async function GET(request: NextRequest) {
