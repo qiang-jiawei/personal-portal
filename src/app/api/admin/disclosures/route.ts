@@ -26,12 +26,18 @@ export async function GET(request: NextRequest) {
     const { data, error } = await client
       .from("info_disclosures")
       .select("*")
-      .order("is_pinned", { ascending: false })
       .order("created_at", { ascending: false });
 
     if (error) throw new Error(`查询失败：${error.message}`);
 
-    return NextResponse.json({ success: true, data });
+    // 在代码中排序 is_pinned
+    const sortedData = (data || []).sort((a, b) => {
+      if (a.is_pinned && !b.is_pinned) return -1;
+      if (!a.is_pinned && b.is_pinned) return 1;
+      return 0;
+    });
+
+    return NextResponse.json({ success: true, data: sortedData });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
