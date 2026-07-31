@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       .order("is_pinned", { ascending: false })
       .order("created_at", { ascending: false });
 
-    if (error) throw new Error(`查询失败: ${error.message}`);
+    if (error) throw new Error(`查询失败：${error.message}`);
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
@@ -53,15 +53,15 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (error) throw new Error(`创建失败: ${error.message}`);
+    if (error) throw new Error(`创建失败：${error.message}`);
 
     await client.from("audit_logs").insert({
       id: crypto.randomUUID(),
-      user_type: "admin",
+      user_id: null,
       action: "create_disclosure",
       target_type: "info_disclosure",
       target_id: data.id,
-      details: `创建信息公开: ${title}`,
+      detail: `创建信息公开：${title}`,
     });
 
     return NextResponse.json({ success: true, data });
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest) {
     const { id, title, content, pdf_url, is_pinned, is_published } = body;
 
     if (!id) {
-      return NextResponse.json({ success: false, error: "缺少ID" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "缺少 ID" }, { status: 400 });
     }
 
     const client = getSupabaseServiceClient();
@@ -100,15 +100,15 @@ export async function PUT(request: NextRequest) {
       .select()
       .single();
 
-    if (error) throw new Error(`更新失败: ${error.message}`);
+    if (error) throw new Error(`更新失败：${error.message}`);
 
     await client.from("audit_logs").insert({
       id: crypto.randomUUID(),
-      user_type: "admin",
+      user_id: null,
       action: "update_disclosure",
       target_type: "info_disclosure",
       target_id: id,
-      details: `更新信息公开: ${title}`,
+      detail: `更新信息公开：${title}`,
     });
 
     return NextResponse.json({ success: true, data });
@@ -129,21 +129,21 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ success: false, error: "缺少ID" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "缺少 ID" }, { status: 400 });
     }
 
     const client = getSupabaseServiceClient();
     const { error } = await client.from("info_disclosures").delete().eq("id", id);
 
-    if (error) throw new Error(`删除失败: ${error.message}`);
+    if (error) throw new Error(`删除失败：${error.message}`);
 
     await client.from("audit_logs").insert({
       id: crypto.randomUUID(),
-      user_type: "admin",
+      user_id: null,
       action: "delete_disclosure",
       target_type: "info_disclosure",
       target_id: id,
-      details: `删除信息公开`,
+      detail: `删除信息公开`,
     });
 
     return NextResponse.json({ success: true });
