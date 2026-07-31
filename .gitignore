@@ -52,6 +52,7 @@ output.log
 *.log
 *.log.*
 logs/
+!src/app/api/admin/logs/
 
 # 视频文件
 *.mp4
