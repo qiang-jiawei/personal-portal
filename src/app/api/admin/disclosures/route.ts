@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     const data = await fetchFromSupabase("/info_disclosures?select=*&order=created_at.desc");
 
     // 在代码中排序 is_pinned
-    const sortedData = (data || []).sort((a, b) => {
+    const sortedData = (data || []).sort((a: { is_pinned?: boolean }, b: { is_pinned?: boolean }) => {
       if (a.is_pinned && !b.is_pinned) return -1;
       if (!a.is_pinned && b.is_pinned) return 1;
       return 0;
