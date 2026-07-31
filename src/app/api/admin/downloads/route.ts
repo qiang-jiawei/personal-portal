@@ -17,6 +17,15 @@ export async function GET(request: NextRequest) {
       .order("created_at", { ascending: false });
 
     if (error) {
+      console.error("Supabase 查询错误:", error);
+      // 如果 schema cache 问题，尝试用 RPC 调用
+      if (error.message.includes("schema cache")) {
+        const { data: rpcData, error: rpcError } = await supabase.rpc('get_all_downloads');
+        if (rpcError) {
+          return NextResponse.json({ success: false, error: rpcError.message }, { status: 500 });
+        }
+        return NextResponse.json({ success: true, data: rpcData || [] });
+      }
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
