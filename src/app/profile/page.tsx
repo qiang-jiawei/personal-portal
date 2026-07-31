@@ -1,204 +1,244 @@
 "use client";
 
-import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { Award, BookOpen, Briefcase, GraduationCap, Mail, Phone, MapPin, Github, Linkedin, ChevronDown, ChevronUp } from "lucide-react";
 
-type TabKey = "intro" | "honors" | "custom";
-
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "intro", label: "个人介绍" },
-  { key: "honors", label: "所获荣誉" },
-  { key: "custom", label: "其他信息" },
-];
+interface Honor {
+  id: string;
+  title: string;
+  description: string;
+  organization: string;
+  date: string;
+  sort_order: number;
+}
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<TabKey>("intro");
+  const [honors, setHonors] = useState<Honor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    software: true,
+    certification: false,
+    competition: false,
+    scholarship: false,
+    ongoing: false,
+  });
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-      {/* Page Header */}
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-8 h-[2px] bg-[#b8860b]" />
-          <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] tracking-widest uppercase">Profile</span>
+  useEffect(() => {
+    fetch("/api/honors")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setHonors(data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("获取荣誉数据失败:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  // 分类荣誉
+  const softwareHonors = honors.filter((h) => h.sort_order <= 3);
+  const certificationHonors = honors.filter((h) => h.sort_order === 4);
+  const competitionHonors = honors.filter((h) => h.sort_order === 5);
+  const scholarshipHonors = honors.filter((h) => h.sort_order >= 6 && h.sort_order <= 8);
+  const ongoingHonors = honors.filter((h) => h.sort_order >= 9);
+
+  const renderHonorItem = (honor: Honor, index: number) => (
+    <div key={honor.id} className="group relative">
+      <div className="absolute -left-3 top-2 h-2 w-2 rounded-full bg-[#b8860b] opacity-0 transition-opacity group-hover:opacity-100" />
+      <div className="flex items-start gap-3 rounded-lg border border-[#e5e5e5] bg-white p-4 transition-all hover:border-[#b8860b] hover:shadow-sm dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-[#1a1a2e] text-sm font-bold text-[#b8860b] dark:bg-[#b8860b] dark:text-[#1a1a2e]">
+          {index + 1}
         </div>
-        <h1 className="font-serif text-3xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
-          个人简介
-        </h1>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="border-b border-[#e5e5e5] dark:border-[#2a2a3a] mb-8">
-        <div className="flex gap-0">
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                "relative px-6 py-3 text-sm transition-colors duration-200",
-                activeTab === tab.key
-                  ? "text-[#1a1a2e] dark:text-[#fafaf9] font-medium"
-                  : "text-[#6b7280] dark:text-[#9ca3af] hover:text-[#1a1a2e] dark:hover:text-[#fafaf9]"
-              )}
-            >
-              {tab.label}
-              {activeTab === tab.key && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#b8860b]" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tab Content */}
-      <div className="min-h-[400px]">
-        {activeTab === "intro" && <IntroTab />}
-        {activeTab === "honors" && <HonorsTab />}
-        {activeTab === "custom" && <CustomTab />}
-      </div>
-    </div>
-  );
-}
-
-function IntroTab() {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-      {/* Photo */}
-      <div className="lg:col-span-1">
-        <div className="aspect-[3/4] bg-[#f5f5f4] dark:bg-[#1e1e32] rounded-[2px] overflow-hidden">
-          <img
-            src="/profile-photo.jpg"
-            alt="强嘉伟"
-            className="w-full h-full object-cover object-top"
-          />
-        </div>
-      </div>
-
-      {/* Info */}
-      <div className="lg:col-span-2 space-y-6">
-        <div>
-          <h2 className="font-serif text-2xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-1">
-            强嘉伟
-          </h2>
-          <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">初级职称 / 学生</p>
-        </div>
-
-        <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
-
-        <div className="space-y-4 text-sm leading-relaxed text-[#374151] dark:text-[#d1d5db]">
-          <p>
-            强嘉伟，学生，初级职称。致力于专业领域的学习与研究，不断追求学术进步与个人成长。
-          </p>
-        </div>
-
-        <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
-
-        {/* Contact info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-[#6b7280] dark:text-[#9ca3af]">电子邮箱</span>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9] mt-1">jiawei-qiang@foxmail.com</p>
+        <div className="flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h4 className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">{honor.title}</h4>
+            <span className="flex-shrink-0 rounded bg-[#1a1a2e] px-2 py-0.5 text-xs text-[#b8860b] dark:bg-[#b8860b] dark:text-[#1a1a2e]">
+              {honor.date}
+            </span>
           </div>
-          <div>
-            <span className="text-[#6b7280] dark:text-[#9ca3af]">联系电话</span>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9] mt-1">+86 15398575367（优先）</p>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9]">+86 17791789885</p>
-          </div>
-          <div>
-            <span className="text-[#6b7280] dark:text-[#9ca3af]">微信</span>
-            <p className="text-[#1a1a2e] dark:text-[#fafaf9] mt-1">wxid_cl8nra6s3bp322</p>
-          </div>
+          <p className="mt-1 text-sm text-[#6b7280]">{honor.description}</p>
+          <p className="mt-1 text-xs text-[#6b7280]">{honor.organization}</p>
         </div>
       </div>
     </div>
   );
-}
 
-function HonorsTab() {
+  const renderSection = (
+    title: string,
+    icon: React.ReactNode,
+    items: Honor[],
+    sectionKey: string
+  ) => (
+    <div className="space-y-4">
+      <button
+        onClick={() => toggleSection(sectionKey)}
+        className="flex w-full items-center justify-between border-b border-[#e5e5e5] pb-2 dark:border-[#2a2a3a]"
+      >
+        <div className="flex items-center gap-2">
+          {icon}
+          <h3 className="text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">{title}</h3>
+          <span className="text-sm text-[#6b7280]">({items.length})</span>
+        </div>
+        {expandedSections[sectionKey] ? (
+          <ChevronUp className="h-5 w-5 text-[#6b7280]" />
+        ) : (
+          <ChevronDown className="h-5 w-5 text-[#6b7280]" />
+        )}
+      </button>
+      {expandedSections[sectionKey] && (
+        <div className="space-y-3">
+          {items.map((honor, index) => renderHonorItem(honor, index))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-serif text-2xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-1">
-          所获荣誉
-        </h2>
-        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">Honors & Awards</p>
-      </div>
-
-      <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
-
-      <div className="space-y-3">
-        {[
-          { title: "计算机软件著作权登记", desc: "基于云计算与大模型的智能医疗交互平台", org: "中华人民共和国国家版权局", date: "2025-11" },
-          { title: "Huawei Certification HCIA-AI", desc: "华为人工智能工程师认证", org: "Huawei Technologies Co., Ltd.", date: "2025-11" },
-          { title: "全国计算机技术与软件专业技术资格（水平）考试", desc: "初级资格 · 信息处理技术员", org: "工业和信息化部 / 人力资源和社会保障部", date: "2025-11" },
-          { title: "全国计算机等级考试", desc: "三级 · 网络技术", org: "教育部教育考试院", date: "2025-09" },
-          { title: "第二十八届中国机器人及人工智能大赛", desc: "云南赛区选拔赛 · 省赛三等奖", org: "中国机器人及人工智能大赛云南赛区组委会", date: "2026-06" },
-          { title: "全国大学英语四级考试", desc: "431 分", org: "教育部教育考试院", date: "2026-03" },
-          { title: "滇池学院 2024-2025 学年优秀学生奖学金", desc: "学业表现优异", org: "滇池学院", date: "2025" },
-          { title: "滇池学院 2024-2025 学年优秀学生干部", desc: "学生工作情况突出", org: "滇池学院", date: "2025" },
-          { title: "全国计算机技术与软件专业技术资格（水平）考试", desc: "中级资格 · 网络工程师（进行中）", org: "工业和信息化部 / 人力资源和社会保障部", date: "备考中" },
-          { title: "全国大学英语六级考试", desc: "进行中", org: "教育部教育考试院", date: "备考中" },
-        ].map((h, i) => (
-          <div key={i} className="flex items-start gap-4 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px]">
-            <div className="w-2 h-2 mt-2 bg-[#b8860b] rounded-full shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline justify-between gap-2 flex-wrap">
-                <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9]">{h.title}</p>
-                <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] shrink-0">{h.date}</span>
+    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0f0f1a]">
+      {/* 头部区域 */}
+      <div className="border-b border-[#e5e5e5] bg-white dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+        <div className="mx-auto max-w-5xl px-6 py-16">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-[#1a1a2e] to-[#b8860b] text-4xl font-bold text-white">
+              强
+            </div>
+            <h1 className="mb-2 text-3xl font-bold text-[#1a1a2e] dark:text-[#fafaf9]">
+              强嘉伟
+            </h1>
+            <p className="mb-4 text-lg text-[#6b7280]">
+              滇池学院 · 计算机科学与技术专业
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-[#6b7280]">
+              <div className="flex items-center gap-1">
+                <Mail className="h-4 w-4" />
+                <span>3080562453@qq.com</span>
               </div>
-              <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] mt-1">{h.desc}</p>
-              <p className="text-xs text-[#9ca3af] dark:text-[#6b7280] mt-0.5">{h.org}</p>
+              <div className="flex items-center gap-1">
+                <Phone className="h-4 w-4" />
+                <span>18213912070</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <MapPin className="h-4 w-4" />
+                <span>云南昆明</span>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CustomTab() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-serif text-2xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-1">
-          专业技能
-        </h2>
-        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">Skills & Expertise</p>
+        </div>
       </div>
 
-      <div className="h-px bg-[#e5e5e5] dark:bg-[#2a2a3a]" />
+      {/* 内容区域 */}
+      <div className="mx-auto max-w-5xl px-6 py-12">
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* 左侧 - 个人信息 */}
+          <div className="lg:col-span-1">
+            <div className="space-y-6">
+              {/* 个人简介 */}
+              <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                  <BookOpen className="h-5 w-5 text-[#b8860b]" />
+                  个人简介
+                </h3>
+                <p className="text-sm leading-relaxed text-[#6b7280]">
+                  热爱技术，专注于人工智能与云计算领域。具备扎实的计算机基础知识和编程能力，
+                  熟悉 Python、Java 等编程语言，了解大模型应用开发。
+                  在校期间积极参与各类技术竞赛和项目实践，不断提升自己的专业技能。
+                </p>
+              </div>
 
-      <div className="space-y-5">
-        <div>
-          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">编程语言</p>
-          <div className="flex flex-wrap gap-2">
-            {["Python", "Java", "C", "C++", "JavaScript", "TypeScript"].map((s) => (
-              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
-            ))}
+              {/* 教育背景 */}
+              <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                  <GraduationCap className="h-5 w-5 text-[#b8860b]" />
+                  教育背景
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <div className="font-medium text-[#1a1a1a] dark:text-[#fafaf9]">滇池学院</div>
+                    <div className="text-sm text-[#6b7280]">计算机科学与技术 · 本科</div>
+                    <div className="text-xs text-[#6b7280]">2024 - 2028（预计）</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 技能标签 */}
+              <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                  <Briefcase className="h-5 w-5 text-[#b8860b]" />
+                  技能特长
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Python", "Java", "人工智能", "云计算", "大模型", "Next.js", "Supabase"].map(
+                    (skill) => (
+                      <span
+                        key={skill}
+                        className="rounded bg-[#1a1a2e] px-3 py-1 text-xs text-[#b8860b] dark:bg-[#b8860b] dark:text-[#1a1a2e]"
+                      >
+                        {skill}
+                      </span>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* 社交链接 */}
+              <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                  <Github className="h-5 w-5 text-[#b8860b]" />
+                  社交链接
+                </h3>
+                <div className="space-y-2">
+                  <a
+                    href="https://github.com/qiang-jiawei"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-[#6b7280] hover:text-[#b8860b]"
+                  >
+                    <Github className="h-4 w-4" />
+                    GitHub
+                  </a>
+                  <a
+                    href="#"
+                    className="flex items-center gap-2 text-sm text-[#6b7280] hover:text-[#b8860b]"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                    LinkedIn
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">数据库</p>
-          <div className="flex flex-wrap gap-2">
-            {["MySQL", "PostgreSQL", "Supabase"].map((s) => (
-              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
-            ))}
-          </div>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">框架与工具</p>
-          <div className="flex flex-wrap gap-2">
-            {["Next.js", "React", "Tailwind CSS", "Docker", "Kubernetes", "HarmonyOS"].map((s) => (
-              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
-            ))}
-          </div>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">专业领域</p>
-          <div className="flex flex-wrap gap-2">
-            {["人工智能", "大模型应用", "云计算", "智能医疗", "前端工程化"].map((s) => (
-              <span key={s} className="px-3 py-1 text-xs border border-[#e5e5e5] dark:border-[#2a2a3a] text-[#1a1a2e] dark:text-[#fafaf9] rounded-[2px]">{s}</span>
-            ))}
+
+          {/* 右侧 - 所获荣誉 */}
+          <div className="lg:col-span-2">
+            <div className="rounded-lg border border-[#e5e5e5] bg-white p-6 dark:border-[#2a2a3a] dark:bg-[#1a1a2e]">
+              <h3 className="mb-6 flex items-center gap-2 text-xl font-semibold text-[#1a1a2e] dark:text-[#fafaf9]">
+                <Award className="h-6 w-6 text-[#b8860b]" />
+                所获荣誉
+              </h3>
+
+              {loading ? (
+                <div className="py-8 text-center text-[#6b7280]">加载中...</div>
+              ) : (
+                <div className="space-y-6">
+                  {renderSection("软件著作权", <Award className="h-5 w-5 text-[#b8860b]" />, softwareHonors, "software")}
+                  {renderSection("等级考试", <BookOpen className="h-5 w-5 text-[#b8860b]" />, certificationHonors, "certification")}
+                  {renderSection("竞赛获奖", <Award className="h-5 w-5 text-[#b8860b]" />, competitionHonors, "competition")}
+                  {renderSection("奖学金与荣誉", <GraduationCap className="h-5 w-5 text-[#b8860b]" />, scholarshipHonors, "scholarship")}
+                  {renderSection("进行中", <Briefcase className="h-5 w-5 text-[#b8860b]" />, ongoingHonors, "ongoing")}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

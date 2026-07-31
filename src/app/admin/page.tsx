@@ -49,6 +49,7 @@ export default function AdminPage() {
     { key: "ious", label: "借据台账" },
     { key: "content", label: "内容管理" },
     { key: "downloads", label: "下载管理" },
+    { key: "honors", label: "荣誉管理" },
     { key: "feedback", label: "反馈管理" },
     { key: "logs", label: "操作日志" },
   ];
@@ -105,6 +106,7 @@ export default function AdminPage() {
       {activeTab === "ious" && <IousPanel />}
       {activeTab === "content" && <ContentPanel />}
       {activeTab === "downloads" && <DownloadsPanel />}
+      {activeTab === "honors" && <HonorsPanel />}
       {activeTab === "feedback" && <FeedbackPanel />}
       {activeTab === "logs" && <LogsPanel />}
     </div>
@@ -832,6 +834,164 @@ function DownloadsPanel() {
 
       {downloads.length === 0 && !showForm && (
         <div className="py-8 text-center text-[12px] text-[#6b7280]">暂无下载文件，点击右上角"上传文件"添加</div>
+      )}
+    </div>
+  );
+}
+
+function HonorsPanel() {
+  const [honors, setHonors] = useState<Array<{ id: string; title: string; description: string; organization: string; date: string; sort_order: number }>>([]);
+  const [error, setError] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState("");
+  const [form, setForm] = useState({ title: "", description: "", organization: "", date: "", sort_order: "0" });
+
+  const fetchHonors = async () => {
+    const res = await fetch("/api/admin/honors");
+    const json = await res.json();
+    if (json.success) {
+      setHonors(json.data || []);
+    } else {
+      setError(json.error || "加载失败");
+    }
+  };
+
+  useEffect(() => { fetchHonors(); }, []);
+
+  const resetForm = () => {
+    setForm({ title: "", description: "", organization: "", date: "", sort_order: "0" });
+    setEditId("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    const res = await fetch("/api/admin/honors", {
+      method: editId ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...form, sort_order: parseInt(form.sort_order) || 0, id: editId || undefined }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      setShowForm(false);
+      resetForm();
+      fetchHonors();
+    } else {
+      setError(json.error || "保存失败");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("确定删除这条荣誉吗？")) return;
+    const res = await fetch(`/api/admin/honors?id=${id}`, { method: "DELETE" });
+    const json = await res.json();
+    if (json.success) {
+      fetchHonors();
+    } else {
+      setError(json.error || "删除失败");
+    }
+  };
+
+  return (
+    <div>
+      {error && <div className="mb-4 text-[12px] text-red-500">{error}</div>}
+      <div className="mb-6 flex items-center justify-between">
+        <div className="text-[12px] text-[#6b7280]">共 {honors.length} 条荣誉</div>
+        <button
+          onClick={() => { setShowForm(true); setEditId(""); resetForm(); }}
+          className="border border-[#2a2a3a] bg-[#1a1a2e] px-3 py-1.5 text-[12px] text-[#fafaf9] transition-colors hover:bg-[#b8860b] hover:text-[#0f0f1a]"
+        >
+          + 新增荣誉
+        </button>
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="mb-6 space-y-3 rounded border border-[#2a2a3a] bg-[#1a1a2e] p-4">
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">标题 *</label>
+            <input
+              type="text"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+              required
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">描述</label>
+            <input
+              type="text"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">颁发机构</label>
+            <input
+              type="text"
+              value={form.organization}
+              onChange={(e) => setForm({ ...form, organization: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">日期</label>
+            <input
+              type="text"
+              value={form.date}
+              onChange={(e) => setForm({ ...form, date: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+              placeholder="如：2025-11 或 备考中"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">排序序号</label>
+            <input
+              type="number"
+              value={form.sort_order}
+              onChange={(e) => setForm({ ...form, sort_order: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+            />
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="submit" className="bg-[#b8860b] px-4 py-1.5 text-[12px] text-[#0f0f1a] transition-colors hover:bg-[#d4a017]">
+              {editId ? "更新" : "创建"}
+            </button>
+            <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className="border border-[#2a2a3a] px-4 py-1.5 text-[12px] text-[#6b7280] transition-colors hover:bg-[#1a1a2e]">
+              取消
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="space-y-3">
+        {honors.map((h) => (
+          <div key={h.id} className="rounded border border-[#2a2a3a] bg-[#1a1a2e] p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="mb-1 text-[14px] font-semibold text-[#fafaf9]">{h.title}</div>
+                {h.description && <div className="mb-1 text-[12px] text-[#6b7280]">{h.description}</div>}
+                <div className="text-[11px] text-[#6b7280]">{h.organization} · {h.date}</div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setEditId(h.id); setForm({ title: h.title, description: h.description, organization: h.organization, date: h.date, sort_order: String(h.sort_order) }); setShowForm(true); }}
+                  className="border border-[#2a2a3a] px-2 py-1 text-[11px] text-[#6b7280] transition-colors hover:bg-[#1a1a2e] hover:text-[#b8860b]"
+                >
+                  编辑
+                </button>
+                <button onClick={() => handleDelete(h.id)} className="border border-red-900/30 px-2 py-1 text-[11px] text-red-400 transition-colors hover:bg-red-900/20">
+                  删除
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {honors.length === 0 && !showForm && (
+        <div className="py-8 text-center text-[12px] text-[#6b7280]">暂无荣誉记录，点击右上角"新增荣誉"添加</div>
       )}
     </div>
   );
