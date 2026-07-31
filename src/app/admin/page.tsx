@@ -840,11 +840,13 @@ function DownloadsPanel() {
 }
 
 function HonorsPanel() {
-  const [honors, setHonors] = useState<Array<{ id: string; title: string; description: string; organization: string; date: string; sort_order: number }>>([]);
+  const [honors, setHonors] = useState<Array<{ id: string; title: string; description: string; organization: string; date: string; category: string; sort_order: number }>>([]);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState("");
-  const [form, setForm] = useState({ title: "", description: "", organization: "", date: "", sort_order: "0" });
+  const [form, setForm] = useState({ title: "", description: "", organization: "", date: "", category: "其他", sort_order: "0" });
+
+  const categories = ["知识产权", "荣誉奖项", "考试证书", "学科竞赛", "其他"];
 
   const fetchHonors = async () => {
     const res = await fetch("/api/admin/honors");
@@ -859,7 +861,7 @@ function HonorsPanel() {
   useEffect(() => { fetchHonors(); }, []);
 
   const resetForm = () => {
-    setForm({ title: "", description: "", organization: "", date: "", sort_order: "0" });
+    setForm({ title: "", description: "", organization: "", date: "", category: "其他", sort_order: "0" });
     setEditId("");
   };
 
@@ -946,12 +948,25 @@ function HonorsPanel() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-[11px] text-[#6b7280]">排序序号</label>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">分类 *</label>
+            <select
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">排序序号（分类内排序，0 开始）</label>
             <input
               type="number"
               value={form.sort_order}
               onChange={(e) => setForm({ ...form, sort_order: e.target.value })}
               className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+              min="0"
             />
           </div>
           <div className="flex gap-2 pt-2">
@@ -970,13 +985,16 @@ function HonorsPanel() {
           <div key={h.id} className="rounded border border-[#2a2a3a] bg-[#1a1a2e] p-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="mb-1 text-[14px] font-semibold text-[#fafaf9]">{h.title}</div>
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="text-[14px] font-semibold text-[#fafaf9]">{h.title}</span>
+                  <span className="rounded bg-[#2a2a3a] px-1.5 py-0.5 text-[10px] text-[#b8860b]">{h.category}</span>
+                </div>
                 {h.description && <div className="mb-1 text-[12px] text-[#6b7280]">{h.description}</div>}
                 <div className="text-[11px] text-[#6b7280]">{h.organization} · {h.date}</div>
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => { setEditId(h.id); setForm({ title: h.title, description: h.description, organization: h.organization, date: h.date, sort_order: String(h.sort_order) }); setShowForm(true); }}
+                  onClick={() => { setEditId(h.id); setForm({ title: h.title, description: h.description, organization: h.organization, date: h.date, category: h.category, sort_order: String(h.sort_order) }); setShowForm(true); }}
                   className="border border-[#2a2a3a] px-2 py-1 text-[11px] text-[#6b7280] transition-colors hover:bg-[#1a1a2e] hover:text-[#b8860b]"
                 >
                   编辑

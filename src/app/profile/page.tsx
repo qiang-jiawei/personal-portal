@@ -9,6 +9,7 @@ interface Honor {
   description: string;
   organization: string;
   date: string;
+  category: string;
   sort_order: number;
 }
 
@@ -16,11 +17,11 @@ export default function ProfilePage() {
   const [honors, setHonors] = useState<Honor[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    software: true,
-    certification: false,
-    competition: false,
-    scholarship: false,
-    ongoing: false,
+    '知识产权': true,
+    '考试证书': false,
+    '学科竞赛': false,
+    '荣誉奖项': false,
+    '其他': false,
   });
 
   useEffect(() => {
@@ -47,11 +48,26 @@ export default function ProfilePage() {
   };
 
   // 分类荣誉
-  const softwareHonors = honors.filter((h) => h.sort_order <= 3);
-  const certificationHonors = honors.filter((h) => h.sort_order === 4);
-  const competitionHonors = honors.filter((h) => h.sort_order === 5);
-  const scholarshipHonors = honors.filter((h) => h.sort_order >= 6 && h.sort_order <= 8);
-  const ongoingHonors = honors.filter((h) => h.sort_order >= 9);
+  const categoryMap: Record<string, Honor[]> = {
+    '知识产权': [],
+    '考试证书': [],
+    '学科竞赛': [],
+    '荣誉奖项': [],
+    '其他': [],
+  };
+  
+  honors.forEach((h) => {
+    if (categoryMap[h.category]) {
+      categoryMap[h.category].push(h);
+    } else {
+      categoryMap['其他'].push(h);
+    }
+  });
+  
+  // 每个分类内按 sort_order 排序
+  Object.keys(categoryMap).forEach((key) => {
+    categoryMap[key].sort((a, b) => a.sort_order - b.sort_order);
+  });
 
   const renderHonorItem = (honor: Honor, index: number) => (
     <div key={honor.id} className="group relative">
@@ -231,11 +247,11 @@ export default function ProfilePage() {
                 <div className="py-8 text-center text-[#6b7280]">加载中...</div>
               ) : (
                 <div className="space-y-6">
-                  {renderSection("软件著作权", <Award className="h-5 w-5 text-[#b8860b]" />, softwareHonors, "software")}
-                  {renderSection("等级考试", <BookOpen className="h-5 w-5 text-[#b8860b]" />, certificationHonors, "certification")}
-                  {renderSection("竞赛获奖", <Award className="h-5 w-5 text-[#b8860b]" />, competitionHonors, "competition")}
-                  {renderSection("奖学金与荣誉", <GraduationCap className="h-5 w-5 text-[#b8860b]" />, scholarshipHonors, "scholarship")}
-                  {renderSection("进行中", <Briefcase className="h-5 w-5 text-[#b8860b]" />, ongoingHonors, "ongoing")}
+                  {renderSection("知识产权", <Award className="h-5 w-5 text-[#b8860b]" />, honors.filter(h => h.category === "知识产权"), "ip")}
+                  {renderSection("荣誉奖项", <GraduationCap className="h-5 w-5 text-[#b8860b]" />, honors.filter(h => h.category === "荣誉奖项"), "honor")}
+                  {renderSection("考试证书", <BookOpen className="h-5 w-5 text-[#b8860b]" />, honors.filter(h => h.category === "考试证书"), "exam")}
+                  {renderSection("学科竞赛", <Award className="h-5 w-5 text-[#b8860b]" />, honors.filter(h => h.category === "学科竞赛"), "competition")}
+                  {renderSection("其他", <Briefcase className="h-5 w-5 text-[#b8860b]" />, honors.filter(h => h.category === "其他"), "other")}
                 </div>
               )}
             </div>
