@@ -10,7 +10,7 @@ export function Footer() {
             <h3 className="font-serif text-sm font-semibold text-[#1a1a2e] dark:text-[#fafaf9] mb-3">
               关于本站
             </h3>
-            <p className="text-xs text-[#6b7280] leading-relaxed">
+            <p className="text-[11px] text-[#6b7280] leading-relaxed">
               强嘉伟个人门户网站系统，提供信息公开、在线咨询、财务管理等综合服务。
             </p>
           </div>

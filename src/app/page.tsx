@@ -44,10 +44,10 @@ export default function HomePage() {
           <div className="mb-6">
             <div className="inline-block w-16 h-[2px] bg-[#b8860b] mb-6" />
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-semibold text-white mb-6 tracking-wide">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold text-white mb-6 tracking-wide whitespace-nowrap">
             欢迎来到强嘉伟个人门户平台
           </h1>
-          <p className="text-white/70 text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-10">
+          <p className="text-white/70 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-10">
             集信息公开、在线咨询、财务管理于一体的综合服务平台
           </p>
           <div className="flex items-center justify-center gap-4">
