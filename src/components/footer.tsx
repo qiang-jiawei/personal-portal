@@ -11,7 +11,7 @@ export function Footer() {
               关于本站
             </h3>
             <p className="text-xs text-[#6b7280] leading-relaxed">
-              个人门户网站系统，提供信息公开、在线咨询、财务管理等综合服务。
+              强嘉伟个人门户网站系统，提供信息公开、在线咨询、财务管理等综合服务。
             </p>
           </div>
 
@@ -46,6 +46,11 @@ export function Footer() {
             </h3>
             <ul className="space-y-2 text-xs text-[#6b7280]">
               <li>工作时间：周一至周五 9:00-17:00</li>
+              <li>
+                <a href="mailto:jiawei-qiang@foxmail.com" className="hover:text-[#b8860b] transition-colors duration-200">
+                  jiawei-qiang@foxmail.com
+                </a>
+              </li>
               <li>
                 <Link href="/feedback" className="hover:text-[#b8860b] transition-colors duration-200">
                   访客反馈
