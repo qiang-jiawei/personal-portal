@@ -119,8 +119,8 @@ export default function ConsultationPage() {
       <div className="mb-8 p-4 border border-[#e5e5e5] dark:border-[#2a2a3a] rounded-[2px] bg-[#f5f5f4]/50 dark:bg-[#1e1e32]/50">
         <h3 className="text-xs font-medium text-[#1a1a2e] dark:text-[#fafaf9] mb-2">紧急咨询专区</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-[#6b7280]">
-          <div>联系电话：<span className="text-[#1a1a2e] dark:text-[#fafaf9]">XXX-XXXX-XXXX</span></div>
-          <div>工作邮箱：<span className="text-[#1a1a2e] dark:text-[#fafaf9]">contact@example.com</span></div>
+          <div>联系电话：<span className="text-[#1a1a2e] dark:text-[#fafaf9]">15398575367</span></div>
+          <div>工作邮箱：<span className="text-[#1a1a2e] dark:text-[#fafaf9]">jiawei-qiang@foxmail.com</span></div>
           <div>工作时段：<span className="text-[#1a1a2e] dark:text-[#fafaf9]">周一至周五 9:00-17:00</span></div>
         </div>
       </div>
