@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-type AdminTab = "users" | "consultations" | "requests" | "ious" | "content" | "downloads" | "honors" | "feedback" | "logs";
+type AdminTab = "users" | "consultations" | "requests" | "ious" | "content" | "downloads" | "honors" | "codeProjects" | "feedback" | "logs";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -50,6 +50,7 @@ export default function AdminPage() {
     { key: "content", label: "内容管理" },
     { key: "downloads", label: "下载管理" },
     { key: "honors", label: "荣誉管理" },
+    { key: "codeProjects", label: "代码实验室" },
     { key: "feedback", label: "反馈管理" },
     { key: "logs", label: "操作日志" },
   ];
@@ -107,6 +108,7 @@ export default function AdminPage() {
       {activeTab === "content" && <ContentPanel />}
       {activeTab === "downloads" && <DownloadsPanel />}
       {activeTab === "honors" && <HonorsPanel />}
+      {activeTab === "codeProjects" && <CodeProjectsPanel />}
       {activeTab === "feedback" && <FeedbackPanel />}
       {activeTab === "logs" && <LogsPanel />}
     </div>
@@ -1010,6 +1012,248 @@ function HonorsPanel() {
 
       {honors.length === 0 && !showForm && (
         <div className="py-8 text-center text-[12px] text-[#6b7280]">暂无荣誉记录，点击右上角"新增荣誉"添加</div>
+      )}
+    </div>
+  );
+}
+
+function CodeProjectsPanel() {
+  interface CodeProjectItem {
+    id: string;
+    title: string;
+    description: string;
+    file_url: string;
+    file_path: string;
+    tags: string;
+    sort_order: number;
+    is_active: boolean;
+  }
+  const [projects, setProjects] = useState<CodeProjectItem[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState("");
+  const [form, setForm] = useState({ title: "", description: "", tags: "", sort_order: "0", is_active: true });
+  const [uploadedFile, setUploadedFile] = useState<{ url: string; path: string; name: string } | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  const fetchProjects = async () => {
+    const res = await fetch("/api/admin/code-projects");
+    const json = await res.json();
+    if (json.success) setProjects(json.data || []);
+    else setError(json.error || "加载失败");
+  };
+
+  useEffect(() => { fetchProjects(); }, []);
+
+  const resetForm = () => {
+    setForm({ title: "", description: "", tags: "", sort_order: "0", is_active: true });
+    setUploadedFile(null);
+    setEditId("");
+    setError("");
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const lowerName = file.name.toLowerCase();
+    if (!lowerName.endsWith(".html") && !lowerName.endsWith(".htm")) {
+      setError("仅支持上传 HTML 文件（.html / .htm）");
+      return;
+    }
+    setUploading(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload-code", { method: "POST", body: fd });
+      const json = await res.json();
+      if (json.success) {
+        setUploadedFile({ url: json.data.url, path: json.data.path, name: file.name });
+        if (!form.title) {
+          setForm((f) => ({ ...f, title: file.name.replace(/\.(html?|HTML?)$/, "") }));
+        }
+      } else {
+        setError(json.error || "上传失败");
+      }
+    } catch {
+      setError("上传失败，请重试");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!uploadedFile) {
+      setError("请先上传 HTML 文件");
+      return;
+    }
+    const res = await fetch("/api/admin/code-projects", {
+      method: editId ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: editId || undefined,
+        title: form.title,
+        description: form.description,
+        tags: form.tags,
+        sort_order: parseInt(form.sort_order) || 0,
+        is_active: form.is_active,
+        file_url: uploadedFile.url,
+        file_path: uploadedFile.path,
+      }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      setShowForm(false);
+      resetForm();
+      fetchProjects();
+    } else {
+      setError(json.error || "保存失败");
+    }
+  };
+
+  const handleEdit = (p: CodeProjectItem) => {
+    setEditId(p.id);
+    setForm({ title: p.title, description: p.description, tags: p.tags, sort_order: String(p.sort_order), is_active: p.is_active });
+    setUploadedFile({ url: p.file_url, path: p.file_path, name: "当前文件（如需替换请重新上传）" });
+    setShowForm(true);
+    setError("");
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("确定删除这个作品吗？")) return;
+    const res = await fetch(`/api/admin/code-projects?id=${id}`, { method: "DELETE" });
+    const json = await res.json();
+    if (json.success) fetchProjects();
+    else setError(json.error || "删除失败");
+  };
+
+  return (
+    <div>
+      {error && <div className="mb-4 text-[12px] text-red-500">{error}</div>}
+      <div className="mb-6 flex items-center justify-between">
+        <div className="text-[12px] text-[#6b7280]">共 {projects.length} 个作品</div>
+        <button
+          onClick={() => { setShowForm(true); resetForm(); }}
+          className="border border-[#2a2a3a] bg-[#1a1a2e] px-3 py-1.5 text-[12px] text-[#fafaf9] transition-colors hover:bg-[#b8860b] hover:text-[#0f0f1a]"
+        >
+          + 新增作品
+        </button>
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="mb-6 space-y-3 rounded border border-[#2a2a3a] bg-[#1a1a2e] p-4">
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">HTML 文件 *（支持 .html / .htm，单文件、资源需用 CDN 链接）</label>
+            <input
+              type="file"
+              accept=".html,.htm,text/html"
+              onChange={handleFileUpload}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] file:mr-3 file:border-0 file:bg-[#b8860b] file:px-3 file:py-1 file:text-[11px] file:text-[#0f0f1a]"
+            />
+            {uploading && <div className="mt-1 text-[11px] text-[#b8860b]">上传中...</div>}
+            {uploadedFile && <div className="mt-1 text-[11px] text-green-500">已上传: {uploadedFile.name}</div>}
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">作品名称 *</label>
+            <input
+              type="text"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+              placeholder="如：太阳系模拟"
+              required
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">作品描述</label>
+            <input
+              type="text"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+              placeholder="一句话介绍这个小作品"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-[#6b7280]">标签（逗号分隔，如：动画,Canvas）</label>
+            <input
+              type="text"
+              value={form.tags}
+              onChange={(e) => setForm({ ...form, tags: e.target.value })}
+              className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-[11px] text-[#6b7280]">排序序号（0 开始）</label>
+              <input
+                type="number"
+                value={form.sort_order}
+                onChange={(e) => setForm({ ...form, sort_order: e.target.value })}
+                className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+                min="0"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-[11px] text-[#6b7280]">状态</label>
+              <select
+                value={form.is_active ? "true" : "false"}
+                onChange={(e) => setForm({ ...form, is_active: e.target.value === "true" })}
+                className="w-full border border-[#2a2a3a] bg-[#0f0f1a] px-2 py-1.5 text-[12px] text-[#fafaf9] outline-none focus:border-[#b8860b]"
+              >
+                <option value="true">显示</option>
+                <option value="false">隐藏</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="submit" disabled={uploading} className="bg-[#b8860b] px-4 py-1.5 text-[12px] text-[#0f0f1a] transition-colors hover:bg-[#d4a017] disabled:opacity-50">
+              {editId ? "更新" : "创建"}
+            </button>
+            <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className="border border-[#2a2a3a] px-4 py-1.5 text-[12px] text-[#6b7280] transition-colors hover:bg-[#1a1a2e]">
+              取消
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="space-y-3">
+        {projects.map((p) => (
+          <div key={p.id} className="rounded border border-[#2a2a3a] bg-[#1a1a2e] p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="text-[14px] font-semibold text-[#fafaf9]">{p.title}</span>
+                  <span className={`rounded px-1.5 py-0.5 text-[10px] ${p.is_active ? "bg-green-900/30 text-green-400" : "bg-[#2a2a3a] text-[#6b7280]"}`}>
+                    {p.is_active ? "显示中" : "已隐藏"}
+                  </span>
+                </div>
+                {p.description && <div className="mb-1 text-[12px] text-[#6b7280]">{p.description}</div>}
+                {p.tags && <div className="mb-1 text-[11px] text-[#b8860b]">标签: {p.tags}</div>}
+                <a href={p.file_url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[#6b7280] underline hover:text-[#b8860b] break-all">
+                  {p.file_url}
+                </a>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleEdit(p)}
+                  className="border border-[#2a2a3a] px-2 py-1 text-[11px] text-[#6b7280] transition-colors hover:bg-[#1a1a2e] hover:text-[#b8860b]"
+                >
+                  编辑
+                </button>
+                <button onClick={() => handleDelete(p.id)} className="border border-red-900/30 px-2 py-1 text-[11px] text-red-400 transition-colors hover:bg-red-900/20">
+                  删除
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {projects.length === 0 && !showForm && (
+        <div className="py-8 text-center text-[12px] text-[#6b7280]">暂无作品，点击右上角"新增作品"上传 HTML 文件</div>
       )}
     </div>
   );
