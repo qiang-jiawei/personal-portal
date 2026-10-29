@@ -135,9 +135,9 @@ export const PDF_TEMPLATES: Record<string, string> = {
  * 印章文件映射
  */
 export const SEAL_FILES: Record<string, string> = {
-  valid: "square-seal.png",    // 强嘉伟印
-  expired: "round-seal.png",   // 强嘉伟证明专用章
-  invalid: "round-seal.png",   // 强嘉伟证明专用章
+  valid: "seal-valid.jpg",    // 强嘉伟专用章
+  expired: "seal-expired.jpg",   // 强嘉伟财务管理专用章
+  invalid: "seal-expired.jpg",   // 强嘉伟财务管理专用章
 };
 
 /**

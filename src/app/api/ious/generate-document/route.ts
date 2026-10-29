@@ -92,9 +92,9 @@ export async function POST(request: NextRequest) {
 
     // Load seal and background images
     const sealMap: Record<string, string> = {
-      valid: "square-seal.png",
-      expired: "round-seal.png",
-      invalid: "round-seal.png",
+      valid: "seal-valid.jpg",
+      expired: "seal-expired.jpg",
+      invalid: "seal-expired.jpg",
     };
     const sealBase64 = await loadSealBase64(sealMap[document_type] || "square-seal.png");
     const backgroundBase64 = await loadBackgroundBase64("借据背景.png");

@@ -368,28 +368,68 @@ function IousPanel() {
   };
 
   const downloadIouPdf = async (iouId: string, status: string, documentNo: string) => {
+    // Open blank window immediately to avoid popup blocker
+    const newWindow = window.open("", "_blank");
+    if (!newWindow) {
+      alert("请允许浏览器打开新窗口");
+      return;
+    }
+
+    // Show loading message in new window
+    newWindow.document.write(`
+      <html>
+        <head><title>正在生成文书...</title></head>
+        <body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+          <div style="text-align:center;">
+            <h2>正在生成文书，请稍候...</h2>
+            <p>请勿关闭此窗口</p>
+          </div>
+        </body>
+      </html>
+    `);
+
     try {
       const res = await fetch("/api/ious/generate-document", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ iou_id: iouId, document_type: status }),
       });
+
       if (!res.ok) {
         const error = await res.json();
-        alert("下载失败: " + (error.error || "未知错误"));
+        newWindow.document.open();
+        newWindow.document.write(`
+          <html>
+            <head><title>生成失败</title></head>
+            <body style="padding:40px;font-family:sans-serif;">
+              <h2>生成失败</h2>
+              <p>${error.error || "未知错误"}</p>
+              <button onclick="window.close()" style="padding:10px 20px;margin-top:20px;">关闭窗口</button>
+            </body>
+          </html>
+        `);
+        newWindow.document.close();
         return;
       }
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${documentNo}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+
+      // Write HTML content to new window
+      const html = await res.text();
+      newWindow.document.open();
+      newWindow.document.write(html);
+      newWindow.document.close();
     } catch {
-      alert("下载失败，请重试");
+      newWindow.document.open();
+      newWindow.document.write(`
+        <html>
+          <head><title>生成失败</title></head>
+          <body style="padding:40px;font-family:sans-serif;">
+            <h2>生成失败</h2>
+            <p>请重试</p>
+            <button onclick="window.close()" style="padding:10px 20px;margin-top:20px;">关闭窗口</button>
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
     }
   };
 
@@ -477,7 +517,7 @@ function IousPanel() {
                     onClick={() => downloadIouPdf(iou.id, iou.status, iou.document_no)}
                     className="text-[10px] text-[#b8860b] hover:underline"
                   >
-                    下载PDF
+                    下载文书
                   </button>
                 </td>
               </tr>

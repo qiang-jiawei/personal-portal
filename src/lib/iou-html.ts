@@ -34,7 +34,7 @@ export async function generateIOUHtml(
   repaymentDate: string,
   signingDate: string
 ): Promise<string> {
-  const sealBase64 = await loadSealBase64("square-seal.png");
+  const sealBase64 = await loadSealBase64("seal-valid.jpg");
   const qrCodeDataUrl = await QRCode.toDataURL(
     `https://jiaweiqiang.cn/verify?code=${iou.verification_code}`,
     { width: 100, margin: 1 }
@@ -282,7 +282,7 @@ export async function generateProofHtml(
   repaymentDate: string,
   signingDate: string
 ): Promise<string> {
-  const sealBase64 = await loadSealBase64("round-seal.png") || await loadSealBase64("square-seal.png");
+  const sealBase64 = await loadSealBase64("seal-expired.jpg") || await loadSealBase64("seal-valid.jpg");
   const qrCodeDataUrl = await QRCode.toDataURL(
     `https://jiaweiqiang.cn/verify?code=${iou.verification_code}`,
     { width: 100, margin: 1 }
@@ -498,7 +498,7 @@ export async function generateInvalidStatementHtml(
   },
   signingDate: string
 ): Promise<string> {
-  const sealBase64 = await loadSealBase64("round-seal.png");
+  const sealBase64 = await loadSealBase64("seal-expired.jpg");
 
   const signingDateObj = signingDate ? new Date(signingDate) : new Date();
   const signingYear = signingDateObj.getFullYear();
@@ -625,6 +625,7 @@ export async function generateInvalidStatementHtml(
   </div>
 
   <div class="signature">
+    <img src="${sealBase64}" alt="印章" class="seal">
     <div class="signature-text">强嘉伟</div>
     <div class="signature-date">${signingYear} 年 ${signingMonth} 月 ${signingDay} 日</div>
   </div>
